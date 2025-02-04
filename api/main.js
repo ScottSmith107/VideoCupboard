@@ -1,13 +1,17 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const data = require("./videos.js");
+const { stringify } = require('querystring');
 const app = express();
 const port = 3000;
 
 const videoPath = path.join(__dirname, "videos")
 
-app.get('/', function (req, res) {
-    res.send('Hello, World!');
+app.get('/', async (req, res) => {
+    output = await data.getDir("");
+    console.log(output);
+    res.send(output);
 });
 
 app.use((req, res, next) => {
@@ -17,22 +21,33 @@ app.use((req, res, next) => {
   });
 
 ///sends all files listed in the videos dir back to caller as json
-app.get('/all', function (req, res) {
-    fs.readdir(videoPath, (err, files) => {
-        if (err) {
-            return res.status(500).json({ error: "Unable to scan directory" });
-        }
-        res.json({ files });
-    });
+app.get('/all', async (req, res) => {
+    output = await data.getDir("");
+    console.log(output);
+    res.send(output);
+
+    // fs.readdir(videoPath, (err, files) => {
+    //     if (err) {
+    //         return res.status(500).json({ error: "Unable to scan directory" });
+    //     }
+    //     res.json({ files });
+    // });
 }); 
 
 //if the user opens a folder
-app.get('/folder', function (req, res) {
-    folderName = req.query.folder;
-    console.log(folderName);
-    folderDir = path.join(videoPath + "/" + folderName);
-    console.log(folderDir);
-    fs.readdir(folderDir, (err, files) => {
+app.get('/folder', async (req, res) => {
+    fileName = req.query.folder;
+    output = await data.getDir(fileName);
+    console.log(output);
+    res.send(output);
+}); 
+
+//returns a video
+app.get('/video', async (req, res) => {
+    fileName = req.query.folder;
+    dir = req.query.dir;
+    filePath = data.getPath(fileName,dir);
+    fs.readFile(filePath, (err, files) => {
         if (err) {
             return res.status(500).json({ error: "Unable to scan directory" });
         }
