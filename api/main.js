@@ -15,7 +15,7 @@ app.get('/', async (req, res) => {
 });
 
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://localhost');
+    res.header('Access-Control-Allow-Origin', 'http://192.168.1.115');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
   });
@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 ///sends all files listed in the videos dir back to caller as json
 app.get('/all', async (req, res) => {
     output = await data.getDir("");
-    console.log(output);
+    // console.log(output);
     res.send(output);
 
     // fs.readdir(videoPath, (err, files) => {
@@ -37,22 +37,54 @@ app.get('/all', async (req, res) => {
 //if the user opens a folder
 app.get('/folder', async (req, res) => {
     fileName = req.query.folder;
+    console.log(fileName);
     output = await data.getDir(fileName);
-    console.log(output);
+    // console.log(output);
     res.send(output);
 }); 
 
-//returns a video
-app.get('/video', async (req, res) => {
-    fileName = req.query.folder;
-    dir = req.query.dir;
-    filePath = data.getPath(fileName,dir);
-    fs.readFile(filePath, (err, files) => {
-        if (err) {
-            return res.status(500).json({ error: "Unable to scan directory" });
-        }
-        res.json({ files });
-    });
+//for uploading files not in a folder
+app.put('/upload', async (req, res) => {
+    files = req.files;
+    description = req.description;
+    console.log(files);
+    console.log(description);
+
+    //adds each file by itself
+    for (let i = 0; i < files.length; i++) {
+        file = array[i];
+        //add file to db
+        //add file to storage
+    }
+
+    output = await data.getDir(fileName);
+    // console.log(output);
+    res.send(output);
+}); 
+
+//for uploading files in a folder
+app.put('/upload-folder', async (req, res) => {
+    files = req.files;
+    description = req.description;
+    console.log(files);
+    console.log(description);
+
+    //adds folder 
+        //add new dir to db
+        data.uploadFile(name ,desc ,dir ,fullPath);
+        //add new dir to storage
+
+    //adds each file by itself
+    for (let i = 0; i < files.length; i++) {
+        file = array[i];
+        //add file to db
+        data.uploadFile(file.namename ,desc ,dir ,fullPath);
+        //add file to storage
+    }
+
+    output = await data.getDir(fileName);
+    // console.log(output);
+    res.send(output);
 }); 
 
 app.listen(port, function() {

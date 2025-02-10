@@ -42,3 +42,16 @@ exports.getPath = function getPath(name,dir){
         });
     });
 }
+
+//uploads singular file to db
+exports.uploadFile = function uploadFile(name ,desc ,dir ,fullPath){
+    return new Promise((resolve, reject) => {
+        db.query('INSERT INTO `video` (`Name`, `Description`, `dir`, `Full_path`, `id`) VALUES (?, ?, ?, ?, NULL)', [name ,desc ,dir ,fullPath], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
