@@ -20,7 +20,7 @@ exports.getAll = function getAll(){
 //gets the dir for a video by the name
 exports.getDir = function getDir(dir){
     return new Promise((resolve, reject) => {
-        db.query('SELECT name FROM video WHERE dir = ?', [dir], (error,results) => {
+        db.query('SELECT name, id FROM video WHERE dir = ?', [dir], (error,results) => {
             if (error) {
                 reject(error);
             } else {
