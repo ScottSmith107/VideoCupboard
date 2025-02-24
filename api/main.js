@@ -17,7 +17,6 @@ const storage = multer.diskStorage({
             //make new path
             newFolder = path.join(__dirname, "videos", folderName);
 
-            console.log(!fs.existsSync(newFolder));
             if(!fs.existsSync(newFolder)){
                 console.log("new folder");
                 //make the new dir with fs
@@ -26,7 +25,7 @@ const storage = multer.diskStorage({
                       return cb(err);
                     }
                     // adds new folder to db 
-                    data.uploadFile(folderName ,desc ,"" ,folderName);
+                    data.uploadFile(folderName ,desc ,0 ,folderName,1);
                     cb(null, newFolder);
                 });
             }else{
@@ -49,49 +48,49 @@ const upload = multer({ storage: storage })
 const app = express();
 const port = 3000;
 
-
-app.get('/', async (req, res) => {
-    console.log("item",req);
-    output = await data.getDir("");
-    console.log(output);
-    res.send(output);
-});
-
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://192.168.1.115');
+    res.header('Access-Control-Allow-Origin', 'http://192.168.1.124');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE');
     next();
   });
 
 ///sends all files listed in the videos dir back to caller as json
 app.get('/all', async (req, res) => {
-    output = await data.getDir("");
+    output = await data.getAll("");
     res.send(output);
 }); 
 
 //if the user opens a folder
 app.get('/folder', async (req, res) => {
-    fileName = req.query.folder;
-    console.log("file: ",fileName);
-    output = await data.getDir(fileName);
+    folderIndex = req.query.folderIndex;
+    console.log("folderIndex: ",folderIndex);
+    output = await data.getDir(folderIndex);
     // console.log(output);
     res.send(output);
 }); 
+
+//if the user opens a folder
+app.get('/path', async (req, res) => {
+    videoIndex = req.query.videoIndex;
+    console.log("videoIndex: ",videoIndex);
+    output = await data.getPath(videoIndex);
+    // console.log(output);
+    res.send(output);
+});
 
 //for uploading files not in a folder
 app.post('/upload', upload.array('files'),async (req, res) => {
     files = req.files;
     description = req.body.description;
-    console.log("files: ", files);
-    console.log("description: ",description);
-    
+
     //adds each file by itself
     for (let i = 0; i < files.length; i++) {
         file = files[i];
         console.log("file:", file);
         console.log("originalname: ", file.originalname);
         //add file to db
-        data.uploadFile(file.originalname ,description ,"" , file.originalname);
+        data.uploadFile(file.originalname ,description ,0 , file.originalname,0);
     }
 
     res.send("good :>");
@@ -102,19 +101,58 @@ app.post('/upload-folder', upload.array('files'),async (req, res) => {
     files = req.files;
     folderName = req.body.folderName;
     description = req.body.description;
-    // console.log("files: ", files);
-    // console.log("folderName: ", folderName);
-    // console.log("req: ",req);
+
+    //folder name for dir
+    folderName = req.body.folderName;
+    dir =  await data.getDirFromName(folderName);
+
+    console.log(folderName);
+    console.log(dir);
 
     //adds each file by itself
     for (let i = 0; i < files.length; i++) {
         file = files[i];
-        // console.log("file:", file);
         //add file to db
-        data.uploadFile(file.originalname ,description ,folderName , path.join(folderName , file.originalname));
+        data.uploadFile(file.originalname ,description ,dir[0].id , path.join(folderName , file.originalname),0);
     }
 
     res.send("good :>");
+});
+
+//delete singular file to db
+app.delete('/remove', async (req, res) => {
+    id = req.query.id;
+    console.log("video id to be removed: ",id);
+    //finds dir
+    fullPath = await data.getPath(id);
+    fullPath = fullPath[0].full_path;
+
+    //removes folder from file system
+    fs.unlink(path.join("videos",fullPath), (err) => {
+        if (err) throw err;
+        console.log(fullPath, 'was deleted');
+      });
+    //removes file from db
+    output = await data.remove(id);
+    res.send(output);
+}); 
+
+//delete whole dir file to db
+app.delete('/removeDir', async (req, res) => {
+    id = req.query.id;
+    console.log("path id to be removed: ",id);
+    //finds dir
+    fullPath = await data.getPath(id);
+    fullPath = fullPath[0].full_path;
+    //removes folder from file system
+    fs.rm(path.join("videos",fullPath),{force: true, recursive: true} , (err) => {
+        if (err) throw err;
+        console.log(fullPath, ' was deleted');
+      });
+
+    output = await data.removeDir(id);
+    output = await data.remove(id);
+    res.send(output);
 }); 
 
 app.listen(port, function() {
