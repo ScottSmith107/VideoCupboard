@@ -5,9 +5,22 @@ const { rejects } = require('assert');
 const db = data.db;
 
 //get all videos
-exports.getAll = function getAll(){
+exports.allVideos = function allVideos(){
     return new Promise((resolve, reject) => {
         db.query('SELECT name, id, dir, folder FROM video WHERE dir = ""', (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//get all videos
+exports.allUsers = function allUsers(){
+    return new Promise((resolve, reject) => {
+        db.query('SELECT * FROM user', (error,results) => {
             if (error) {
                 reject(error);
             } else {
@@ -57,6 +70,19 @@ exports.getDirFromName = function getDirFromName(folderName){
 }
 
 //uploads singular file to db
+exports.addUser = function addUser(name){
+    return new Promise((resolve, reject) => {
+        db.query('INSERT INTO `user` (`Name`) VALUES (?)', name, (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//uploads singular file to db
 exports.uploadFile = function uploadFile(name ,desc ,dir ,fullPath,folder){
     return new Promise((resolve, reject) => {
         db.query('INSERT INTO `video` (`Name`, `Description`, `dir`, `Full_path`,`folder`) VALUES (?, ?, ?, ?,?)', [name ,desc ,dir ,fullPath,folder], (error,results) => {
@@ -86,6 +112,45 @@ exports.remove = function remove(id){
 exports.removeDir = function removeDir(dir){
     return new Promise((resolve, reject) => {
         db.query('DELETE FROM video WHERE `dir` = ?', [dir], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//gets the current timestamp for the video for the user
+exports.getTimestamp = function getTimestamp(userID,videoID){
+    return new Promise((resolve, reject) => {
+        db.query('SELECT time FROM watching WHERE userID = ? and videoID = ?', [userID,videoID], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//sets the current timestamp for the video for the user
+exports.setTimestamp = function setTimestamp(userID,videoID,timestamp){
+    return new Promise((resolve, reject) => {
+        db.query('INSERT INTO `watching` (`userID`, `videoID` , `time`) VALUES (?,?,?)', [userID,videoID,timestamp], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//updates the current timestamp for the video for the user
+exports.updateTimestamp = function updateTimestamp(userID,videoID,timestamp){
+    return new Promise((resolve, reject) => {
+        db.query('UPDATE watching SET time = ? WHERE userID = ? and videoID = ?', [timestamp,userID,videoID], (error,results) => {
             if (error) {
                 reject(error);
             } else {

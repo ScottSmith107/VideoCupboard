@@ -6,6 +6,7 @@ const path = require('path');
 let videoPath = path.join(__dirname, "videos")
 
 const multer = require("multer");
+const { userInfo } = require('os');
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
 
@@ -51,15 +52,21 @@ const port = 3000;
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', 'http://192.168.1.124');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT');
     next();
   });
 
 ///sends all files listed in the videos dir back to caller as json
-app.get('/all', async (req, res) => {
-    output = await data.getAll("");
+app.get('/allVideos', async (req, res) => {
+    output = await data.allVideos("");
     res.send(output);
-}); 
+});
+
+///sends all files listed in the videos dir back to caller as json
+app.get('/allUsers', async (req, res) => {
+    output = await data.allUsers("");
+    res.send(output);
+});
 
 //if the user opens a folder
 app.get('/folder', async (req, res) => {
@@ -76,6 +83,25 @@ app.get('/path', async (req, res) => {
     console.log("videoIndex: ",videoIndex);
     output = await data.getPath(videoIndex);
     // console.log(output);
+    res.send(output);
+});
+
+// gets timestamp from userid and videoid
+app.put('/getTimestamp',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    videoID = req.body.videoID;
+    console.log("userID: ",userID);
+    console.log("videoID: ",videoID);
+
+    output = await data.getTimestamp(userID,videoID);
+    console.log(output);
+    res.send(output);
+}); 
+
+//adding new user to the db
+app.post('/addUser',upload.none(), async (req, res) => {
+    let name = req.body.username
+    output = await data.addUser(name);
     res.send(output);
 });
 
@@ -154,6 +180,30 @@ app.delete('/removeDir', async (req, res) => {
     output = await data.remove(id);
     res.send(output);
 }); 
+
+//if the user opens a folder
+app.put('/updateTimestamp',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    videoID = req.body.videoID;
+    timestamp = req.body.timestamp;
+    console.log("userID: ",userID);
+    console.log("videoID: ",videoID);
+    console.log("timestamp: ",timestamp);
+
+    check = await data.getTimestamp(userID,videoID);
+    console.log("check: ",check);
+
+    if(check.length == 0){
+        console.log("Set");
+        output = await data.setTimestamp(userID,videoID,timestamp);
+    }else{
+        console.log("update");
+        output = await data.updateTimestamp(userID,videoID,timestamp);
+    }
+
+    // console.log(output);
+    res.send(output);
+});
 
 app.listen(port, function() {
     console.log(`Example app listening on port ${port}!`);
