@@ -4,6 +4,7 @@ const data = require("./videos.js");
 
 const path = require('path');
 let videoPath = path.join(__dirname, "videos")
+let userIconPath = path.join(__dirname, "icons")
 
 const multer = require("multer");
 const { userInfo } = require('os');
@@ -17,7 +18,7 @@ const storage = multer.diskStorage({
             console.log("folder vaild");
             //make new path
             newFolder = path.join(__dirname, "videos", folderName);
-
+    
             if(!fs.existsSync(newFolder)){
                 console.log("new folder");
                 //make the new dir with fs
@@ -32,7 +33,7 @@ const storage = multer.diskStorage({
             }else{
                 cb(null, newFolder);
             }
-
+    
         }else{
             console.log("folder unvaild");
             cb(null, videoPath);
@@ -68,6 +69,12 @@ app.get('/allUsers', async (req, res) => {
     res.send(output);
 });
 
+///sends all files listed in the videos dir back to caller as json
+app.get('/allIcons', async (req, res) => {
+    output = await data.allIcons("");
+    res.send(output);
+});
+
 //if the user opens a folder
 app.get('/folder', async (req, res) => {
     folderIndex = req.query.folderIndex;
@@ -98,10 +105,47 @@ app.put('/getTimestamp',upload.none(), async (req, res) => {
     res.send(output);
 }); 
 
+// gets timestamp from userid and videoid
+app.put('/getUser',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    console.log("userID: ",userID);
+    
+    output = await data.getUser(userID);
+    res.send(output);
+});
+
+// gets timestamp from userid and videoid //fix\\
+app.put('/updateUser',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    let name = req.body.username
+    iconID = req.body.iconID
+    console.log("name: ",name);
+    console.log("iconID: ",iconID);
+    console.log("userID: ",userID);
+    
+    //if the icon has been added
+    if(iconID){
+        output = await data.updateUser(name,iconID,userID);
+    }else{
+        output = await data.updateUsername(name,userID);
+    }
+    res.send(output);
+});
+
+// gets timestamp from userid and videoid
+app.put('/getIcon',upload.none(), async (req, res) => {
+    iconID = req.body.iconID;
+    console.log("iconID: ",iconID);
+    
+    output = await data.getIcon(iconID);
+    res.send(output);
+});
+
 //adding new user to the db
 app.post('/addUser',upload.none(), async (req, res) => {
     let name = req.body.username
-    output = await data.addUser(name);
+    let iconID = req.body.iconID
+    output = await data.addUser(name,iconID);
     res.send(output);
 });
 
@@ -130,10 +174,7 @@ app.post('/upload-folder', upload.array('files'),async (req, res) => {
 
     //folder name for dir
     folderName = req.body.folderName;
-    dir =  await data.getDirFromName(folderName);
-
-    console.log(folderName);
-    console.log(dir);
+    dir =  await data.getIdFromName(folderName);
 
     //adds each file by itself
     for (let i = 0; i < files.length; i++) {
@@ -181,6 +222,16 @@ app.delete('/removeDir', async (req, res) => {
     res.send(output);
 }); 
 
+//delete whole dir file to db
+app.delete('/deleteUser',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    console.log("userID: ",userID);
+
+    await data.deleteUser(userID);
+    output = await data.deleteUserWatching(userID);
+    res.send(output);
+}); 
+
 //if the user opens a folder
 app.put('/updateTimestamp',upload.none(), async (req, res) => {
     userID = req.body.userID;
@@ -210,4 +261,5 @@ app.listen(port, function() {
 });
 
 app.use(express.static(videoPath));
+app.use(express.static(userIconPath));
     

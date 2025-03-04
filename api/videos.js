@@ -30,6 +30,32 @@ exports.allUsers = function allUsers(){
     });
 }
 
+//get all videos
+exports.allIcons = function allIcons(){
+    return new Promise((resolve, reject) => {
+        db.query('SELECT * FROM icons', (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//gets a icon full path based from id
+exports.getIcon = function getIcon(iconID){
+    return new Promise((resolve, reject) => {
+        db.query('SELECT fullPath FROM icons WHERE iconID = ?', [iconID], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
 //gets the dir for a video by the name
 exports.getDir = function getDir(index){
     return new Promise((resolve, reject) => {
@@ -57,7 +83,7 @@ exports.getPath = function getPath(id){
 }
 
 //gets a videos full path based off name and dir
-exports.getDirFromName = function getDirFromName(folderName){
+exports.getIdFromName = function getIdFromName(folderName){
     return new Promise((resolve, reject) => {
         db.query('SELECT id FROM video WHERE name = ?', [folderName], (error,results) => {
             if (error) {
@@ -70,9 +96,48 @@ exports.getDirFromName = function getDirFromName(folderName){
 }
 
 //uploads singular file to db
-exports.addUser = function addUser(name){
+exports.addUser = function addUser(name,iconID){
     return new Promise((resolve, reject) => {
-        db.query('INSERT INTO `user` (`Name`) VALUES (?)', name, (error,results) => {
+        db.query('INSERT INTO `user` (`Name`,`icon`) VALUES (?,?)', [name,iconID], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//gets a videos full path based from id
+exports.getUser = function getUser(userID){
+    return new Promise((resolve, reject) => {
+        db.query('SELECT * FROM user WHERE userID = ?', [userID], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//updates username and icon //fix\\
+exports.updateUser = function updateUser(name,iconID,userID){
+    return new Promise((resolve, reject) => {
+        db.query('UPDATE user SET name = ? ,icon = ? WHERE userID = ?', [name,iconID,userID], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//updates username //fix\\
+exports.updateUsername = function updateUsername(name,userID){
+    return new Promise((resolve, reject) => {
+        db.query('UPDATE user SET name = ? WHERE userID = ?', [name,userID], (error,results) => {
             if (error) {
                 reject(error);
             } else {
@@ -99,6 +164,32 @@ exports.uploadFile = function uploadFile(name ,desc ,dir ,fullPath,folder){
 exports.remove = function remove(id){
     return new Promise((resolve, reject) => {
         db.query('DELETE FROM video WHERE `video`.`id` = ?', [id], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//delete singular file to db
+exports.deleteUser = function deleteUser(userID){
+    return new Promise((resolve, reject) => {
+        db.query('DELETE FROM user WHERE `user`.`userID` = ?', [userID], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//delete singular file to db
+exports.deleteUserWatching = function deleteUserWatching(userID){
+    return new Promise((resolve, reject) => {
+        db.query('DELETE FROM watching WHERE `watching`.`userID` = ?', [userID], (error,results) => {
             if (error) {
                 reject(error);
             } else {
