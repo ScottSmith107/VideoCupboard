@@ -1,0 +1,104 @@
+body{
+    background-color: #1e2423;
+}
+
+.header{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.userDiv{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* div styling */
+    border-style: solid;
+    border-color: black;
+}
+
+.button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#user{
+    border-style: solid;
+    border-color: black;
+    width: 33%;
+}
+
+.user{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.user:hover{
+    background-color: rgb(102, 102, 95);
+}
+
+.usercontent{
+    order: 1;
+}
+
+.userIcon{
+    order: 2;
+}
+
+.userEdit{
+    order: 3;
+}
+
+#userIcon{
+    width: 50%;
+}
+
+/* addUserForm */
+.addUserDiv{
+    padding: 10px;
+    border-style: solid;
+    border-color: black;
+}
+
+.icon{
+    width: 25%;
+    border-style: solid;
+    border-color:#1e2423 ;
+}
+.icon:hover{
+    border-style: solid;
+    border-color: rgb(102, 102, 95);
+}
+
+a{
+    text-decoration: none;
+    color: white;
+}
+
+a:link {
+    color: white; /* Removes the default color for unvisited links */
+}
+
+a:visited {
+    color: white; /* Removes the default color for visited links */
+}
+
+.controlesDiv{
+    display: flex;
+    flex-direction:row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+
+    /* border for looking */
+    border-style: solid;
+    border-color: black;
+}
+
+h1{
+    color: white;
+}

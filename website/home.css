@@ -1,0 +1,22 @@
+body{
+    background-color: #1e2423;
+}
+
+#videosDiv{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+a{
+  text-decoration: none;
+  color: white;
+}
+
+a:link {
+  color: white;  
+}
+
+a:visited {
+  color: white; 
+}

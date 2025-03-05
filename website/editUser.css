@@ -1,0 +1,44 @@
+body{
+    background-color: #1e2423;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+.mainIcon{
+    order: 1;
+}
+.button{
+    order: 2;
+}
+.otherIcon{
+    order: 3;
+}
+
+#mainIcon{
+    background-color: #1e2423;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
+    /* border for looking */
+    border-style: solid;
+    border-color: black;
+}
+.userIcon{
+    width: 30%;
+    order: 1;
+}
+
+.otherIcon{
+    width: 30%;
+
+    /* border for looking */
+    border-style: solid;
+    border-color: black;
+}
+
+#username{
+    margin-left: 10px;
+}
