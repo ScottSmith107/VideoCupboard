@@ -7,7 +7,7 @@ const db = data.db;
 //get all videos
 exports.allVideos = function allVideos(){
     return new Promise((resolve, reject) => {
-        db.query('SELECT name, id, dir, folder FROM video WHERE dir = ""', (error,results) => {
+        db.query('SELECT * FROM video WHERE dir = ""', (error,results) => {
             if (error) {
                 reject(error);
             } else {
@@ -112,6 +112,58 @@ exports.addUser = function addUser(name,iconID){
 exports.getUser = function getUser(userID){
     return new Promise((resolve, reject) => {
         db.query('SELECT * FROM user WHERE userID = ?', [userID], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//gets all favorite videos from id
+exports.getFavorites = function getFavorites(userID){
+    return new Promise((resolve, reject) => {
+        db.query('SELECT * FROM video JOIN favorites ON video.id = favorites.videoID WHERE favorites.userId = ?', [userID], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//sets new favorites
+exports.setFavorites = function setFavorites(userID,videoID){
+    return new Promise((resolve, reject) => {
+        db.query('INSERT INTO `favorites` (`userID`,`videoID`) VALUES (?,?)', [userID,videoID] , (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//removes favorites 
+exports.removeFavorites = function removeFavorites(userID,videoID){
+    return new Promise((resolve, reject) => {
+        db.query('DELETE FROM favorites WHERE userID = ? AND videoId = ?', [userID,videoID] , (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//gets gets the most recent 10 videos from watching from id
+exports.getRecent = function getRecent(userID){
+    return new Promise((resolve, reject) => {
+        db.query('SELECT * FROM video JOIN watching ON video.id = watching.videoID WHERE watching.userId = ? ORDER BY videoID DESC LIMIT 10', [userID], (error,results) => {
             if (error) {
                 reject(error);
             } else {

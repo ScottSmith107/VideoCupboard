@@ -105,12 +105,55 @@ app.put('/getTimestamp',upload.none(), async (req, res) => {
     res.send(output);
 }); 
 
-// gets timestamp from userid and videoid
+// gets user info from userID
 app.put('/getUser',upload.none(), async (req, res) => {
     userID = req.body.userID;
     console.log("userID: ",userID);
     
     output = await data.getUser(userID);
+    res.send(output);
+});
+
+// gets Recents from userid
+app.put('/getRecent',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    console.log("userID: ",userID);
+    
+    output = await data.getRecent(userID);
+    res.send(output);
+});
+
+// gets Favorites from userid
+app.put('/getFavorites',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    console.log("getFav");
+    console.log("userID: ",userID);
+    
+    output = await data.getFavorites(userID);
+    res.send(output);
+});
+
+// gets Favorites from userid
+app.put('/setFavorites',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    videoID = req.body.videoID;
+    console.log("addFav");
+    console.log("userID: ",userID);
+    console.log("videoID: ",videoID);
+    
+    output = await data.setFavorites(userID,videoID);
+    res.send(output);
+});
+
+// gets Favorites from userid
+app.delete('/removeFavorites',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    videoID = req.body.videoID;
+    console.log("removeFav");
+    console.log("userID: ",userID);
+    console.log("videoID: ",videoID);
+    
+    output = await data.removeFavorites(userID,videoID);
     res.send(output);
 });
 
