@@ -1,4 +1,4 @@
-let url = "http://192.168.1.124:3000/";
+let url = "http://"+IP+":3000/";
 let user;
 const urlParams = new URLSearchParams(window.location.search);
 // Function to get URL parameters

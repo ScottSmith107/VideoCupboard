@@ -1,4 +1,4 @@
-let url = "http://192.168.1.124:3000/";
+let url = "http://"+IP+":3000/";
 let allvideos =[];
 let favoriteVideos = new Map();
 const urlParams = new URLSearchParams(window.location.search);

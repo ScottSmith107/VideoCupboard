@@ -3,6 +3,7 @@ const fs = require('fs');
 const data = require("./videos.js");
 
 const path = require('path');
+let websitePath= path.join(__dirname,"website")
 let videoPath = path.join(__dirname, "videos")
 let userIconPath = path.join(__dirname, "icons")
 
@@ -106,10 +107,22 @@ app.use('/', timestamp);
 app.use('/', user);
 app.use('/', video);
 
+
+require('dotenv').config();
+app.get('/config.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.send(`window.APP_CONFIG = { IP: "${process.env.IP}" };`);
+});
+///sends all files listed in the videos dir back to caller as json
+app.get('/', async (req, res) => {
+    res.sendFile(path.join(websitePath,"index.html"));
+});
+
 app.listen(port, function() {
     console.log(`Example app listening on port ${port}!`);
 });
 
 app.use(express.static(videoPath));
 app.use(express.static(userIconPath));
+app.use(express.static(websitePath));
     
