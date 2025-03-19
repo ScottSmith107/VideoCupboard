@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 body,button{
     font-family: "Major Mono Display", monospace;
     color: white;
@@ -51,4 +52,59 @@ button{
 #fileInput{
     border-style: solid;
     border-color: #4E2C5D;
+=======
+body,button{
+    font-family: "Major Mono Display", monospace;
+    color: white;
+}
+
+.main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.icon{
+    order: 1;
+}
+#videoName,#nameID{
+    order: 2;
+}
+#videoDesc,#descID{
+    order: 3;
+}
+#fileInput,#inputID{
+    order: 4;
+}
+#updateButton{
+    order: 5;
+}
+#deleteButton{
+    order: 6;
+}
+
+button{
+    background-color: #4E2C5D;
+    cursor:pointer;
+}
+
+.icon{
+    width: calc(100% / 3 - 20px);
+    border-radius: 5%;
+    border-color: #4E2C5D;
+    border-style: solid;
+}
+
+#videoName,#videoDesc{
+    color: white;
+    background-color: #4E2C5D;
+    width: auto;
+}
+
+#fileInput{
+    border-style: solid;
+    border-color: #4E2C5D;
+>>>>>>> 5f108183f1a777aeb5d002bc2a116c1972b6971e
 }
