@@ -1,0 +1,54 @@
+body{
+    color: white;
+    font-family: "Major Mono Display", monospace;
+}
+
+button{
+    color: white;
+    background-color: #4E2C5D;
+    cursor:pointer;
+}
+
+.file-upload-button{
+    color: white;
+    background-color: #4E2C5D;
+}
+
+#main{
+    display: flex;
+    flex-direction:column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}  
+
+.elementdiv{
+    display: flex;
+    flex-direction:column;
+    justify-content: flex-start;
+}
+
+.fileInputdiv{
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  position:relative;
+  padding-right:22px;
+  border: 1px solid #200A24;
+}
+
+a{
+    text-decoration: none;
+}
+a:link {
+    color: white;  
+}
+a:visited {
+    color: white; 
+}
+
+@media (max-width: 1000px) {
+    #home{
+        border-width: 2px;
+    }
+}

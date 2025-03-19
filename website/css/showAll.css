@@ -1,0 +1,114 @@
+body{
+  color: white; 
+  display: grid;
+  grid-template-areas:
+  "h h h"
+  "f f f"
+  "r r r"
+  "m m m";
+  font-family: "Major Mono Display", monospace;
+}
+
+button{
+  color: white;
+  background-color: #4E2C5D;
+  cursor:pointer;
+}
+
+.controls{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+#videosItems{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: fit-content;
+}
+
+#navBar{
+  grid-area: h;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 33%;
+}
+
+.video{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-bottom: 10px;
+
+  background-color: #200A24;
+
+  width: fit-content;
+
+  border-style: solid;
+  border-radius: 5%;
+  border-width: 5px;
+  border-color: black;
+}
+.video:hover{
+  border-color:white;
+}
+
+.nameDiv{
+  padding: 5px 5px 0px 5px;
+
+  display: grid;
+  grid-template-areas:
+  "n n n"
+  "d d d"
+  ". . h";
+}
+.link{
+  grid-area: n;
+}
+.desc{
+  grid-area: d;
+}
+.heart, .favedHeart{
+  width: 20px;
+  padding-bottom: 5px;
+  align-self: end;
+  grid-area: h;
+}
+
+.videoIcon{
+  flex: 0 0 10%;
+  max-width: 100px;
+  object-fit: cover;
+}
+
+a{
+  text-decoration: none;
+}
+
+a:link {
+  color: white;  
+}
+
+a:visited {
+  color: white; 
+}
+
+p{
+  cursor:pointer;
+}
+
+#videosLabel{
+  padding-right: 7px;
+}
+
+.removeAll:hover{
+  color: #4E2C5D;
+}
+
+@media (max-width: 1000px) {
+
+}

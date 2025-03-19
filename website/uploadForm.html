@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>MovieTown</title>
+    <link rel="stylesheet" href="css/uploadForm.css">
+  </head>
+  <body onload=onload() , style="background-image: url(images/indexBackground.png)">
+    <button id="home" onclick="location.replace('home.html?userID='+userID)">Home</button>
+    <div id="main">
+      <h1 id="title">Uploading video</h1>
+
+      
+      <div id="description" class="elementdiv">
+        <label for="Description">Description</label>
+        <input type="text" id="Description">
+      </div>
+      
+      <div id="name" class="elementdiv">
+        <label for="FolderName">Folder Name OPTIONAL</label>
+        <input type="text" id="folderName">
+      </div>
+      
+      <label for="fileInputDiv">Files</label>
+      <div id="fileInputDiv" class="fileInputdiv" >
+        <input type="file" id="fileInput" name="file" multiple accept=".mp4,.mp3">
+      </div>
+      
+      <label for="iconInputDiv">Icon</label>
+      <div id="iconInputDiv" class="fileInputdiv" >
+        <input type="file" id="iconInput" name="file" accept=".jpg, .png, .jpeg">
+      </div>
+
+      <div id="button" class="elementdiv">
+        <button id="buttonFile" onclick=addFile()>Add File</button>
+      </div>
+
+      <p id="error"></p>
+    </div>
+
+  </body>
+  <script src="scripts/uploadForm.js"></script>
+</html>
+
