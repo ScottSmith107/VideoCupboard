@@ -83,7 +83,6 @@ const storage = multer.diskStorage({
 
     },
     filename: function (req, file, cb) {
-        // console.log("originalname: ",file.originalname);
         cb(null, file.originalname);
     }
   })
@@ -99,7 +98,6 @@ app.use((req, res, next) => {
     next();
   });
 
-// const postRoutes = require('./routes/posts');
 app.use('/', fav);
 app.use('/', recent);
 app.use('/', file);

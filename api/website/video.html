@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>MovieTown</title>
+    <link rel="stylesheet" href="css/video.css">
+    <script src="scripts/video.js"></script>
+  </head>
+  <button id="home" onclick="location.replace('home.html?userID='+userID)">Home</button>
+  <a id="edit">EDIT</a>
+
+  <body onload=getQueryParam() , style="background-image: url(images/indexBackground.png)">
+
+    <div id="tester">
+      <div id="header">
+        <h1 id="title" >title</h1>
+      </div>
+      
+      <div id="main">
+        <div id="playerDiv">
+        </div>
+      </div>
+      
+      <div id="videosDiv">
+      </div>
+      
+      <div id="removeButton">
+      </div>
+
+      <div id="color">
+      </div>
+
+      <p id="error"></p>
+    </div>
+
+  </body>
+</html>
+

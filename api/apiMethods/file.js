@@ -12,7 +12,7 @@ const { userInfo } = require('os');
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
 
-        console.log("file");
+        console.log("file-file.js");
         console.log(file);
         console.log("");
         
@@ -29,7 +29,7 @@ const storage = multer.diskStorage({
                 console.log("new folder-icon");
 
                 //make new path
-                newFolder = path.join(__dirname, "videos", folderName);
+                newFolder = path.join(__dirname, ".." ,"videos", folderName);
                 //make the new dir with fs
                 fs.mkdir(newFolder, { recursive: true }, (err) => {
                     if (err) {
@@ -48,7 +48,7 @@ const storage = multer.diskStorage({
         if(folderName){
             console.log("folder vaild");
             //make new path
-            newFolder = path.join(__dirname, "videos", folderName);
+            newFolder = path.join(__dirname, ".." , "videos", folderName);
     
             //if there is a folder without an icon
             if(!fs.existsSync(newFolder)){
