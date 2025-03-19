@@ -11,14 +11,45 @@ const { userInfo } = require('os');
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
 
+        console.log("file");
+        console.log(file);
+        console.log("");
+        
         //get foldername
         folderName = req.body.folderName;
         desc = req.body.description;
+
+        iconPath ="";
+        //if its an image then upload diffrent
+        if(file.mimetype.split("/")[0] == "image"){
+            
+            if(folderName){
+                //makes the new folde with the icon
+                console.log("new folder-icon");
+
+                //make new path
+                newFolder = path.join(__dirname, "videos", folderName);
+                //make the new dir with fs
+                fs.mkdir(newFolder, { recursive: true }, (err) => {
+                    if (err) {
+                        return cb(err);
+                    }
+                    // adds new folder to db 
+                    iconPath = "videoIcon/"+file.originalname;
+                    console.log("iconpath: ",iconPath);
+                    data.uploadFile(folderName ,desc ,0 ,folderName,1,iconPath);
+                });
+            }
+                    
+            return cb(null, path.join(videoPath,"videoIcon"));
+        }
+
         if(folderName){
             console.log("folder vaild");
             //make new path
             newFolder = path.join(__dirname, "videos", folderName);
     
+            //if there is a folder without an icon
             if(!fs.existsSync(newFolder)){
                 console.log("new folder");
                 //make the new dir with fs
@@ -27,7 +58,8 @@ const storage = multer.diskStorage({
                       return cb(err);
                     }
                     // adds new folder to db 
-                    data.uploadFile(folderName ,desc ,0 ,folderName,1);
+                    console.log("iconpath: ",iconPath);
+                    data.uploadFile(folderName ,desc ,0 ,folderName,1,iconPath);
                     cb(null, newFolder);
                 });
             }else{
@@ -41,7 +73,7 @@ const storage = multer.diskStorage({
 
     },
     filename: function (req, file, cb) {
-        console.log("originalname: ",file.originalname);
+        // console.log("originalname: ",file.originalname);
         cb(null, file.originalname);
     }
   })
@@ -95,13 +127,15 @@ app.get('/path', async (req, res) => {
 
 // gets timestamp from userid and videoid
 app.put('/getTimestamp',upload.none(), async (req, res) => {
+    console.log("getTimestamp");
     userID = req.body.userID;
     videoID = req.body.videoID;
     console.log("userID: ",userID);
     console.log("videoID: ",videoID);
-
+    
     output = await data.getTimestamp(userID,videoID);
     console.log(output);
+    console.log("");
     res.send(output);
 }); 
 
@@ -157,7 +191,7 @@ app.delete('/removeFavorites',upload.none(), async (req, res) => {
     res.send(output);
 });
 
-// gets timestamp from userid and videoid //fix\\
+//updates the users icon
 app.put('/updateUser',upload.none(), async (req, res) => {
     userID = req.body.userID;
     let name = req.body.username
@@ -175,7 +209,34 @@ app.put('/updateUser',upload.none(), async (req, res) => {
     res.send(output);
 });
 
-// gets timestamp from userid and videoid
+//updates a specific video.
+app.put('/updateVideo', upload.array('files'), async (req, res) => {
+    files = req.files;
+    videoID = req.body.videoID;
+    videoName = req.body.videoName
+    desc = req.body.desc
+    console.log("videoName: ",videoName);
+    console.log("videoID: ",videoID);
+    console.log("desc: ",desc);
+    console.log(files);
+
+    iconPath = "";
+    if(files.length > 0){
+        if(files[0].mimetype.split("/")[0] == "image"){
+            iconPath = "videoIcon/"+files[0].originalname;
+        }
+    }
+    
+    // if the icon has been added
+    if(iconPath){
+        output = await data.updateVideoWicon(videoID,videoName,iconPath,desc);
+    }else{
+        output = await data.updateVideoName(videoID,videoName,desc);
+    }
+    res.send(output);
+});
+
+//retreves all icons
 app.put('/getIcon',upload.none(), async (req, res) => {
     iconID = req.body.iconID;
     console.log("iconID: ",iconID);
@@ -196,37 +257,69 @@ app.post('/addUser',upload.none(), async (req, res) => {
 app.post('/upload', upload.array('files'),async (req, res) => {
     files = req.files;
     description = req.body.description;
+    
+    console.log("");
+    console.log(files);
+    console.log("");
+    
+    iconPath = "";
+    let i = 0;
+    //find icon\\ as if ther eis a icon it wil be placed first
+    if(files[0].mimetype.split("/")[0] == "image"){
+        iconPath = "videoIcon/"+files[0].originalname;
+        i = 1;
+    }
 
     //adds each file by itself
-    for (let i = 0; i < files.length; i++) {
+    for (; i < files.length; i++) {
         file = files[i];
         console.log("file:", file);
         console.log("originalname: ", file.originalname);
+        console.log("iconPath: ", iconPath);
         //add file to db
-        data.uploadFile(file.originalname ,description ,0 , file.originalname,0);
+        output = data.uploadFile(file.originalname ,description ,0 , file.originalname,0,iconPath);
     }
 
-    res.send("good :>");
+    res.send(output);
 }); 
 
 //for uploading files in a folder
 app.post('/upload-folder', upload.array('files'),async (req, res) => {
     files = req.files;
     folderName = req.body.folderName;
+    videoID = req.body.videoID;
     description = req.body.description;
+    
+    console.log(videoID);
+    console.log("");
+    console.log(files);
+    console.log("");
+    
+    iconPath = "";
+    let i = 0;
+    //find icon\\ as if ther eis a icon it wil be placed first
+    if(files[0].mimetype.split("/")[0] == "image"){
+        iconPath = "videoIcon/"+files[0].originalname;
+        i = 1;
+    }else{
+        tmp = await data.getPath(videoID);
+        iconPath = tmp[0].icon
+
+    }
+
 
     //folder name for dir
     folderName = req.body.folderName;
     dir =  await data.getIdFromName(folderName);
 
     //adds each file by itself
-    for (let i = 0; i < files.length; i++) {
+    for (; i < files.length; i++) {
         file = files[i];
         //add file to db
-        data.uploadFile(file.originalname ,description ,dir[0].id , path.join(folderName , file.originalname),0);
+        output = data.uploadFile(file.originalname ,description ,dir[0].id , path.join(folderName , file.originalname),0,iconPath);
     }
 
-    res.send("good :>");
+    res.send(output);
 });
 
 //delete singular file to db
@@ -234,15 +327,16 @@ app.delete('/remove', async (req, res) => {
     id = req.query.id;
     console.log("video id to be removed: ",id);
     //finds dir
-    fullPath = await data.getPath(id);
-    fullPath = fullPath[0].full_path;
+    response = "";
+    response = await data.getPath(id);
+    fullPath = response[0].Full_path;
 
     //removes folder from file system
     fs.unlink(path.join("videos",fullPath), (err) => {
         if (err) throw err;
         console.log(fullPath, 'was deleted');
       });
-    //removes file from db
+    // removes file from db
     output = await data.remove(id);
     res.send(output);
 }); 
@@ -252,8 +346,9 @@ app.delete('/removeDir', async (req, res) => {
     id = req.query.id;
     console.log("path id to be removed: ",id);
     //finds dir
-    fullPath = await data.getPath(id);
-    fullPath = fullPath[0].full_path;
+    response = "";
+    response = await data.getPath(id);
+    fullPath = response[0].Full_path;
     //removes folder from file system
     fs.rm(path.join("videos",fullPath),{force: true, recursive: true} , (err) => {
         if (err) throw err;
@@ -275,6 +370,26 @@ app.delete('/deleteUser',upload.none(), async (req, res) => {
     res.send(output);
 }); 
 
+//removeAllRecents for a user
+app.delete('/removeAllRecents',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    console.log("removeAllRecents");
+    console.log("userID: ",userID);
+
+    output = await data.removeAllRecents(userID);
+    res.send(output);
+}); 
+
+//removeAllFavorites for a user
+app.delete('/removeAllFavorites',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    console.log("removeAllFav");
+    console.log("userID: ",userID);
+
+    output = await data.removeAllFavorites(userID);
+    res.send(output);
+}); 
+
 //if the user opens a folder
 app.put('/updateTimestamp',upload.none(), async (req, res) => {
     userID = req.body.userID;
@@ -289,9 +404,13 @@ app.put('/updateTimestamp',upload.none(), async (req, res) => {
 
     if(check.length == 0){
         console.log("Set");
+        console.log("");
+
         output = await data.setTimestamp(userID,videoID,timestamp);
     }else{
         console.log("update");
+        console.log("");
+
         output = await data.updateTimestamp(userID,videoID,timestamp);
     }
 

@@ -72,7 +72,7 @@ exports.getDir = function getDir(index){
 //gets a videos full path based from id
 exports.getPath = function getPath(id){
     return new Promise((resolve, reject) => {
-        db.query('SELECT full_path FROM video WHERE id = ?', [id], (error,results) => {
+        db.query('SELECT * FROM video WHERE id = ?', [id], (error,results) => {
             if (error) {
                 reject(error);
             } else {
@@ -124,7 +124,7 @@ exports.getUser = function getUser(userID){
 //gets all favorite videos from id
 exports.getFavorites = function getFavorites(userID){
     return new Promise((resolve, reject) => {
-        db.query('SELECT * FROM video JOIN favorites ON video.id = favorites.videoID WHERE favorites.userId = ?', [userID], (error,results) => {
+        db.query('SELECT * FROM video JOIN favorites ON video.id = favorites.videoID WHERE favorites.userId = ? ORDER BY whenUploaded DESC', [userID], (error,results) => {
             if (error) {
                 reject(error);
             } else {
@@ -163,7 +163,7 @@ exports.removeFavorites = function removeFavorites(userID,videoID){
 //gets gets the most recent 10 videos from watching from id
 exports.getRecent = function getRecent(userID){
     return new Promise((resolve, reject) => {
-        db.query('SELECT * FROM video JOIN watching ON video.id = watching.videoID WHERE watching.userId = ? ORDER BY videoID DESC LIMIT 10', [userID], (error,results) => {
+        db.query('SELECT * FROM video JOIN watching ON video.id = watching.videoID WHERE watching.userId = ? ORDER BY whenUploaded DESC', [userID], (error,results) => {
             if (error) {
                 reject(error);
             } else {
@@ -199,10 +199,36 @@ exports.updateUsername = function updateUsername(name,userID){
     });
 }
 
-//uploads singular file to db
-exports.uploadFile = function uploadFile(name ,desc ,dir ,fullPath,folder){
+//updates username //fix\\
+exports.updateVideoWicon = function updateVideoWicon(videoID,videoName,iconPath,desc){
     return new Promise((resolve, reject) => {
-        db.query('INSERT INTO `video` (`Name`, `Description`, `dir`, `Full_path`,`folder`) VALUES (?, ?, ?, ?,?)', [name ,desc ,dir ,fullPath,folder], (error,results) => {
+        db.query('UPDATE video SET name = ?, icon = ?, description = ? WHERE id = ?', [videoName,iconPath,desc,videoID], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//updates username //fix\\
+exports.updateVideoName = function updateVideoName(videoId,videoName,desc){
+    return new Promise((resolve, reject) => {
+        db.query('UPDATE video SET name = ?, description = ? WHERE id = ?', [videoName,desc,videoId], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//uploads singular file to db
+exports.uploadFile = function uploadFile(name ,desc ,dir ,fullPath,folder,icon){
+    return new Promise((resolve, reject) => {
+        db.query('INSERT INTO `video` (`Name`, `Description`, `dir`, `Full_path`,`folder`,`icon`) VALUES (?, ?, ?, ?,?,?)', [name ,desc ,dir ,fullPath,folder,icon], (error,results) => {
             if (error) {
                 reject(error);
             } else {
@@ -216,6 +242,32 @@ exports.uploadFile = function uploadFile(name ,desc ,dir ,fullPath,folder){
 exports.remove = function remove(id){
     return new Promise((resolve, reject) => {
         db.query('DELETE FROM video WHERE `video`.`id` = ?', [id], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//delete singular file to db
+exports.removeAllRecents = function removeAllRecents(userID){
+    return new Promise((resolve, reject) => {
+        db.query('DELETE FROM watching WHERE `userID` = ?', [userID], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//delete singular file to db
+exports.removeAllFavorites = function removeAllFavorites(userID){
+    return new Promise((resolve, reject) => {
+        db.query('DELETE FROM favorites WHERE `userID` = ? ', [userID], (error,results) => {
             if (error) {
                 reject(error);
             } else {
