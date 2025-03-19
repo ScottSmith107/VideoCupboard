@@ -1,22 +1,13 @@
 const express = require('express');
 const fs = require('fs');
-const data = require("./videos.js");
+const data = require("../videos.js");
 
 const path = require('path');
-let videoPath = path.join(__dirname, "videos")
-let userIconPath = path.join(__dirname, "icons")
+let videoPath = path.join(__dirname, '..' ,"videos")
+let userIconPath = path.join(__dirname, '..' ,"icons")
 
 const multer = require("multer");
 const { userInfo } = require('os');
-
-//import diff loctions
-const fav = require('./apiMethods/fav');
-const recent = require('./apiMethods/recent');
-const file = require('./apiMethods/file');
-const icon = require('./apiMethods/icon');
-const timestamp = require('./apiMethods/timestamp');
-const user = require('./apiMethods/user');
-const video = require('./apiMethods/video');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -89,29 +80,50 @@ const storage = multer.diskStorage({
   })
 const upload = multer({ storage: storage })
 
-const app = express();
-const port = 3000;
+const app = express.Router();
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://192.168.1.124');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT');
-    next();
-  });
-
-// const postRoutes = require('./routes/posts');
-app.use('/', fav);
-app.use('/', recent);
-app.use('/', file);
-app.use('/', icon);
-app.use('/', timestamp);
-app.use('/', user);
-app.use('/', video);
-
-app.listen(port, function() {
-    console.log(`Example app listening on port ${port}!`);
+// gets Favorites from userid
+app.put('/getFavorites',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    console.log("getFav");
+    console.log("userID: ",userID);
+    
+    output = await data.getFavorites(userID);
+    res.send(output);
 });
 
-app.use(express.static(videoPath));
-app.use(express.static(userIconPath));
+// gets Favorites from userid
+app.put('/setFavorites',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    videoID = req.body.videoID;
+    console.log("addFav");
+    console.log("userID: ",userID);
+    console.log("videoID: ",videoID);
     
+    output = await data.setFavorites(userID,videoID);
+    res.send(output);
+});
+
+// gets Favorites from userid
+app.delete('/removeFavorites',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    videoID = req.body.videoID;
+    console.log("removeFav");
+    console.log("userID: ",userID);
+    console.log("videoID: ",videoID);
+    
+    output = await data.removeFavorites(userID,videoID);
+    res.send(output);
+});
+
+//removeAllFavorites for a user
+app.delete('/removeAllFavorites',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    console.log("removeAllFav");
+    console.log("userID: ",userID);
+
+    output = await data.removeAllFavorites(userID);
+    res.send(output);
+}); 
+
+module.exports = app;

@@ -1,22 +1,13 @@
 const express = require('express');
 const fs = require('fs');
-const data = require("./videos.js");
+const data = require("../videos.js");
 
 const path = require('path');
-let videoPath = path.join(__dirname, "videos")
-let userIconPath = path.join(__dirname, "icons")
+let videoPath = path.join(__dirname, '..' ,"videos")
+let userIconPath = path.join(__dirname, '..' ,"icons")
 
 const multer = require("multer");
 const { userInfo } = require('os');
-
-//import diff loctions
-const fav = require('./apiMethods/fav');
-const recent = require('./apiMethods/recent');
-const file = require('./apiMethods/file');
-const icon = require('./apiMethods/icon');
-const timestamp = require('./apiMethods/timestamp');
-const user = require('./apiMethods/user');
-const video = require('./apiMethods/video');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -89,29 +80,57 @@ const storage = multer.diskStorage({
   })
 const upload = multer({ storage: storage })
 
-const app = express();
-const port = 3000;
+const app = express.Router();
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://192.168.1.124');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT');
-    next();
-  });
-
-// const postRoutes = require('./routes/posts');
-app.use('/', fav);
-app.use('/', recent);
-app.use('/', file);
-app.use('/', icon);
-app.use('/', timestamp);
-app.use('/', user);
-app.use('/', video);
-
-app.listen(port, function() {
-    console.log(`Example app listening on port ${port}!`);
+///sends all files listed in the videos dir back to caller as json
+app.get('/allUsers', async (req, res) => {
+    output = await data.allUsers("");
+    res.send(output);
 });
 
-app.use(express.static(videoPath));
-app.use(express.static(userIconPath));
+// gets user info from userID
+app.put('/getUser',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    console.log("userID: ",userID);
     
+    output = await data.getUser(userID);
+    res.send(output);
+});
+
+//updates the users icon
+app.put('/updateUser',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    let name = req.body.username
+    iconID = req.body.iconID
+    console.log("name: ",name);
+    console.log("iconID: ",iconID);
+    console.log("userID: ",userID);
+    
+    //if the icon has been added
+    if(iconID){
+        output = await data.updateUser(name,iconID,userID);
+    }else{
+        output = await data.updateUsername(name,userID);
+    }
+    res.send(output);
+});
+
+//adding new user to the db
+app.post('/addUser',upload.none(), async (req, res) => {
+    let name = req.body.username
+    let iconID = req.body.iconID
+    output = await data.addUser(name,iconID);
+    res.send(output);
+});
+
+//delete whole dir file to db
+app.delete('/deleteUser',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    console.log("userID: ",userID);
+
+    await data.deleteUser(userID);
+    output = await data.deleteUserWatching(userID);
+    res.send(output);
+}); 
+
+module.exports = app;
