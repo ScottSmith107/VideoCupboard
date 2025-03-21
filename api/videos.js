@@ -59,7 +59,7 @@ exports.getIcon = function getIcon(iconID){
 //gets the dir for a video by the name
 exports.getDir = function getDir(index){
     return new Promise((resolve, reject) => {
-        db.query('SELECT name, id, dir, Full_path, folder FROM video WHERE dir = ?', [index], (error,results) => {
+        db.query('SELECT * FROM video WHERE dir = ?', [index], (error,results) => {
             if (error) {
                 reject(error);
             } else {

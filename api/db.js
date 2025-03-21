@@ -1,10 +1,13 @@
 const mysql = require("mysql2");
+require('dotenv').config();
+
 
 const dbConfig = {
-    host: 'localhost',
-    database: 'movieserver',
-    user: 'root',
-    password: ''
+    host: process.env.DB_IP,
+    database: process.env.DB_NAME,
+    port: process.env.PORT,
+    user: process.env.user,
+    password: process.env.PASSWORD
 };
 
 const db = mysql.createConnection(dbConfig);

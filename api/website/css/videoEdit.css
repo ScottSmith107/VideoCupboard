@@ -36,7 +36,8 @@ button{
 }
 
 .icon{
-    width: calc(100% / 3 - 20px);
+    width: 20%;
+    max-width: 200px;
     border-radius: 5%;
     border-color: #4E2C5D;
     border-style: solid;

@@ -5,13 +5,14 @@ let folderID;
 let videoID;
 let userID;
 let video;
-let videoFullName;
+let _video;
+let name;
 
 // Function to get URL parameters
 //serves as onload function
 async function getQueryParam() {
     title = document.getElementById("title");
-    videoFullName = urlParams.get("data");
+    name = urlParams.get("data");
     videoID = urlParams.get("index");
     userID = urlParams.get("userID");
     folder = urlParams.get("folder");
@@ -19,7 +20,7 @@ async function getQueryParam() {
 
     configEdit(videoID);
 
-    title.innerText = videoFullName.split(".mp4")[0];
+    title.innerText = name.split(".mp4")[0];
     
     fav = await getFavs(userID,videoID);
 
@@ -124,6 +125,8 @@ function setUrl(index,videoPlayer) {
     .then(data => {
         console.log("video");
         console.log(data);
+        console.log("");
+        _video = data[0];
         source = document.createElement("source");
         source.src = url + data[0].Full_path;
         source.type = "video/mp4";
@@ -166,7 +169,7 @@ function findFolder(index){
         arrayOfContents = data;
         arr = data;
         for (let index = 0; index < arr.length; index++) {
-            makeWidget(arr[index].name, arr[index].id, arr[index].dir, arr[index].folder);
+            makeWidget(arr[index].Name, arr[index].id, arr[index].dir, arr[index].folder);
         }
     })
     .catch(error => {
@@ -178,7 +181,6 @@ function findFolder(index){
 //makes video widget //I didnt feel like using react so here it is done
 function makeWidget(name,id,dir,folder){
     main = document.getElementById("videosDiv");
-
     content = document.createElement("a");
     
     content.href = "video.html?data="+name + 
@@ -194,16 +196,14 @@ function makeWidget(name,id,dir,folder){
 
 //buttons
 function prevPressed(){
-    curr = videoFullName;
-    index = findIndex(arrayOfContents, curr);
+    index = findIndex(arrayOfContents, _video.id);
 
     if(index != 0){
         location.replace(document.querySelectorAll(".nextup")[index-1].href);
     }
 }
 function nextPressed(){
-    curr = videoFullName;
-    index = findIndex(arrayOfContents, curr);
+    index = findIndex(arrayOfContents, _video.id);
 
     if(index < arrayOfContents.length-1){
         location.replace(document.querySelectorAll(".nextup")[index+1].href);
@@ -211,12 +211,12 @@ function nextPressed(){
 }
 
 //finds the index of the currently playing video
-function findIndex(arr, curr){
+function findIndex(arr, id){
     for (let i = 0; i < arr.length; i++) {
-        video = arr[i].name;
+        video = arr[i].id;
         console.log("video", video);
-        console.log(curr);
-        if(curr == video){
+        console.log(id);
+        if(id == video){
             return i;
         }
     }
@@ -403,7 +403,7 @@ function addNewVideo(event){
 
     formData = new FormData();
     formData.append("videoID",videoID);
-    formData.append("folderName",videoFullName);
+    formData.append("folderName",name);
     formData.append("description"," ");
     for (let i = 0; i < files.length; i++) {
         formData.append('files', files[i]);
