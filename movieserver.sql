@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 21, 2025 at 12:57 AM
+-- Generation Time: Mar 25, 2025 at 12:28 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -32,14 +32,6 @@ CREATE TABLE `favorites` (
   `videoID` int(11) NOT NULL,
   `whenUploaded` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `favorites`
---
-
-INSERT INTO `favorites` (`userID`, `videoID`, `whenUploaded`) VALUES
-(0, 207, '2025-03-19 01:10:32'),
-(6, 180, '2025-03-19 01:10:32');
 
 -- --------------------------------------------------------
 
@@ -73,15 +65,6 @@ CREATE TABLE `user` (
   `icon` int(11) NOT NULL COMMENT 'iconID'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `user`
---
-
-INSERT INTO `user` (`userID`, `name`, `icon`) VALUES
-(22, 'Amber', 6),
-(23, 'Scott', 7),
-(24, 'Scott0', 8);
-
 -- --------------------------------------------------------
 
 --
@@ -98,16 +81,6 @@ CREATE TABLE `video` (
   `id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `video`
---
-
-INSERT INTO `video` (`Name`, `Description`, `dir`, `Full_path`, `folder`, `icon`, `id`) VALUES
-('Los Retros - Someone To Spend Time With.mp4', 'song', 0, 'Los Retros - Someone To Spend Time With.mp4', 0, 'videoIcon/jim_icon.jpg', 1),
-('The.Notebook.2004.1080p.mp4', 'Its the notebook lol', 0, 'The.Notebook.2004.1080p.mp4', 0, 'videoIcon/notebook.JPEG', 180),
-('pentagram songs', '', 0, 'pentagram songs', 1, 'videoIcon/pentagramIcon.png', 231),
-('1 Buck Spin.mp3', '', 231, 'pentagram songs\\1 Buck Spin.mp3', 0, 'videoIcon/pentagramIcon.png', 232);
-
 -- --------------------------------------------------------
 
 --
@@ -120,13 +93,6 @@ CREATE TABLE `watching` (
   `time` int(11) NOT NULL COMMENT 'time to the nearest minute',
   `whenUploaded` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `watching`
---
-
-INSERT INTO `watching` (`userID`, `videoID`, `time`, `whenUploaded`) VALUES
-(6, 180, 2677, '2025-03-20 06:13:26');
 
 --
 -- Indexes for dumped tables
