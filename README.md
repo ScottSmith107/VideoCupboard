@@ -33,5 +33,6 @@ I like pm2 for the deployment, so you don't need a tab open, but to each their o
 I have elected to exclude my scripts from that installer, so you may see what the installer and the powershell script will be doing before running it.
 
 3. Once installed, all you need to do is run the mysetup.exe and give it some creds so it can add the SQL file to your mariaDB and then the port that the db is hosted on.
+  if you dont supplly a password the script will then ask you for one
 
-4. Then you will be able to see the app running on https://localhost:3000/ or https://YOUR_IPV4:3000/
+5. Then you will be able to see the app running on https://YOUR_IPV4:3000/
