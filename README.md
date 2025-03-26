@@ -34,4 +34,4 @@ I have elected to exclude my scripts from that installer, so you may see what th
 
 3. Once installed, all you need to do is run the mysetup.exe and give it some creds so it can add the SQL file to your mariaDB and then the port that the db is hosted on.
 
-4. Then you will be able to see that app running on localhost:3000/ or YOUR_IPV4:3000/
+4. Then you will be able to see the app running on https://localhost:3000/ or https://YOUR_IPV4:3000/
