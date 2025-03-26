@@ -35,36 +35,3 @@ I have elected to exclude my scripts from that installer, so you may see what th
 3. Once installed, all you need to do is run the mysetup.exe and give it some creds so it can add the SQL file to your mariaDB and then the port that the db is hosted on.
 
 4. Then you will be able to see that app running on localhost:3000/ or YOUR_IPV4:3000/
-
-
-## Deployment
-
-you have two options 
-
-### Option 1
-You can download directly from main which will get you all the code.
-you get it running from here you will need to npm install.
-
-Then add a .env here is a template
-```bash
-IP=
-DB_IP=
-DB_NAME=
-PORT=
-USER=root
-PASSWORD= 
-```
-
-you can either set up ur own DB or install mariaDB and use the provided .SQL file
-
-I like pm2 for the deployment so you dont need a tab open but each there own.
-
-### Option 2
-1. you will need to have npm, node.js and mariaDB already installed for this method or else the installer will fail. 
-
-2. For this option you can go to the installer branch.
-I have elected to exclude my scripts from that installer so you may see what the installer and the powershell script will doing before running it.
-
-3. once installed all you need to do run the mysetup.exe and give it some creds so it can add the SQL file to your mariaDB and then the port that the db is hosted on.
-
-4. then you able to see that app running on localhost:3000/ or YOUR_IPV4:3000/
