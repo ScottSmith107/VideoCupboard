@@ -52,7 +52,7 @@ New-Item -Path . -Name ".env" -ItemType "file" -Value "
         DB_IP=localhost
         DB_NAME=movieserver
         PORT=$Port
-        USER=root
+        USER=$User
         PASSWORD=$Password     "
 
 # running app

@@ -17,7 +17,7 @@ IP=
 DB_IP=
 DB_NAME=
 PORT=
-USER=root
+USER=
 PASSWORD= 
 ```
 
