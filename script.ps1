@@ -20,8 +20,6 @@ Write-Host "Port: $Port"
 Set-Location "C:\Program Files\MariaDB 11.7\bin"
 ./mariadb -u $User -p"$Password" -e "CREATE DATABASE movieserver;"
 Get-Content "$out\movieserver.sql" | ./mariadb -u $User -p"$Password" -D movieserver
-# ./mysql -u $User -p"$Password" -D movieserver  -e "SHOW TABLES;"
-# ./mysql -u $User -p"$Password" -D movieserver  -e "select * from user;"
 
 # install pm2
 $Output = npm list -g pm2
