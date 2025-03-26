@@ -1,4 +1,4 @@
-# Project Title
+# VideoCupboard
 
 This basic full stack web app allows you to upload your open mp3/mp4's for anyone on the local network to watch and, with some port forwarding the greater world.
 
