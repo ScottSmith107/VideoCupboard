@@ -83,6 +83,7 @@ openSockets = new Map();
 //meow meow
 app.post('/openSocket', upload.none(),async (req, res) => {
     currPort = getFreePort();
+    console.log(currPort);
 
     id = req.body.id;
     console.log(openSockets);
@@ -94,9 +95,8 @@ app.post('/openSocket', upload.none(),async (req, res) => {
     }
  
     WebSocket = require('ws');
-    wss = new WebSocket.Server({ port: portNum });  
+    wss = new WebSocket.Server({ port: currPort });  
     
-    portNum++;
     wss.on('connection', function connection(ws) {
         console.log("client connected");
         console.log("");
@@ -115,15 +115,19 @@ app.post('/openSocket', upload.none(),async (req, res) => {
 
         ws.on('close', function() {
             console.log("client disconected");
+
             openSockets.set(id,[currPort,openSockets.get(id)[1]-1]);
+
             console.log(openSockets);
             console.log("");
             
             //check if socket empty
             if(openSockets.get(id)[1] == 0){
                 console.log("Closing socket");
+
                 openPort(openSockets.get(id)[0]);
                 openSockets.delete(id);
+
                 console.log(openSockets);
                 console.log("");
             }
@@ -131,27 +135,29 @@ app.post('/openSocket', upload.none(),async (req, res) => {
 
     });
 
-    res.send(''+portNum-1+'');
+    res.send(''+currPort+'');
 });
 
 //map of free ports
-let mapOPorts = new Map(
+let mapOPorts = new Map([
     [8081 ,false],
     [8082 ,false],
     [8083 ,false],
     [8084 ,false],
     [8085 ,false]
-);
+]);
 // finds the lowest near port
 //grabs the first free port
 function getFreePort(){
     for (let i = 0; i < mapOPorts.length; i++) {
         const obj = mapOPorts[i];
+        console.log("obj: ",obj);
         if(obj[1] == false){
             return obj[0];
         }
     }
 }
+//opens up passed in port number in map
 function openPort(portNum){
     mapOPorts.set(mapOPorts.get(portNum),false);
 }
