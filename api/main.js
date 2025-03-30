@@ -18,6 +18,7 @@ const icon = require('./apiMethods/icon');
 const timestamp = require('./apiMethods/timestamp');
 const user = require('./apiMethods/user');
 const video = require('./apiMethods/video');
+const websocket = require('./apiMethods/websocket');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -106,6 +107,7 @@ app.use('/', icon);
 app.use('/', timestamp);
 app.use('/', user);
 app.use('/', video);
+app.use('/', websocket);
 
 
 require('dotenv').config();

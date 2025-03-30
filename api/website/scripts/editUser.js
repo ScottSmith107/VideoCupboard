@@ -93,7 +93,7 @@ function getIcons(){
     });
 }
  
-// updates user //fix\\
+//updates user
 function updateUser(){
     formData = new FormData();
     username = document.getElementById("username").value;

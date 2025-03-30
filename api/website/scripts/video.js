@@ -84,6 +84,12 @@ function play(index) {
     setUrl(index,videoPlayer)
     video.addEventListener("progress", updateTimestamp);
     video.addEventListener("ended", videoEnded);
+    //listeners for watch togeather
+    video.addEventListener("play", playEvent);
+    video.addEventListener("pause", pauseEvent);
+    video.addEventListener("seeked", seekedEvent);
+    video.addEventListener("stalled", bufferingEvent);
+    video.addEventListener("suspend", bufferingEvent);
     checkPlayTime(video);
     div.appendChild(videoPlayer);
 
@@ -176,7 +182,6 @@ function findFolder(index){
         console.error("couldnt make connection to database", error);
     });
 }
-
 
 //makes video widget //I didnt feel like using react so here it is done
 function makeWidget(name,id,dir,folder){
@@ -429,3 +434,93 @@ function reload(){
     document.getElementById("error").innerText = "";
     getQueryParam()
 }
+
+let _socket;
+function createSocket(){
+
+    formData = new FormData();
+    formData.append("id",1);
+
+    fetch("http://192.168.1.124:3000/openSocket", {
+        method: "POST",
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(openSocket)
+    
+
+}
+function openSocket(response){
+
+    console.log("watch togeather open on: " + response);
+
+    socket = new WebSocket('ws://localhost:'+response);
+    _socket = socket;
+    socket.onopen = function(event) {
+      // Handle connection open
+    };
+    
+    // Handle received message
+    socket.onmessage = function(event) {
+        message = event.data
+
+        if(message == "play"){
+            video.play()
+            console.log("playing");
+
+        }else if(message == "pause"){
+            video.pause();
+            console.log("pausing");
+
+        }else if(message.split("seek:").length > 1){
+            time = message.split("seek: ")[1];
+            console.log("skipping to: "+ time);
+            //checking if already at correct time //avoids loop
+            if(video.currentTime != time){
+                video.currentTime = time;
+            }
+        }else{ //buffering or anything else
+            video.pause();
+            console.log("other user buffering");
+        }
+    };
+
+}
+
+
+function sendWebsocket(){
+  meow = document.getElementById("timmy").value;
+  _socket.send(message);
+    
+}
+
+//all events for the video in relation to watch together
+function playEvent(event){
+    if(_socket){
+        video = event.target;
+        _socket.send("play")
+    }
+}
+function pauseEvent(event){
+    if(_socket){
+        video = event.target;
+        _socket.send("pause")
+    }
+    
+}
+function seekedEvent(event){
+    if(_socket){
+        video = event.target;
+        _socket.send("seek: "+event.target.currentTime)
+    }
+    
+}
+//for satlled and suspended
+function bufferingEvent(event){
+    if(_socket){
+        video = event.target;
+        _socket.send("buffering")
+    }
+
+}
+
