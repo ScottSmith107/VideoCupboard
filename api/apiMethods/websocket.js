@@ -78,7 +78,6 @@ const upload = multer({ storage: storage })
 
 const app = express.Router();
 
-let portNum = 8080
 openSockets = new Map();
 //meow meow
 app.post('/openSocket', upload.none(),async (req, res) => {
@@ -90,6 +89,8 @@ app.post('/openSocket', upload.none(),async (req, res) => {
     //check if socket is open
     if(openSockets.get(id)){
         currPort = openSockets.get(id)[0];
+        res.send(''+currPort+'');
+        return;
     }else{
         openSockets.set(id,[currPort,0])
     }
@@ -109,8 +110,12 @@ app.post('/openSocket', upload.none(),async (req, res) => {
             console.log(openSockets);
             console.log("");
             
-            //decode message
-            ws.send(message.toString('utf8'));
+            // ws.send(message.toString('utf8'));
+            wss.clients.forEach(client => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(message.toString('utf8'));
+                }
+            });
         });
 
         ws.on('close', function() {
@@ -149,11 +154,9 @@ let mapOPorts = new Map([
 // finds the lowest near port
 //grabs the first free port
 function getFreePort(){
-    for (let i = 0; i < mapOPorts.length; i++) {
-        const obj = mapOPorts[i];
-        console.log("obj: ",obj);
-        if(obj[1] == false){
-            return obj[0];
+    for (let [key, value] of mapOPorts) {
+        if(value == false){
+            return key;
         }
     }
 }

@@ -94,7 +94,7 @@ const app = express();
 const port = 3000;
 
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://192.168.1.124');
+    res.header('Access-Control-Allow-Origin', 'http://'+process.env.IP);
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT');
     next();
