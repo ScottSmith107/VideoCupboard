@@ -4,6 +4,7 @@ const data = require("../videos.js");
 const path = require('path');
 const multer = require("multer");
 const { userInfo } = require('os');
+const { disconnect } = require('process');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -78,43 +79,35 @@ const upload = multer({ storage: storage })
 
 const app = express.Router();
 
-openSockets = new Map();
-//meow meow
-app.post('/openSocket', upload.none(),async (req, res) => {
+WebSocket = require('ws');
 
-    id = req.body.id;
+openSockets = new Map();
+app.post('/openSocket', upload.none(),async (req, res) => {
+    const id = req.body.id;
     console.log(openSockets);
-    //check if socket is open
-    if(openSockets.get(id)){
-        currPort = openSockets.get(id)[0];
-        res.send(''+currPort+'');
+
+    if(openSockets.has(id)) {
+        const [currPort] = openSockets.get(id);
+        res.send('' + currPort + '');
         return;
-    }else{
-        currPort = getFreePort();
-        openSockets.set(id,[currPort,0])
     }
-    console.log("currPort: ",currPort);
- 
-    WebSocket = require('ws');
-    wss = new WebSocket.Server({ port: currPort });  
-    
+
+    const currPort = getFreePort();
+    const wss = new WebSocket.Server({ port: currPort });
+
+    openSockets.set(id, [currPort, 0, wss]);
+
+    console.log("WebSocket Server created on port:", currPort);
+
     wss.on('connection', function connection(ws) {
-        console.log("client connected");
-        console.log("openSocket");
-        openSockets.set(id,[currPort,openSockets.get(id)[1]+1])
-        console.log(openSockets);
-        console.log("mapOport");
-        console.log(mapOPorts);
-        console.log("");
+        console.log("Client connected on", id, "port", currPort);
         ws.id = id;
 
+        openSockets.set(id, [currPort, openSockets.get(id)[1] + 1, wss]);
+
         ws.on('message', function incoming(message) {
-            console.log("message");
-            console.log(message.toString('utf8'));
-            console.log(openSockets);
-            console.log("");
-            
-            // ws.send(message.toString('utf8'));
+            console.log("Message received:", message.toString('utf8'));
+
             wss.clients.forEach(client => {
                 if (client.readyState === WebSocket.OPEN) {
                     client.send(message.toString('utf8'));
@@ -123,45 +116,34 @@ app.post('/openSocket', upload.none(),async (req, res) => {
         });
 
         ws.on('close', function() {
-            console.log("client disconected");
-            _id = ws.id;
-
-            openSockets.set(_id,[openSockets.get(_id)[0],openSockets.get(_id)[1]-1]);
-            
-            console.log("id: ",_id);
-            console.log(openSockets);
-            console.log("");
-            
-            //check if socket empty
-            if(openSockets.get(_id)[1] == 0){
-                console.log("id:"+_id+" socket: "+openSockets.get(_id));
-                console.log("Closing socket");
-
-                wss.clients.forEach(client => {
-                    client.terminate(); // Forcefully close all WebSocket connections
-                });
-
-                wss.close(() => {
-                    console.log("WebSocket server closed on port:", openSockets.get(_id)[0]);
-
-                    console.log("openSockets");
-                    console.log(openSockets);
-                    console.log("");
-
-                    openPort(openSockets.get(_id)[0]);
-                    openSockets.delete(_id);
-
-                    console.log("map0ports");
-                    console.log(mapOPorts);
-                    console.log("");
-                });
-            }
+            console.log("Client disconnected:", ws.id);
+            disconnectSocket(ws.id);
         });
-
     });
 
-    res.send(''+currPort+'');
+    res.send('' + currPort + '');
 });
+function disconnectSocket(id) {
+    if (!openSockets.has(id)) return;
+
+    let [_port, count, wss] = openSockets.get(id);
+    count -= 1;
+
+    if (count > 0) {
+        openSockets.set(id, [_port, count, wss]);
+        return;
+    }
+
+    console.log(`No more clients on port ${_port}. Closing WebSocket.`);
+
+    // Close only the correct WebSocket server
+    wss.close(() => {
+        console.log(`WebSocket server closed on port: ${_port}`);
+        openPort(_port);
+        openSockets.delete(id);
+    });
+}
+
 
 //map of free ports
 let mapOPorts = new Map([
