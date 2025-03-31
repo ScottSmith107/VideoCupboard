@@ -438,8 +438,18 @@ function reload(){
 let _socket;
 function createSocket(){
 
+    //add end watch together 
+    endButton = document.createElement("button");
+    endButton.id = "endButton"
+    endButton.innerText = "End Watch Together"
+    endButton.onclick = function(){
+        _socket.close();
+        document.getElementById("endButton").remove();
+    }
+    document.getElementById("headerButtons").appendChild(endButton);
+
     formData = new FormData();
-    formData.append("id",1);
+    formData.append("id",videoID);
 
     fetch(url + "openSocket", {
         method: "POST",
@@ -447,8 +457,6 @@ function createSocket(){
     })
     .then(response => response.json())
     .then(openSocket)
-    
-
 }
 function openSocket(response){
 
@@ -487,7 +495,6 @@ function openSocket(response){
 
 }
 
-
 function sendWebsocket(){
   meow = document.getElementById("timmy").value;
   _socket.send(message); 
@@ -495,14 +502,12 @@ function sendWebsocket(){
 
 //all events for the video in relation to watch together
 function playEvent(event){
-    console.log("play");
     if(_socket){
         video = event.target;
         _socket.send("play")
     }
 }
 function pauseEvent(event){
-    console.log("pause");
     if(_socket){
         video = event.target;
         _socket.send("pause")
@@ -510,7 +515,6 @@ function pauseEvent(event){
     
 }
 function seekedEvent(event){
-    console.log("seek");
     if(_socket){
         video = event.target;
         _socket.send("seek: "+event.target.currentTime)
@@ -519,7 +523,6 @@ function seekedEvent(event){
 }
 //for satlled and suspended
 function bufferingEvent(event){
-    console.log("buffering");
     if(_socket){
         video = event.target;
         _socket.send("buffering")

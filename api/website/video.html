@@ -12,9 +12,11 @@
     </script>
     <script src="scripts/video.js"></script>
   </head>
-  <button id="home" onclick="location.replace('home.html?userID='+userID)">Home</button>
-  <button id="watchTogether" onclick=createSocket()>watch together</button>
-  <a id="edit">EDIT</a>
+  <div id="headerButtons">
+    <button id="home" onclick="location.replace('home.html?userID='+userID)">Home</button>
+    <button id="watchTogether" onclick=createSocket()>watch together</button>
+    <a id="edit">EDIT</a>
+  </div>
 
   <body onload=getQueryParam() , style="background-image: url(images/indexBackground.png)">
 

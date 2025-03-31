@@ -135,6 +135,8 @@ app.post('/openSocket', upload.none(),async (req, res) => {
 
                 console.log(openSockets);
                 console.log("");
+
+                wss.close();
             }
         });
 
@@ -156,13 +158,19 @@ let mapOPorts = new Map([
 function getFreePort(){
     for (let [key, value] of mapOPorts) {
         if(value == false){
+            mapOPorts.set(key,true);
+            console.log("finding new open port");
+            console.log("mapOPorts: 160");
+            console.log(mapOPorts);
             return key;
         }
     }
 }
 //opens up passed in port number in map
 function openPort(portNum){
-    mapOPorts.set(mapOPorts.get(portNum),false);
+    mapOPorts.set(portNum,false);
+    console.log("mapOPorts: 172");
+    console.log(mapOPorts);
 }
 
 module.exports = app;
