@@ -81,8 +81,6 @@ const app = express.Router();
 openSockets = new Map();
 //meow meow
 app.post('/openSocket', upload.none(),async (req, res) => {
-    currPort = getFreePort();
-    console.log(currPort);
 
     id = req.body.id;
     console.log(openSockets);
@@ -92,17 +90,23 @@ app.post('/openSocket', upload.none(),async (req, res) => {
         res.send(''+currPort+'');
         return;
     }else{
+        currPort = getFreePort();
         openSockets.set(id,[currPort,0])
     }
+    console.log("currPort: ",currPort);
  
     WebSocket = require('ws');
     wss = new WebSocket.Server({ port: currPort });  
     
     wss.on('connection', function connection(ws) {
         console.log("client connected");
-        console.log("");
-
+        console.log("openSocket");
         openSockets.set(id,[currPort,openSockets.get(id)[1]+1])
+        console.log(openSockets);
+        console.log("mapOport");
+        console.log(mapOPorts);
+        console.log("");
+        ws.id = id;
 
         ws.on('message', function incoming(message) {
             console.log("message");
@@ -120,23 +124,37 @@ app.post('/openSocket', upload.none(),async (req, res) => {
 
         ws.on('close', function() {
             console.log("client disconected");
+            _id = ws.id;
 
-            openSockets.set(id,[currPort,openSockets.get(id)[1]-1]);
-
+            openSockets.set(_id,[openSockets.get(_id)[0],openSockets.get(_id)[1]-1]);
+            
+            console.log("id: ",_id);
             console.log(openSockets);
             console.log("");
             
             //check if socket empty
-            if(openSockets.get(id)[1] == 0){
+            if(openSockets.get(_id)[1] == 0){
+                console.log("id:"+_id+" socket: "+openSockets.get(_id));
                 console.log("Closing socket");
 
-                openPort(openSockets.get(id)[0]);
-                openSockets.delete(id);
+                wss.clients.forEach(client => {
+                    client.terminate(); // Forcefully close all WebSocket connections
+                });
 
-                console.log(openSockets);
-                console.log("");
+                wss.close(() => {
+                    console.log("WebSocket server closed on port:", openSockets.get(_id)[0]);
 
-                wss.close();
+                    console.log("openSockets");
+                    console.log(openSockets);
+                    console.log("");
+
+                    openPort(openSockets.get(_id)[0]);
+                    openSockets.delete(_id);
+
+                    console.log("map0ports");
+                    console.log(mapOPorts);
+                    console.log("");
+                });
             }
         });
 
@@ -160,8 +178,6 @@ function getFreePort(){
         if(value == false){
             mapOPorts.set(key,true);
             console.log("finding new open port");
-            console.log("mapOPorts: 160");
-            console.log(mapOPorts);
             return key;
         }
     }
@@ -169,7 +185,7 @@ function getFreePort(){
 //opens up passed in port number in map
 function openPort(portNum){
     mapOPorts.set(portNum,false);
-    console.log("mapOPorts: 172");
+    console.log("mapOPorts:");
     console.log(mapOPorts);
 }
 
