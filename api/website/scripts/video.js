@@ -7,7 +7,7 @@ let userID;
 let video;
 let _video;
 let name;
-
+let recents = new Map();
 // Function to get URL parameters
 //serves as onload function
 async function getQueryParam() {
@@ -27,7 +27,7 @@ async function getQueryParam() {
     //check if the passed name is a folder
     if(folder == 1){
         addFolderButtons(videoID);
-        findFolder(videoID)
+        recent(userID,videoID)
     }
     else{//if not a folder then play the video
         play(videoID)
@@ -36,6 +36,32 @@ async function getQueryParam() {
 
     //sets the params of the home button
     document.getElementById("home").href = "home.html?userID="+userID;
+}
+
+//gets the recent videos and save to map
+function recent(userID,videoID){        
+    formData = new FormData();
+    formData.append("userID",userID);
+
+    fetch(url+"getRecent", {
+            method: "PUT",
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            //save all recents to data
+            if(data.length > 0){
+                for (let i = 0; i < data.length; i++) {
+                    video = data[i];
+                    recents.set(video.videoID,true)
+                }
+            }
+            findFolder(videoID)
+        })
+        .catch(error => {
+            console.error("couldnt make connection to database", error);
+        });
 }
 
 //adds "removeFolder" button under the folder title
@@ -175,7 +201,8 @@ function findFolder(index){
         arrayOfContents = data;
         arr = data;
         for (let index = 0; index < arr.length; index++) {
-            makeWidget(arr[index].Name, arr[index].id, arr[index].dir, arr[index].folder);
+            let recent = ((recents.has(arr[index].id)) ? true : false ) 
+            makeWidget(arr[index].Name, arr[index].id, arr[index].dir, arr[index].folder,recent);
         }
     })
     .catch(error => {
@@ -184,10 +211,12 @@ function findFolder(index){
 }
 
 //makes video widget //I didnt feel like using react so here it is done
-function makeWidget(name,id,dir,folder){
+function makeWidget(name,id,dir,folder,recent){
     main = document.getElementById("videosDiv");
+    div = document.createElement("div");
+    div.id = "lineDiv";
+
     content = document.createElement("a");
-    
     content.href = "video.html?data="+name + 
                "&index=" + id +
                "&dir=" + dir +
@@ -195,8 +224,17 @@ function makeWidget(name,id,dir,folder){
                "&userID=" + userID;   
     content.innerText = name.split(".mp4")[0];
     content.className = "nextup";
+    div.appendChild(content);
 
-    main.appendChild(content);
+    if(recent){
+        console.log("recents");
+        recentCheck = document.createElement("img");
+        recentCheck.className = "recent";
+        recentCheck.src = "images/recentCheck.webp";
+        div.appendChild(recentCheck);
+    }
+
+    main.appendChild(div);
 }
 
 //buttons

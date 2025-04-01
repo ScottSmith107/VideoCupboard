@@ -153,6 +153,7 @@ let mapOPorts = new Map([
     [8084 ,false],
     [8085 ,false]
 ]);
+let lastPort = 8085;
 // finds the lowest near port
 //grabs the first free port
 function getFreePort(){
@@ -163,6 +164,10 @@ function getFreePort(){
             return key;
         }
     }
+    //expands the list of ports
+    lastPort++;
+    mapOPorts.set(lastPort,true);
+    return lastPort;
 }
 //opens up passed in port number in map
 function openPort(portNum){

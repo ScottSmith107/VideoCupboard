@@ -53,6 +53,12 @@ video{
     width: calc(100% / 3 - 10px);
 }
 
+.recent{
+    width: 2%;
+    max-width: 20px;
+    padding-left: 10px;
+}
+
 #main{
     display: flex;
     flex-direction:column;
@@ -108,7 +114,7 @@ video{
 #edit{
     color: #551a8b;
     text-decoration: none;
-    margin-left: 90%;
+    margin-left: 80%;
 }
 
 @media (max-width: 1000px) {
@@ -123,5 +129,11 @@ video{
     #main,#videosDiv,#header,#removeButton{
         width: 95%;
     }   
+
+    .recent{
+        width: 5%;
+        padding-left: 10px;
+    }
+
 }
 
