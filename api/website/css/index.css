@@ -107,6 +107,10 @@ a:visited {
     color: white;
 }
 
+#fileInput{
+    display: none;
+}
+
 /* addUserForm */
 .addUserDiv{
     padding: 10px;

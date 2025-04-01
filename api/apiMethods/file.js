@@ -4,7 +4,7 @@ const data = require("../videos.js");
 
 const path = require('path');
 let videoPath = path.join(__dirname, '..' ,"videos")
-let userIconPath = path.join(__dirname, '..' ,"icons")
+let userIconPath = path.join(__dirname, '..' ,"videos/icons")
 
 const multer = require("multer");
 const { userInfo } = require('os');
@@ -15,6 +15,12 @@ const storage = multer.diskStorage({
         console.log("file-file.js");
         console.log(file);
         console.log("");
+
+        //if the user uploads a new 
+        icon = req.body.icon;
+        if(icon){
+            return cb(null, userIconPath);
+        }
         
         //get foldername
         folderName = req.body.folderName;
@@ -81,6 +87,17 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 const app = express.Router();
+
+//for uploading files not in a folder
+app.post('/upload-icon', upload.array('files'),async (req, res) => {
+    files = req.files;
+    
+    let name = files[0].originalname;
+    console.log("uploading new icon: " + name);
+
+    output = data.uploadIcon(name,"icons/"+name);
+    res.send(output);
+}); 
 
 //for uploading files not in a folder
 app.post('/upload', upload.array('files'),async (req, res) => {

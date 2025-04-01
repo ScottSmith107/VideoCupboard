@@ -238,6 +238,19 @@ exports.uploadFile = function uploadFile(name ,desc ,dir ,fullPath,folder,icon){
     });
 }
 
+//uploads singular file to db
+exports.uploadIcon = function uploadIcon(iconID ,fullPath){
+    return new Promise((resolve, reject) => {
+        db.query('INSERT INTO `icons` (`iconID`, `fullPath`) VALUES (?, ?)', [iconID ,fullPath], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
 //delete singular file to db
 exports.remove = function remove(id){
     return new Promise((resolve, reject) => {

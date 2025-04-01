@@ -77,11 +77,20 @@ function makeForm(){
     button.id = "addButton";
     button.onclick = addUser;
 
+    addImage = document.createElement("button");
+    addImage.innerText = "Add new Icon";
+    addImage.id = "addImage";
+    addImage.addEventListener("click", function() {
+        document.getElementById("fileInput").addEventListener("change", addIcon);
+        document.getElementById("fileInput").click();
+    });
+
     iconDiv = getIcons();
 
     controlesDiv.appendChild(label);
     controlesDiv.appendChild(username);
     controlesDiv.appendChild(button);
+    controlesDiv.appendChild(addImage);
     div.appendChild(controlesDiv);
 
     div.appendChild(iconDiv);
@@ -206,4 +215,29 @@ function getIcons(){
     });
     console.log(icons);
     return div;
+}
+
+
+//change event for new file input
+//adds new iamge to the icon list
+function addIcon(event){
+    console.log(event.target.files);
+    files = event.target.files;
+
+    formData = new FormData();
+    formData.append('icon', "icon");
+    for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i]);
+    }
+
+    fetch(url+"upload-icon", {
+        method: "POST",
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(makeForm)
+    .catch(error => {
+        console.error("couldnt upload new video to folder", error);
+    });
+
 }
