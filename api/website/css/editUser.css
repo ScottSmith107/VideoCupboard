@@ -1,3 +1,6 @@
+html{
+    height: 100%;
+}
 body{
     display: flex;
     flex-direction: column;
@@ -5,11 +8,13 @@ body{
     justify-content: flex-start;
     gap: 10px;
     font-family: "Major Mono Display", monospace;
+
+    background-size: 100% 100%;
 }
 
 button{
     color: white;
-    background-color: #4E2C5D;
+    background-color: black;
     cursor:pointer;
 }
 

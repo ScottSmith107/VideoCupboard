@@ -267,3 +267,58 @@ function gotoUpload(){
 function logout(){
     location.replace("index.html");
 }
+
+//onclick for all filter buttons v v v
+//filters all videos by folders
+function filterFolders(){
+    
+    //clear div
+    document.getElementById("videosItems").innerText = "";
+    document.getElementById("videosItems").innerHTML = "";
+
+    for (let index = 0; index < allvideos.length; index++) {
+        if(allvideos[index].folder == 1){
+            fav = ((favoriteVideos.get(allvideos[index].id) ? true : false));
+            makeWidget(allvideos[index].Name, allvideos[index].id, allvideos[index].dir, allvideos[index].folder, allvideos[index].Description, allvideos[index].icon,"videosItems",fav);
+        }
+    }
+}
+function filterAll(){
+    
+    //clear div
+    document.getElementById("videosItems").innerText = "";
+    document.getElementById("videosItems").innerHTML = "";
+
+    for (let index = 0; index < allvideos.length; index++) {
+        fav = ((favoriteVideos.get(allvideos[index].id) ? true : false));
+        makeWidget(allvideos[index].Name, allvideos[index].id, allvideos[index].dir, allvideos[index].folder, allvideos[index].Description, allvideos[index].icon,"videosItems",fav);
+    }
+}
+function filterSingle(){
+    
+    //clear div
+    document.getElementById("videosItems").innerText = "";
+    document.getElementById("videosItems").innerHTML = "";
+
+    for (let index = 0; index < allvideos.length; index++) {
+        if (allvideos[index].folder == 0) {
+            fav = ((favoriteVideos.get(allvideos[index].id) ? true : false));
+            makeWidget(allvideos[index].Name, allvideos[index].id, allvideos[index].dir, allvideos[index].folder, allvideos[index].Description, allvideos[index].icon,"videosItems",fav);
+        }
+    }
+}
+//filters Alphabetically
+function filterAbc(){
+    
+    //clear div
+    document.getElementById("videosItems").innerText = "";
+    document.getElementById("videosItems").innerHTML = "";
+
+    arr = allvideos.toSorted();
+
+    for (let index = 0; index < arr.length; index++) {
+        fav = ((favoriteVideos.get(arr[index].id) ? true : false));
+        makeWidget(arr[index].Name, arr[index].id, arr[index].dir, arr[index].folder, arr[index].Description, arr[index].icon,"videosItems",fav);
+    }
+}
+

@@ -25,7 +25,7 @@ function makeWidget(name,id,icon){
     div.className = "user";
 
     //user link
-    content = document.createElement("a");
+    content = document.createElement("p");
     content.href = "home.html?userID="+id;   
     content.innerText = name;
     content.className = "userContent";

@@ -103,7 +103,7 @@ function play(index) {
     div = document.getElementById("playerDiv");
     //setting up video tag
     videoPlayer = document.createElement("video");
-    videoPlayer.autoplay = true;
+    videoPlayer.autoplay = false;
     videoPlayer.controls = true;
     videoPlayer.className  = "videoPlayer";
     video = videoPlayer

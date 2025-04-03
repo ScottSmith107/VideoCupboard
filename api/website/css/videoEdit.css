@@ -1,6 +1,12 @@
+html{
+    height: 100%;
+}
 body,button{
     font-family: "Major Mono Display", monospace;
     color: white;
+}
+body{
+    background-size: 100% 100%;
 }
 
 .main{
@@ -31,7 +37,7 @@ body,button{
 }
 
 button{
-    background-color: #4E2C5D;
+    background-color: black;
     cursor:pointer;
 }
 

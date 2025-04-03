@@ -1,6 +1,11 @@
+html{
+    height: 100%;
+}
+
 body{
     color: #1e2423;
     font-family: "Major Mono Display", monospace;
+    background-size: 100% 100% ;
 }
 
 .header{
@@ -39,7 +44,13 @@ body{
 .user:hover{
     background-color: #441E4B;
 }
-
+P{
+    color: white;
+    background-color: black;
+    border-style: solid;
+    border-color: black;
+    border-radius: 15%;
+}
 .usercontent{
     order: 1;
 }
@@ -56,7 +67,7 @@ body{
 
 button{
     color: white;
-    background-color: #4E2C5D;
+    background-color: black;
     cursor:pointer;
 }
 
