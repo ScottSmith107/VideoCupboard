@@ -268,18 +268,19 @@ function findIndex(arr, id){
 
 //onclick for removeFolder button
 function removeFolder(){
-
-    deletUrl = new URL(url+"removeDir");
-    deletUrl.searchParams.append("id", folderID);
-    fetch(deletUrl, {method: "DELETE"})
-    .then(response => response.json())
-    .then()
-    .catch(error => {
-        console.error("couldnt delete curr folder", error);
-    });
-
-    //go to home
-    location.replace("home.html?userID="+userID);
+    if(confirm("Are you sure you wanna delete this folder?")){
+        deletUrl = new URL(url+"removeDir");
+        deletUrl.searchParams.append("id", folderID);
+        fetch(deletUrl, {method: "DELETE"})
+        .then(response => response.json())
+        .then()
+        .catch(error => {
+            console.error("couldnt delete curr folder", error);
+        });
+    
+        //go to home
+        location.replace("home.html?userID="+userID);
+    }
 } 
 
 //send new timestamp to the db
@@ -476,13 +477,15 @@ function reload(){
 let _socket;
 function createSocket(){
 
+    document.getElementById("progress").innerText = "Connecting . . . ";
+
     //add end watch together 
     endButton = document.createElement("button");
-    endButton.id = "endButton"
+    endButton.id = "endWatchButton"
     endButton.innerText = "End Watch Together"
     endButton.onclick = function(){
         _socket.close();
-        document.getElementById("endButton").remove();
+        document.getElementById("endWatchButton").remove();
     }
     document.getElementById("headerButtons").appendChild(endButton);
 
@@ -498,6 +501,7 @@ function createSocket(){
 }
 function openSocket(response){
 
+    document.getElementById("progress").innerText = "";
     console.log("watch togeather open on: " + response);
 
     socket = new WebSocket('ws://localhost:'+response);

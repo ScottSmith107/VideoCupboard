@@ -108,14 +108,35 @@ video{
     color: white;
 }
 
+#headerButtons{
+    display: flex;
+    flex-direction:row;
+    justify-content: flex-start;
+    width: 100%;
+}
+
 #home{
     text-decoration: none;
+    order: 1;
+}
+#watchTogether{
+    text-decoration: none;
+    order: 2;
+}
+#progress{
+    order: 3;
+}
+#endWatchButton{
+    text-decoration: none;
+    order: 4;
 }
 #edit{
     color: #551a8b;
     text-decoration: none;
-    margin-left: 80%;
+    margin-left: auto;
+    order: 5;
 }
+
 
 @media (max-width: 1000px) {
     #edit{
