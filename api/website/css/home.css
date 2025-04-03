@@ -60,19 +60,19 @@ button{
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  width: fit-content;
+  width: 100%;
 }
 
 .video{
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 10px;
   margin-bottom: 10px;
 
   background-color: #200A24;
 
-  /* width: calc(100% / 3 - 20px); */
-
+  width: calc(80% / 5);
+  
   border-style: solid;
   border-radius: 5%;
   border-width: 5px;
@@ -98,18 +98,21 @@ button{
   grid-area: d;
 }
 .heart, .favedHeart{
+  margin-left: auto;
   width: 20px;
   padding-bottom: 5px;
-  align-self: end;
   grid-area: h;
 }
 
 .videoIcon{
   flex: 0 0 10%;
-  max-width: 100px;
+  /* max-width: 100px; */
+  padding-left: 2.5%;
+  padding-right: 2.5%;
+  width: 95%;
   object-fit: cover;
 
-  border-radius: 2%;
+  border-radius: 5%;
 }
 
 a{
@@ -158,7 +161,7 @@ a:visited {
   .video {
     flex: 0 0 auto;
     scroll-snap-align: start;
-    max-width: 95%;
+    width: calc(80% / 3);
     gap: 5px;
   }
 
@@ -168,5 +171,28 @@ a:visited {
 
   .nameDiv{
     padding-left: 0px;
+  }
+  
+  a, p{
+    padding-left: 5px;
+    font-size: 10px;
+  }
+}
+
+@media (min-width: 1500px) {
+  .video{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+  
+    background-color: #200A24;
+  
+    width: calc(80% / 8);
+    
+    border-style: solid;
+    border-radius: 5%;
+    border-width: 5px;
+    border-color: black;
   }
 }

@@ -40,14 +40,14 @@ button{
 
 .video{
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 10px;
   margin-bottom: 10px;
 
   background-color: #200A24;
 
-  width: fit-content;
-
+  width: calc(80% / 5);
+  
   border-style: solid;
   border-radius: 5%;
   border-width: 5px;
@@ -81,8 +81,13 @@ button{
 
 .videoIcon{
   flex: 0 0 10%;
-  max-width: 100px;
+  /* max-width: 100px; */
+  padding-left: 2.5%;
+  padding-right: 2.5%;
+  width: 95%;
   object-fit: cover;
+
+  border-radius: 5%;
 }
 
 a{
@@ -110,5 +115,32 @@ p{
 }
 
 @media (max-width: 1000px) {
+  .video {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    width: calc(80% / 3);
+    gap: 5px;
+  }
+  
+  a, p{
+    font-size: 10px;
+  }
+}
 
+@media (min-width: 1500px) {
+  .video{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+  
+    background-color: #200A24;
+  
+    width: calc(80% / 8);
+    
+    border-style: solid;
+    border-radius: 5%;
+    border-width: 5px;
+    border-color: black;
+  }
 }

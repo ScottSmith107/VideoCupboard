@@ -22,15 +22,26 @@ function onload(){
                 //reset container
                 document.getElementById("favoritesItems").innerHTML ="";
                 //displays all on phone but only 3 on desktop
-                const mediaQuery = window.matchMedia('(max-width: 1000px)')
+                const phoneSize = window.matchMedia('(max-width: 1000px)');
+                const halfScreen = window.matchMedia('(min-width: 1000px)');
+                const fullScreen = window.matchMedia('(min-width: 1400px)');
+                console.log("phoneSize");
+                console.log(phoneSize);
+                console.log("halfScreen");
+                console.log(halfScreen);
+                console.log("fullScreen");
+                console.log(fullScreen);
                 //adds all to widget
                 for (let i = 0; i < data.length; i++) {
                     video = data[i];
                     favoriteVideos.set(video.id,true);
-                    if(mediaQuery.matches){
+                    if(phoneSize.matches){
                         makeWidget(video.Name, video.id, video.dir, video.folder, video.Description, video.icon,"favoritesItems",true);
                     }
-                    else if(i < 3){
+                    else if(i < 5 && halfScreen.matches){
+                        makeWidget(video.Name, video.id, video.dir, video.folder, video.Description, video.icon,"favoritesItems",true);
+                    }
+                    else if(i < 8 && fullScreen.matches){
                         makeWidget(video.Name, video.id, video.dir, video.folder, video.Description, video.icon,"favoritesItems",true);
                     }
                 }
@@ -111,37 +122,6 @@ function recent(userID){
         .catch(error => {
             console.error("couldnt make connection to database", error);
         });
-}
-
-//gets the recent videos then displays them
-function favorites(userID){
-    formData = new FormData();
-    formData.append("userID",userID);
-
-    fetch(url+"getFavorites", {
-            method: "PUT",
-            body: formData,
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("favorites");
-            console.log(data);
-            if(data.length > 0){
-                //reset div
-                document.getElementById("favoritesItems").innerHTML ="";
-                //adds all to widget
-                limit = ((data.length > 3) ? 3 : data.length);
-                for (let i = 0; i < limit; i++) {
-                    video = data[i];
-                    favoriteVideos.set(video.id,true);
-                    makeWidget(video.Name, video.id, video.dir, video.folder, video.Description, video.icon,"favoritesItems",true);
-                }
-            }
-        })
-        .catch(error => {
-            console.error("couldnt get favs", error);
-        });
-
 }
 
 //makes video widget //I didnt feel like using react so here it is done
