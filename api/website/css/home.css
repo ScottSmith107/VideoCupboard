@@ -21,6 +21,9 @@ button{
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
+
+  border-style: solid;
+  border-color: black;
 }
 
 #recent ,#videosDiv ,#favorites{
@@ -52,7 +55,7 @@ button{
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 80%;
+  gap: 28%;
   padding-bottom: 5%;
 }
 
@@ -67,7 +70,7 @@ button{
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-top: 10px;
 
   background-color: #200A24;
 
@@ -99,6 +102,7 @@ button{
 }
 .heart, .favedHeart{
   margin-left: auto;
+  margin-top: auto;
   width: 20px;
   padding-bottom: 5px;
   grid-area: h;
@@ -135,7 +139,7 @@ a:visited {
 
 @media (max-width: 1000px) {
   #navBar {
-    gap: 50%;
+    gap: 15%;
   }
 
   #favoritesItems, #recentItems{
@@ -170,6 +174,7 @@ a:visited {
   }
 
   .nameDiv{
+    height: 100%;
     padding-left: 0px;
   }
   

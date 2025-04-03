@@ -103,16 +103,27 @@ function recent(userID){
             if(data.length > 0){
                 //clear div
                 document.getElementById("recentItems").innerHTML ="";
-                //displays all on phone but only 3 on desktop
-                const mediaQuery = window.matchMedia('(max-width: 1000px)')
+                //diff sizes for diff screens
+                const phoneSize = window.matchMedia('(max-width: 1000px)');
+                const halfScreen = window.matchMedia('(min-width: 1000px)');
+                const fullScreen = window.matchMedia('(min-width: 1400px)');
+                console.log("phoneSize");
+                console.log(phoneSize);
+                console.log("halfScreen");
+                console.log(halfScreen);
+                console.log("fullScreen");
+                console.log(fullScreen);
                 //add widgets
                 for (let i = 0; i < data.length; i++) {
                     video = data[i];
                     fav = ((favoriteVideos.get(video.id) ? true : false));
-                    if(mediaQuery.matches){
+                    if(phoneSize.matches){
                         makeWidget(video.Name, video.id, video.dir, video.folder, video.Description, video.icon,"recentItems",fav);
                     }
-                    else if(i < 3){
+                    else if(i < 5 && halfScreen.matches){
+                        makeWidget(video.Name, video.id, video.dir, video.folder, video.Description, video.icon,"recentItems",fav);
+                    }
+                    else if(i < 8 && fullScreen.matches){
                         makeWidget(video.Name, video.id, video.dir, video.folder, video.Description, video.icon,"recentItems",fav);
                     }
     
