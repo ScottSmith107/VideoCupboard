@@ -25,12 +25,6 @@ function onload(){
                 const phoneSize = window.matchMedia('(max-width: 1000px)');
                 const halfScreen = window.matchMedia('(min-width: 1000px)');
                 const fullScreen = window.matchMedia('(min-width: 1400px)');
-                console.log("phoneSize");
-                console.log(phoneSize);
-                console.log("halfScreen");
-                console.log(halfScreen);
-                console.log("fullScreen");
-                console.log(fullScreen);
                 //adds all to widget
                 for (let i = 0; i < data.length; i++) {
                     video = data[i];
@@ -107,12 +101,6 @@ function recent(userID){
                 const phoneSize = window.matchMedia('(max-width: 1000px)');
                 const halfScreen = window.matchMedia('(min-width: 1000px)');
                 const fullScreen = window.matchMedia('(min-width: 1400px)');
-                console.log("phoneSize");
-                console.log(phoneSize);
-                console.log("halfScreen");
-                console.log(halfScreen);
-                console.log("fullScreen");
-                console.log(fullScreen);
                 //add widgets
                 for (let i = 0; i < data.length; i++) {
                     video = data[i];
@@ -288,7 +276,6 @@ function filterAll(){
     //clear div
     document.getElementById("videosItems").innerText = "";
     document.getElementById("videosItems").innerHTML = "";
-
     for (let index = 0; index < allvideos.length; index++) {
         fav = ((favoriteVideos.get(allvideos[index].id) ? true : false));
         makeWidget(allvideos[index].Name, allvideos[index].id, allvideos[index].dir, allvideos[index].folder, allvideos[index].Description, allvideos[index].icon,"videosItems",fav);
@@ -314,7 +301,7 @@ function filterAbc(){
     document.getElementById("videosItems").innerText = "";
     document.getElementById("videosItems").innerHTML = "";
 
-    arr = allvideos.toSorted();
+    const arr = [...allvideos].sort((a, b) => a.Name.localeCompare(b.Name));
 
     for (let index = 0; index < arr.length; index++) {
         fav = ((favoriteVideos.get(arr[index].id) ? true : false));
