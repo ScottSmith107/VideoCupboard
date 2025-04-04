@@ -6,17 +6,19 @@ document.getElementById('fileInput').addEventListener('change', (event) => {
     files = event.target.files;
 
     //check if the files are vaild                                                                  //redo
-    // for (let i = 0; i < files.length; i++) {
-    //     file = files[i];
-    //     //pulles the extention from the name
-    //     extention = file.name.split('.')[file.name.split('.').length-1];
-    //     if(!(extention == "MP4" || extention == "mp4" || extention == "MP3" || extention == "mp3")){
-    //         files = event.target.files = undefined;
-    //         document.getElementById("error").innerText = "please only submit mp3/mp4's"
-    //     }else{
-    //         document.getElementById("error").innerText = ""
-    //     }
-    // }
+    for (let i = 0; i < files.length; i++) {
+        file = files[i];
+        //pulles the extention from the name
+        extention = file.name.split('.')[file.name.split('.').length-1];
+        if(!(extention == "MP4" || extention == "mp4" || extention == "MP3" || extention == "mp3")){
+            if(confirm("If you dont submit a MP3 or MP4 you may encounter issues.")){//so they know they might have issues
+                files = event.target.files = undefined;
+                document.getElementById("error").innerText = "please only submit mp3/mp4's"
+            }
+        }else{
+            document.getElementById("error").innerText = ""
+        }
+    }
 });
 document.getElementById('iconInput').addEventListener('change', (event) => {
     icon = event.target.files[0];

@@ -22,11 +22,13 @@ button{
   flex-direction: row;
   justify-content: flex-start;
 
-  border-style: solid;
-  border-color: black;
+  /* border-style: solid; */
+  /* border-color: black; */
 
   flex-wrap: wrap;
   overflow: hidden;
+  background-image: url(../images/shelf.png);
+  background-size: 100% 100% ;
 }
 .buttonDiv{
   display: inline-flex;
@@ -44,6 +46,10 @@ button{
   flex-direction: row;
   justify-content: flex-start;
   gap: 15px;
+}
+#recentItems, #favoritesItems, #videosItems{
+  background-image: url(../images/shelfBack.png);
+  background-size: 100% 100% ;
 }
 
 #recent, #recentItems{

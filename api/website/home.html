@@ -12,7 +12,7 @@
     </script>
     <script src="scripts/home.js"></script>
   </head>
-  <body onload=onload() style="background-image: url(images/borderBackground.png)">
+  <body onload=onload() style="background-image: url(images/shelfBack.png)">
     <div id="navBar">
       <button id="uploadButton" onclick=gotoUpload()>Upload New Video</button>
       <h1>Video Cupboard</h1>
@@ -24,7 +24,7 @@
         <h2 id="recentLabel">Recently Watched</h2>
         <a id="showRecents" class="showAll">Show all</a>
       </div>
-      <div id="recentItems" style="background-image: url(images/sheldbackground.png)">
+      <div id="recentItems">
         <p>nothing to show</p>
       </div>
     </div>
@@ -34,7 +34,7 @@
         <h2 id="favoritesLabel">Favorites</h2>
         <a id="showfavorites" class="showAll"> Show All</a>
       </div>
-      <div id="favoritesItems" style="background-image: url(images/sheldbackground.png)">
+      <div id="favoritesItems">
         <p>nothing to show</p>
       </div>
     </div>
@@ -50,7 +50,7 @@
           <button id="abcFilter" class="filterButton" onclick="filterAbc()">Alphabetically</button>
         </div>
       </div>
-      <div id="videosItems" style="background-image: url(images/sheldbackground.png)"></div>
+      <div id="videosItems"></div>
     </div>
     <p id="videos"></p>
 
