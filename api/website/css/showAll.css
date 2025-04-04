@@ -30,7 +30,7 @@ button{
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  width: fit-content;
+  width: 100vw;
 }
 
 #navBar{

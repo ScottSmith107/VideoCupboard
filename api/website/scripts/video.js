@@ -108,6 +108,12 @@ function play(index) {
     videoPlayer.autoplay = false;
     videoPlayer.controls = true;
     videoPlayer.className  = "videoPlayer";
+    //get volume pref from cookies
+    if(document.cookie){
+        volume = document.cookie;
+        volume = volume.split("=")[1];
+        videoPlayer.volume = volume;
+    }
     video = videoPlayer
     setUrl(index,videoPlayer)
     video.addEventListener("progress", updateTimestamp);
@@ -118,6 +124,7 @@ function play(index) {
     video.addEventListener("seeked", seekedEvent);
     video.addEventListener("stalled", bufferingEvent);
     video.addEventListener("suspend", bufferingEvent);
+    video.addEventListener("volumechange", volumeEvent);
     checkPlayTime(video);
     div.appendChild(videoPlayer);
 
@@ -147,6 +154,12 @@ function play(index) {
     buttonDiv.appendChild(next);
     buttonDiv.appendChild(heart);
     div.appendChild(buttonDiv);
+}
+
+//saves volume change to cookie
+function volumeEvent(event){
+    let video = event.target;
+    document.cookie = "volume="+video.volume;
 }
 
 //gets the full path for the video request from the index
