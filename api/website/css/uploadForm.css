@@ -63,4 +63,10 @@ a:visited {
     #home{
         border-width: 2px;
     }
+
+    #main{
+        margin-top: 10px;
+        margin-right: 5%;
+        margin-left: 5%;
+    }
 }

@@ -72,6 +72,7 @@ button{
 
 @media (max-width: 1000px) {
     .main{
+        margin-top: 10px;
         margin-right: 10%;
         margin-left: 10%;
     }

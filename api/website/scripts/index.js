@@ -70,7 +70,7 @@ function makeForm(){
     label.className = "label";
     label.setAttribute('for', 'username');
     label.innerText = "Username:";
-    label.style.color = "white";
+    label.style.color = "black";
 
     button = document.createElement("button");
     button.innerText = "add user";

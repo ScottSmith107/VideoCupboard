@@ -1,8 +1,6 @@
 body{
-    background-image: url(images/indexBackground.png);
     font-family: "Major Mono Display", monospace;
-
-    color: white;
+    color: black;
 }
 
 #tester{
@@ -15,7 +13,7 @@ body{
 
 button{
     color: white;
-    background-color: #4E2C5D;
+    background-color: black;
     cursor:pointer;
 }
 
@@ -29,7 +27,7 @@ button{
     width: 100%;
     order: 1;
     margin-bottom: 10px;
-    box-shadow: 0 4px 8px 0 #4E2C5D, 0 6px 20px 0 #4E2C5D;
+    box-shadow: 0 4px 8px 0 white, 0 6px 20px 0 white;
 }
 .playerButtons{
     order: 2;
@@ -74,9 +72,9 @@ video{
 
     border-radius: 5px;
 
-    box-shadow: 0 4px 8px 0 #4E2C5D, 0 6px 20px 0 #4E2C5D;
+    /* box-shadow: 0 4px 8px 0 white, 0 6px 20px 0 white; */
 
-    background-color: #200A24;
+    /* background-color: #200A24; */
 }
 #main,#videosDiv,#header{
     width: 80%;
@@ -105,7 +103,7 @@ video{
 }
 
 .nextup{
-    color: white;
+    color: black;
 }
 
 #headerButtons{
@@ -131,7 +129,7 @@ video{
     order: 4;
 }
 #edit{
-    color: #551a8b;
+    color: black;
     text-decoration: none;
     margin-left: auto;
     order: 5;
@@ -154,6 +152,10 @@ video{
     .recent{
         width: 5%;
         padding-left: 10px;
+    }
+
+    .nextup{
+        font-size: 15px;
     }
 
 }

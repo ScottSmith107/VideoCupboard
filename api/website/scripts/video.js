@@ -28,10 +28,12 @@ async function getQueryParam() {
     if(folder == 1){
         addFolderButtons(videoID);
         recent(userID,videoID)
+        document.body.style.backgroundImage = "url('../images/folderBackground.jfif')";
     }
     else{//if not a folder then play the video
         play(videoID)
         findFolder(dir)
+        document.body.style.backgroundImage = "url('../images/folderBackground.jfif')";
     }
 
     //sets the params of the home button
