@@ -150,9 +150,14 @@ function play(index) {
     heart.checked = fav;
     heart.addEventListener("click", favOnClick);
 
+    //cast button
+    cast = document.createElement("google-cast-launcher");
+    cast.id = "castbutton";
+
     buttonDiv.appendChild(prev);
     buttonDiv.appendChild(next);
     buttonDiv.appendChild(heart);
+    buttonDiv.appendChild(cast);
     div.appendChild(buttonDiv);
 }
 
@@ -177,6 +182,7 @@ function setUrl(index,videoPlayer) {
         source = document.createElement("source");
         source.src = url + data[0].Full_path;
         source.type = "video/mp4";
+        source.id = "currVideo";
         videoPlayer.appendChild(source);
     })
     .catch(error => {
@@ -586,4 +592,3 @@ function bufferingEvent(event){
     }
 
 }
-

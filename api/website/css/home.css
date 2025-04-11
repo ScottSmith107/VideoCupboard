@@ -109,6 +109,7 @@ button{
 }
 
 .nameDiv{
+  height: 100%;
   padding: 5px 5px 0px 5px;
 
   display: grid;
@@ -122,6 +123,7 @@ button{
 }
 .desc{
   grid-area: d;
+  color: white;
 }
 .heart, .favedHeart{
   margin-left: auto;
