@@ -36,16 +36,18 @@ const storage = multer.diskStorage({
 
                 //make new path
                 newFolder = path.join(__dirname, ".." ,"videos", folderName);
-                //make the new dir with fs
-                fs.mkdir(newFolder, { recursive: true }, (err) => {
-                    if (err) {
-                        return cb(err);
-                    }
-                    // adds new folder to db 
-                    iconPath = "videoIcon/"+file.originalname;
-                    console.log("iconpath: ",iconPath);
-                    data.uploadFile(folderName ,desc ,0 ,folderName,1,iconPath);
-                });
+                if(!fs.existsSync(newFolder)){
+                    //make the new dir with fs
+                    fs.mkdir(newFolder, { recursive: true }, (err) => {
+                        if (err) {
+                            return cb(err);
+                        }
+                        // adds new folder to db 
+                        iconPath = "videoIcon/"+file.originalname;
+                        console.log("iconpath: ",iconPath);
+                        data.uploadFile(folderName ,desc ,0 ,folderName,1,iconPath);
+                    });
+                }
             }
                     
             return cb(null, path.join(videoPath,"videoIcon"));
@@ -179,7 +181,7 @@ app.delete('/remove', async (req, res) => {
 
     //removes folder from file system
     fs.unlink(path.join("videos",fullPath), (err) => {
-        if (err) throw err;
+        if (err) console.log(err);
         console.log(fullPath, 'was deleted');
       });
     // removes file from db
@@ -197,7 +199,7 @@ app.delete('/removeDir', async (req, res) => {
     fullPath = response[0].Full_path;
     //removes folder from file system
     fs.rm(path.join("videos",fullPath),{force: true, recursive: true} , (err) => {
-        if (err) throw err;
+        if (err) console.log(err);
         console.log(fullPath, ' was deleted');
       });
 

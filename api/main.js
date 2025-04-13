@@ -36,21 +36,25 @@ const storage = multer.diskStorage({
         if(file.mimetype.split("/")[0] == "image"){
             
             if(folderName){
-                //makes the new folde with the icon
+                //makes the new folder with the icon
                 console.log("new folder-icon");
 
                 //make new path
                 newFolder = path.join(__dirname, "videos", folderName);
-                //make the new dir with fs
-                fs.mkdir(newFolder, { recursive: true }, (err) => {
-                    if (err) {
-                        return cb(err);
-                    }
-                    // adds new folder to db 
-                    iconPath = "videoIcon/"+file.originalname;
-                    console.log("iconpath: ",iconPath);
-                    data.uploadFile(folderName ,desc ,0 ,folderName,1,iconPath);
-                });
+                if(!fs.existsSync(newFolder)){
+                    //make the new dir with fs
+                    fs.mkdir(newFolder, { recursive: true }, (err) => {
+                        if (err) {
+                            return cb(err);
+                        }
+                        //tells icon where to go
+                        iconPath = "videoIcon/"+file.originalname;
+                        console.log("iconpath: ",iconPath);
+                        // adds new folder to db 
+                        data.uploadFile(folderName ,desc ,0 ,folderName,1,iconPath);
+                    });
+                }
+
             }
                     
             return cb(null, path.join(videoPath,"videoIcon"));

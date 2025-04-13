@@ -105,9 +105,10 @@ function play(index) {
     div = document.getElementById("playerDiv");
     //setting up video tag
     videoPlayer = document.createElement("video");
-    videoPlayer.autoplay = false;
+    videoPlayer.autoplay = true;
     videoPlayer.controls = true;
     videoPlayer.className  = "videoPlayer";
+    videoPlayer.id = "videoPlayer";
     //get volume pref from cookies
     if(document.cookie){
         volume = document.cookie;
@@ -163,7 +164,7 @@ function play(index) {
 
 //saves volume change to cookie
 function volumeEvent(event){
-    let video = event.target;
+    const video = event.target;
     document.cookie = "volume="+video.volume;
 }
 
@@ -267,19 +268,27 @@ function prevPressed(){
     }
 }
 function nextPressed(){
+    console.log("next");
     index = findIndex(arrayOfContents, _video.id);
 
     if(index < arrayOfContents.length-1){
-        location.replace(document.querySelectorAll(".nextup")[index+1].href);
+        var newVideo = arrayOfContents[index+1];
+        _video = newVideo;
+        
+        //setting gloabls to new video 
+        title = document.getElementById("title");
+        title.innerText = newVideo.Name.split(".mp4")[0];
+        videoID = newVideo.id;
+        configEdit(videoID);
+
+        video.src = url+newVideo.Full_path;
     }
 }
 
 //finds the index of the currently playing video
 function findIndex(arr, id){
     for (let i = 0; i < arr.length; i++) {
-        video = arr[i].id;
-        console.log("video", video);
-        console.log(id);
+        const video = arr[i].id;
         if(id == video){
             return i;
         }
@@ -341,6 +350,7 @@ function updateTimestamp(event){
 
 //when the video is ended set timstamp to 0
 function videoEnded(event){
+    console.log("ended");
     formData = new FormData();
     formData.append("userID",userID);
     formData.append("videoID",videoID);
@@ -566,28 +576,28 @@ function sendWebsocket(){
 //all events for the video in relation to watch together
 function playEvent(event){
     if(_socket){
-        video = event.target;
+        const video = event.target;
         _socket.send("play")
     }
 }
 function pauseEvent(event){
     if(_socket){
-        video = event.target;
+        const video = event.target;
         _socket.send("pause")
     }
     
 }
 function seekedEvent(event){
     if(_socket){
-        video = event.target;
-        _socket.send("seek: "+event.target.currentTime)
+        const video = event.target;
+        _socket.send("seek: "+video.currentTime)
     }
     
 }
 //for satlled and suspended
 function bufferingEvent(event){
     if(_socket){
-        video = event.target;
+        const video = event.target;
         _socket.send("buffering")
     }
 

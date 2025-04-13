@@ -12,8 +12,9 @@ document.getElementById('fileInput').addEventListener('change', (event) => {
         extention = file.name.split('.')[file.name.split('.').length-1];
         if(!(extention == "MP4" || extention == "mp4" || extention == "MP3" || extention == "mp3")){
             if(confirm("If you dont submit a MP3 or MP4 you may encounter issues.")){//so they know they might have issues
+                console.log("good");
+            }else{
                 files = event.target.files = undefined;
-                document.getElementById("error").innerText = "please only submit mp3/mp4's"
             }
         }else{
             document.getElementById("error").innerText = ""
