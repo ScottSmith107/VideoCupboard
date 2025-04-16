@@ -117,7 +117,10 @@ function play(index) {
     }
     video = videoPlayer
     setUrl(index,videoPlayer)
-    video.addEventListener("progress", updateTimestamp);
+    video.addEventListener("progress", () =>{
+        var time = video.currentTime;
+        updateTimestamp(time,videoID); 
+    });
     video.addEventListener("ended", videoEnded);
     //listeners for watch togeather
     video.addEventListener("play", playEvent);
@@ -315,8 +318,9 @@ function removeFolder(){
 
 //send new timestamp to the db
 let go = true;
-function updateTimestamp(event){
-    time = video.currentTime;
+function updateTimestamp(time,id){
+    console.log(time);
+    console.log(id);
     time = Math.round(time);
     
     //dont bother saving if its less then 1 time
@@ -333,8 +337,8 @@ function updateTimestamp(event){
 
         formData = new FormData();
         formData.append("userID",userID);
-        formData.append("videoID",videoID);
-        formData.append("timestamp",video.currentTime);
+        formData.append("videoID",id);
+        formData.append("timestamp",time);
         
         fetch(url+"updateTimestamp", {
             method: "PUT",
@@ -353,7 +357,7 @@ function videoEnded(event){
     console.log("ended");
     formData = new FormData();
     formData.append("userID",userID);
-    formData.append("videoID",videoID);
+    formData.append("videoID",id);
     formData.append("timestamp",0);
     
     fetch(url+"updateTimestamp", {

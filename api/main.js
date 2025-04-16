@@ -1,4 +1,5 @@
 const express = require('express');
+const https = require('https');
 const fs = require('fs');
 const data = require("./videos.js");
 
@@ -9,6 +10,14 @@ let userIconPath = path.join(__dirname, "icons")
 
 const multer = require("multer");
 const { userInfo } = require('os');
+
+//ssl certs
+var key = fs.readFileSync(__dirname + '/../certs/selfsigned.key');
+var cert = fs.readFileSync(__dirname + '/../certs/selfsigned.crt');
+var options = {
+  key: key,
+  cert: cert
+};
 
 //import diff loctions
 const fav = require('./apiMethods/fav');
@@ -98,7 +107,7 @@ const app = express();
 const port = 3000;
 
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://'+process.env.IP);
+    res.header('Access-Control-Allow-Origin', 'https://'+process.env.IP);
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT');
     next();
@@ -124,11 +133,14 @@ app.get('/', async (req, res) => {
     res.sendFile(path.join(websitePath,"index.html"));
 });
 
-app.listen(port, function() {
-    console.log(`Example app listening on port ${port}!`);
-});
+
 
 app.use(express.static(videoPath));
 app.use(express.static(userIconPath));
 app.use(express.static(websitePath));
-    
+
+var server = https.createServer(options, app);
+
+server.listen(port, () => {
+    console.log(`Example app listening on port ${port}!`);
+});

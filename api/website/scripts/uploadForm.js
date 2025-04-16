@@ -1,4 +1,4 @@
-let url = "http://"+IP+":3000/";
+let url = "https://"+IP+":3000/";
 let files;
 let icon;
 

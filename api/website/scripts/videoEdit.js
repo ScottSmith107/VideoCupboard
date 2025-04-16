@@ -1,4 +1,4 @@
-let url = "http://"+IP+":3000/";
+let url = "https://"+IP+":3000/";
 let video;
 let userID;
 const urlParams = new URLSearchParams(window.location.search);
