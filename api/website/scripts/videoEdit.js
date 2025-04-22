@@ -1,4 +1,5 @@
-let url = "https://"+IP+":3000/";
+// let url = "https://"+IP+":3000/";
+let url = "http://"+IP+":3000/";
 let video;
 let userID;
 const urlParams = new URLSearchParams(window.location.search);
@@ -28,28 +29,28 @@ function getVideo(videoID){
 
 //displays the video
 function displayVideo(video){
-    video = video[0];
+    const video = video[0];
 
-    let name = document.getElementById("videoName");
+    const name = document.getElementById("videoName");
     name.value  = video.Name;
     name.innerText  = video.Name;
 
-    desc = document.getElementById("videoDesc");
+    const desc = document.getElementById("videoDesc");
     desc.value  = video.Description;
     desc.innerText  = video.Description;
 
-    icon = document.getElementById("icon")
+    const icon = document.getElementById("icon")
     icon.src = url + video.icon;
 }
 
 //updates video
 function update(){
-    formData = new FormData();
-    videoName = document.getElementById("videoName").value;
-    desc = document.getElementById("videoDesc").value;
+    const formData = new FormData();
+    const videoName = document.getElementById("videoName").value;
+    const desc = document.getElementById("videoDesc").value;
 
     //check if user has opted to change the icon
-    newIcon = document.getElementById("fileInput")
+    const newIcon = document.getElementById("fileInput")
     if(newIcon.files.length > 0){
         formData.append("files",newIcon.files[0]);
     }
@@ -75,9 +76,9 @@ function update(){
 //removes the displayed video
 function remove(){
     if(confirm("Are you sure you want to delete this video?")){
-        id = urlParams.get("videoID");
+        const id = urlParams.get("videoID");
 
-        deletUrl = new URL(url+"remove");
+        const deletUrl = new URL(url+"remove");
         deletUrl.searchParams.append("id", id);
         fetch(deletUrl, {method: "DELETE"})
         .then(response => response.json())

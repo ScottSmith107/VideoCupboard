@@ -1,11 +1,13 @@
-let url = "https://"+IP+":3000/";
+// let url = "https://"+IP+":3000/";
+let url = "http://"+IP+":3000/";
 let allvideos =[];
 let favoriteVideos = new Map();
+let userID;
 const urlParams = new URLSearchParams(window.location.search);
 //get all videos from the server
 function onload(){
     userID = urlParams.get("userID");
-    type = urlParams.get("data");
+    const type = urlParams.get("data");
 
     document.getElementById("home").href = "home.html?userID="+userID;
     //0 is favs
@@ -23,7 +25,7 @@ function onload(){
 
 //gets the recent videos then displays them
 function recent(userID){        
-    formData = new FormData();
+    const formData = new FormData();
     formData.append("userID",userID);
 
     fetch(url+"getRecent", {
@@ -39,10 +41,8 @@ function recent(userID){
                 document.getElementById("videosItems").innerHTML ="";
                 //add widgets
                 for (let i = 0; i < data.length; i++) {
-                    video = data[i];
-                    if(favoriteVideos.get(video.id)){
-                        fav = true;
-                    }else{fav = false}
+                    const video = data[i];
+                    const fav = ((favoriteVideos.get(video.id) ? true : false));
                     makeWidget(video.Name.split(".mp4")[0], video.id, video.dir, video.folder, video.Description, video.icon,"videosItems",fav);
     
                 }
@@ -55,7 +55,7 @@ function recent(userID){
 
 //gets the favorite videos then displays them
 function favorites(userID){
-    formData = new FormData();
+    const formData = new FormData();
     formData.append("userID",userID);
 
     fetch(url+"getFavorites", {
@@ -71,7 +71,7 @@ function favorites(userID){
                 document.getElementById("videosItems").innerHTML ="";
                 //adds all to widget
                 for (let i = 0; i < data.length; i++) {
-                    video = data[i];
+                    const video = data[i];
                     favoriteVideos.set(video.id,true);
                     makeWidget(video.Name.split(".mp4")[0], video.id, video.dir, video.folder, video.Description, video.icon,"videosItems",true);
                 }
@@ -86,7 +86,7 @@ function favorites(userID){
 //used to get a hashmap of all favorited videos.
 //rather then display them
 function getFavorites(userID){
-    formData = new FormData();
+    const formData = new FormData();
     formData.append("userID",userID);
 
     fetch(url+"getFavorites", {
@@ -99,7 +99,7 @@ function getFavorites(userID){
             console.log(data);
             if(data.length > 0){
                 for (let i = 0; i < data.length; i++) {
-                    video = data[i];
+                    const video = data[i];
                     favoriteVideos.set(video.id,true);
                 }
             }
@@ -112,15 +112,15 @@ function getFavorites(userID){
 
 //makes video widget //I didnt feel like using react so here it is done
 function makeWidget(name,id, dir, folder,desc,iconPath,divID,fav){
-    main = document.getElementById(divID);
+    const main = document.getElementById(divID);
 
-    div = document.createElement("div");
+    const div = document.createElement("div");
     div.className ="video";
 
-    nameDiv = document.createElement("div");
+    const nameDiv = document.createElement("div");
     nameDiv.className = "nameDiv";
 
-    content = document.createElement("a");
+    const content = document.createElement("a");
     content.id = id;
     content.className = "link";
     content.href = "video.html?data="+name + 
@@ -130,7 +130,7 @@ function makeWidget(name,id, dir, folder,desc,iconPath,divID,fav){
                "&folder=" + folder;   
     content.innerText = name;
 
-    description = document.createElement("p");
+    const description = document.createElement("p");
     description.innerText = desc;
     description.className = "desc";
     description.onclick = function(){
@@ -142,7 +142,7 @@ function makeWidget(name,id, dir, folder,desc,iconPath,divID,fav){
     }
 
     if(iconPath){
-        icon = document.createElement("img");
+        const icon = document.createElement("img");
         icon.src = url+iconPath;
         icon.onclick = function(){
             location.replace("video.html?data="+name + 
@@ -155,7 +155,7 @@ function makeWidget(name,id, dir, folder,desc,iconPath,divID,fav){
         div.appendChild(icon)
     }
 
-    heart = document.createElement("img");
+    const heart = document.createElement("img");
     heart.src = "images/heartBlank.png"
     heart.id = id+"-checkbox";
     heart.className = "heart";
@@ -176,8 +176,8 @@ function makeWidget(name,id, dir, folder,desc,iconPath,divID,fav){
 //onclick function for the check box
 //saves or unsaves the clicked video
 function favOnClick(event){
-    heart = event.srcElement;
-    src = heart.className;
+    const heart = event.srcElement;
+    const src = heart.className;
 
     if(src == "heart"){
         console.log("add");
@@ -190,7 +190,7 @@ function favOnClick(event){
 
 //adds new fav 
 function addFav(id){
-    formData = new FormData();
+    const formData = new FormData();
     formData.append("userID",urlParams.get("userID"));
     formData.append("videoID",id);
 
@@ -207,7 +207,7 @@ function addFav(id){
 
 //adds new fav 
 function removeFav(id){
-    formData = new FormData();
+    const formData = new FormData();
     formData.append("userID",urlParams.get("userID"));
     formData.append("videoID",id);
 
@@ -232,13 +232,13 @@ function reload(){
 //removes all favorites or recents from the db 
 //will swap to either depending what data is 
 function removeAll(){
-    type = urlParams.get("data");
+    const type = urlParams.get("data");
+    //make call to remove all recently watched
+    const formData = new FormData();
+    formData.append("userID",urlParams.get("userID"));
     //0 is favs
     //1 is recents
     if(type == 1){
-        //make call to remove all recently watched
-        formData = new FormData();
-        formData.append("userID",urlParams.get("userID"));
 
         fetch(url+"removeAllRecents", {
                 method: "DELETE",
@@ -250,10 +250,6 @@ function removeAll(){
                 console.error("couldnt remove all recently watched", error);
             });
     }else{
-        //make call to remove all favs
-        formData = new FormData();
-        formData.append("userID",urlParams.get("userID"));
-
         fetch(url+"removeAllFavorites", {
                 method: "DELETE",
                 body: formData,

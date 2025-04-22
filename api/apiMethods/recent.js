@@ -91,6 +91,15 @@ app.put('/getRecent',upload.none(), async (req, res) => {
     res.send(output);
 });
 
+// gets Recents from userid with limits
+app.put('/getRecentLimit',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    console.log("userID: ",userID);
+    
+    output = await data.getRecentLimit(userID);
+    res.send(output);
+});
+
 //removeAllRecents for a user
 app.delete('/removeAllRecents',upload.none(), async (req, res) => {
     userID = req.body.userID;

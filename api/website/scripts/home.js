@@ -1,4 +1,5 @@
-let url = "https://"+IP+":3000/";
+// let url = "https://"+IP+":3000/";
+let url = "http://"+IP+":3000/";
 let allvideos =[];
 let favoriteVideos = new Map();
 const urlParams = new URLSearchParams(window.location.search);
@@ -27,7 +28,7 @@ function onload(){
                 const fullScreen = window.matchMedia('(min-width: 1400px)');
                 //adds all to widget
                 for (let i = 0; i < data.length; i++) {
-                    video = data[i];
+                    const video = data[i];
                     favoriteVideos.set(video.id,true);
                     if(phoneSize.matches){
                         makeWidget(video.Name, video.id, video.dir, video.folder, video.Description, video.icon,"favoritesItems",true);
@@ -68,10 +69,10 @@ function getVideos(){
             console.log("all Videos");
             console.log(data);
             allvideos = data;
-            arr = data;
+            const arr = data;
             for (let index = 0; index < arr.length; index++) {
-                video = data[index];
-                fav = ((favoriteVideos.get(video.id) ? true : false));
+                const video = data[index];
+                const fav = ((favoriteVideos.get(video.id) ? true : false));
                 makeWidget(arr[index].Name, arr[index].id, arr[index].dir, arr[index].folder, arr[index].Description, arr[index].icon,"videosItems",fav);
             }
         })
@@ -86,7 +87,7 @@ function recent(userID){
     formData = new FormData();
     formData.append("userID",userID);
 
-    fetch(url+"getRecent", {
+    fetch(url+"getRecentLimit", {
             method: "PUT",
             body: formData,
         })
@@ -103,8 +104,8 @@ function recent(userID){
                 const fullScreen = window.matchMedia('(min-width: 1400px)');
                 //add widgets
                 for (let i = 0; i < data.length; i++) {
-                    video = data[i];
-                    fav = ((favoriteVideos.get(video.id) ? true : false));
+                    const video = data[i];
+                    const fav = ((favoriteVideos.get(video.id) ? true : false));
                     if(phoneSize.matches){
                         makeWidget(video.Name, video.id, video.dir, video.folder, video.Description, video.icon,"recentItems",fav);
                     }
@@ -125,15 +126,15 @@ function recent(userID){
 
 //makes video widget //I didnt feel like using react so here it is done
 function makeWidget(name,id, dir, folder,desc,iconPath,divID,fav){
-    main = document.getElementById(divID);
+    const main = document.getElementById(divID);
 
-    div = document.createElement("div");
+    const div = document.createElement("div");
     div.className ="video";
 
-    nameDiv = document.createElement("div");
+    const nameDiv = document.createElement("div");
     nameDiv.className = "nameDiv";
 
-    content = document.createElement("a");
+    const content = document.createElement("a");
     content.id = id;
     content.className = "link";
     content.href = "video.html?data="+name + 
@@ -143,7 +144,7 @@ function makeWidget(name,id, dir, folder,desc,iconPath,divID,fav){
                "&folder=" + folder;   
     content.innerText = name.split(".mp4")[0];
 
-    description = document.createElement("p");
+    const description = document.createElement("p");
     description.innerText = desc;
     description.className = "desc";
     description.onclick = function(){
@@ -155,7 +156,7 @@ function makeWidget(name,id, dir, folder,desc,iconPath,divID,fav){
     }
 
     if(iconPath){
-        icon = document.createElement("img");
+        const icon = document.createElement("img");
         icon.src = url+iconPath;
         icon.onclick = function(){
             location.replace("video.html?data="+name + 
@@ -168,7 +169,7 @@ function makeWidget(name,id, dir, folder,desc,iconPath,divID,fav){
         div.appendChild(icon)
     }
 
-    heart = document.createElement("img");
+    const heart = document.createElement("img");
     heart.src = "images/heartBlank.png"
     heart.id = id+"-checkbox";
     heart.className = "heart";
@@ -189,8 +190,8 @@ function makeWidget(name,id, dir, folder,desc,iconPath,divID,fav){
 //onclick function for the check box
 //saves or unsaves the clicked video
 function favOnClick(event){
-    heart = event.srcElement;
-    src = heart.className;
+    const heart = event.srcElement;
+    const src = heart.className;
 
     if(src == "heart"){
         console.log("add");
@@ -203,7 +204,7 @@ function favOnClick(event){
 
 //adds new fav 
 function addFav(id){
-    formData = new FormData();
+    const formData = new FormData();
     formData.append("userID",urlParams.get("userID"));
     formData.append("videoID",id);
 
@@ -220,7 +221,7 @@ function addFav(id){
 
 //deletes new fav 
 function removeFav(id){
-    formData = new FormData();
+    const formData = new FormData();
     formData.append("userID",urlParams.get("userID"));
     formData.append("videoID",id);
 
@@ -260,52 +261,52 @@ function logout(){
 //filters all videos by folders
 function filterFolders(){
     
-    //clear div
-    document.getElementById("videosItems").innerText = "";
-    document.getElementById("videosItems").innerHTML = "";
+    resetItems();
 
     for (let index = 0; index < allvideos.length; index++) {
         if(allvideos[index].folder == 1){
-            fav = ((favoriteVideos.get(allvideos[index].id) ? true : false));
-            makeWidget(allvideos[index].Name, allvideos[index].id, allvideos[index].dir, allvideos[index].folder, allvideos[index].Description, allvideos[index].icon,"videosItems",fav);
+            utill(allvideos, index);
         }
     }
 }
 function filterAll(){
     
-    //clear div
-    document.getElementById("videosItems").innerText = "";
-    document.getElementById("videosItems").innerHTML = "";
+    resetItems();
+
     for (let index = 0; index < allvideos.length; index++) {
-        fav = ((favoriteVideos.get(allvideos[index].id) ? true : false));
-        makeWidget(allvideos[index].Name, allvideos[index].id, allvideos[index].dir, allvideos[index].folder, allvideos[index].Description, allvideos[index].icon,"videosItems",fav);
+        utill(allvideos, index);
     }
 }
 function filterSingle(){
     
-    //clear div
-    document.getElementById("videosItems").innerText = "";
-    document.getElementById("videosItems").innerHTML = "";
+    resetItems();
 
     for (let index = 0; index < allvideos.length; index++) {
         if (allvideos[index].folder == 0) {
-            fav = ((favoriteVideos.get(allvideos[index].id) ? true : false));
-            makeWidget(allvideos[index].Name, allvideos[index].id, allvideos[index].dir, allvideos[index].folder, allvideos[index].Description, allvideos[index].icon,"videosItems",fav);
+            utill(allvideos, index);
         }
     }
 }
 //filters Alphabetically
 function filterAbc(){
     
-    //clear div
-    document.getElementById("videosItems").innerText = "";
-    document.getElementById("videosItems").innerHTML = "";
+    resetItems();
 
     const arr = [...allvideos].sort((a, b) => a.Name.localeCompare(b.Name));
 
     for (let index = 0; index < arr.length; index++) {
-        fav = ((favoriteVideos.get(arr[index].id) ? true : false));
-        makeWidget(arr[index].Name, arr[index].id, arr[index].dir, arr[index].folder, arr[index].Description, arr[index].icon,"videosItems",fav);
+        utill(arr, index);
     }
 }
 
+function resetItems(){
+    document.getElementById("videosItems").innerText = "";
+    document.getElementById("videosItems").innerHTML = "";
+}
+
+//utillity to save repeat lines
+//dont have name
+function utill(arr, index){
+    const fav = ((favoriteVideos.get(arr[index].id) ? true : false));
+    makeWidget(arr[index].Name, arr[index].id, arr[index].dir, arr[index].folder, arr[index].Description, arr[index].icon,"videosItems",fav);
+}

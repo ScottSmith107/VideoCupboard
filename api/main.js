@@ -1,5 +1,5 @@
 const express = require('express');
-const https = require('https');
+// const https = require('https');
 const fs = require('fs');
 const data = require("./videos.js");
 
@@ -12,12 +12,12 @@ const multer = require("multer");
 const { userInfo } = require('os');
 
 //ssl certs
-var key = fs.readFileSync(__dirname + '/../certs/selfsigned.key');
-var cert = fs.readFileSync(__dirname + '/../certs/selfsigned.crt');
-var options = {
-  key: key,
-  cert: cert
-};
+// var key = fs.readFileSync(__dirname + '/../certs/selfsigned.key');
+// var cert = fs.readFileSync(__dirname + '/../certs/selfsigned.crt');
+// var options = {
+//   key: key,
+//   cert: cert
+// };
 
 //import diff loctions
 const fav = require('./apiMethods/fav');
@@ -139,8 +139,12 @@ app.use(express.static(videoPath));
 app.use(express.static(userIconPath));
 app.use(express.static(websitePath));
 
-var server = https.createServer(options, app);
+// var server = https.createServer(options, app);
 
-server.listen(port, () => {
+// server.listen(port, () => {
+//     console.log(`Example app listening on port ${port}!`);
+// });
+
+app.listen(port, () => {
     console.log(`Example app listening on port ${port}!`);
 });

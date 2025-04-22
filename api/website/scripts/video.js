@@ -1,3 +1,4 @@
+// let url = "https://"+IP+":3000/";
 let url = "http://"+IP+":3000/";
 let urlParams = new URLSearchParams(window.location.search);
 let arrayOfContents = [];
@@ -7,32 +8,32 @@ let userID;
 let video;
 let _video;
 let name;
+let fav;
 let recents = new Map();
 // Function to get URL parameters
 //serves as onload function
 async function getQueryParam() {
-    title = document.getElementById("title");
+    const title = document.getElementById("title");
     name = urlParams.get("data");
     videoID = urlParams.get("index");
     userID = urlParams.get("userID");
-    folder = urlParams.get("folder");
+    const folder = urlParams.get("folder");
     dir = urlParams.get("dir");
+    fav = await getFavs(userID,videoID);
 
     configEdit(videoID);
 
     title.innerText = name.split(".mp4")[0];
     
-    fav = await getFavs(userID,videoID);
-
+    recent(userID,videoID);
     //check if the passed name is a folder
     if(folder == 1){
         addFolderButtons(videoID);
-        recent(userID,videoID)
         document.body.style.backgroundImage = "url('../images/folderBackground.jfif')";
     }
     else{//if not a folder then play the video
-        play(videoID)
-        findFolder(dir)
+        play(videoID);
+        findFolder(dir);
         document.body.style.backgroundImage = "url('../images/folderBackground.jfif')";
     }
 
@@ -42,7 +43,7 @@ async function getQueryParam() {
 
 //gets the recent videos and save to map
 function recent(userID,videoID){        
-    formData = new FormData();
+    const formData = new FormData();
     formData.append("userID",userID);
 
     fetch(url+"getRecent", {
@@ -55,7 +56,7 @@ function recent(userID,videoID){
             //save all recents to data
             if(data.length > 0){
                 for (let i = 0; i < data.length; i++) {
-                    video = data[i];
+                    const video = data[i];
                     recents.set(video.videoID,true)
                 }
             }
@@ -67,17 +68,17 @@ function recent(userID,videoID){
 }
 
 //adds "removeFolder" button under the folder title
-function addFolderButtons(index){
-    folderID = index;
+function addFolderButtons(videoID){
+    folderID = videoID;
 
     //remove folder button
-    removeButton = document.createElement("button");
+    const removeButton = document.createElement("button");
     removeButton.id = "removeFolder";
     removeButton.innerText = "Remove Folder";
     removeButton.onclick = removeFolder;
 
     //add to folder button
-    addVideo = document.createElement("button");
+    const addVideo = document.createElement("button");
     addVideo.id = "addVideo";
     addVideo.innerText = "Add Video";
     addVideo.addEventListener("click", function() {
@@ -85,38 +86,38 @@ function addFolderButtons(index){
     });
 
     //file input that will be hidden
-    input = document.createElement("input");
+    const input = document.createElement("input");
     input.type = "file";
     input.accept = ".mp4,.mp3";
     input.multiple = true;
     input.id = "fileInput";
     input.addEventListener("change", addNewVideo);
 
-    div = document.getElementById("removeButton");
+    const div = document.getElementById("removeButton");
     div.appendChild(removeButton);
     div.appendChild(input);
     div.appendChild(addVideo);
 }
 
 // play passed video
-function play(index) {
-    videoID = index;
+function play(videoID) {
+    videoID = videoID;
     // console.log(index);
-    div = document.getElementById("playerDiv");
+    const div = document.getElementById("playerDiv");
     //setting up video tag
-    videoPlayer = document.createElement("video");
+    let videoPlayer = document.createElement("video");
     videoPlayer.autoplay = true;
     videoPlayer.controls = true;
     videoPlayer.className  = "videoPlayer";
     videoPlayer.id = "videoPlayer";
     //get volume pref from cookies
     if(document.cookie){
-        volume = document.cookie;
+        var volume = document.cookie;
         volume = volume.split("=")[1];
         videoPlayer.volume = volume;
     }
     video = videoPlayer
-    setUrl(index,videoPlayer)
+    setUrl(videoID,videoPlayer)
     video.addEventListener("progress", () =>{
         var time = video.currentTime;
         updateTimestamp(time,videoID); 
@@ -133,10 +134,10 @@ function play(index) {
     div.appendChild(videoPlayer);
 
     //add buttons
-    buttonDiv = document.createElement("div");
+    const buttonDiv = document.createElement("div");
     buttonDiv.className = "playerButtons";
-    next = document.createElement("button");
-    prev = document.createElement("button");
+    const next = document.createElement("button");
+    const prev = document.createElement("button");
     next.onclick = nextPressed;
     prev.onclick = prevPressed;
     next.innerText = "Next";
@@ -145,9 +146,9 @@ function play(index) {
     prev.id = "prevButton";
 
     //add heart
-    heart = document.createElement("img");
+    const heart = document.createElement("img");
     heart.src = "images/heartBlank.png"
-    heart.id = index+"-checkbox";
+    heart.id = videoID + "-checkbox";
     heart.className = "heart";
     heart.src = ((fav) ? "images/heartFilled.png" : "images/heartBlank.png"); 
     heart.className = ((fav) ? "heartFilled" : "heart"); 
@@ -155,7 +156,7 @@ function play(index) {
     heart.addEventListener("click", favOnClick);
 
     //cast button
-    cast = document.createElement("google-cast-launcher");
+    const cast = document.createElement("google-cast-launcher");
     cast.id = "castbutton";
 
     buttonDiv.appendChild(prev);
@@ -173,7 +174,7 @@ function volumeEvent(event){
 
 //gets the full path for the video request from the index
 function setUrl(index,videoPlayer) {
-    searchUrl = new URL(url+"path");
+    const searchUrl = new URL(url+"path");
     searchUrl.searchParams.append("videoIndex",index);
 
     fetch(searchUrl)
@@ -183,7 +184,7 @@ function setUrl(index,videoPlayer) {
         console.log(data);
         console.log("");
         _video = data[0];
-        source = document.createElement("source");
+        const source = document.createElement("source");
         source.src = url + data[0].Full_path;
         source.type = "video/mp4";
         source.id = "currVideo";
@@ -196,7 +197,7 @@ function setUrl(index,videoPlayer) {
 
 //checks if the user has watched this video before
 function checkPlayTime(videoPlayer) {
-    formData = new FormData();
+    const formData = new FormData();
     formData.append("userID",userID);
     formData.append("videoID",videoID);
     
@@ -218,15 +219,15 @@ function checkPlayTime(videoPlayer) {
 
 //makes request for all items within a folder from the passed in index
 function findFolder(index){
-    folderUrl = new URL(url+"folder");
+    const folderUrl = new URL(url+"folder");
     folderUrl.searchParams.append("folderIndex",index);
     fetch(folderUrl)
     .then(response => response.json())
     .then(data =>{
         arrayOfContents = data;
-        arr = data;
+        const arr = data;
         for (let index = 0; index < arr.length; index++) {
-            let recent = ((recents.has(arr[index].id)) ? true : false ) 
+            const recent = ((recents.has(arr[index].id)) ? true : false ) 
             makeWidget(arr[index].Name, arr[index].id, arr[index].dir, arr[index].folder,recent);
         }
     })
@@ -237,11 +238,11 @@ function findFolder(index){
 
 //makes video widget //I didnt feel like using react so here it is done
 function makeWidget(name,id,dir,folder,recent){
-    main = document.getElementById("videosDiv");
-    div = document.createElement("div");
+    const main = document.getElementById("videosDiv");
+    const div = document.createElement("div");
     div.id = "lineDiv";
 
-    content = document.createElement("a");
+    const content = document.createElement("a");
     content.href = "video.html?data="+name + 
                "&index=" + id +
                "&dir=" + dir +
@@ -253,7 +254,7 @@ function makeWidget(name,id,dir,folder,recent){
 
     if(recent){
         console.log("recents");
-        recentCheck = document.createElement("img");
+        const recentCheck = document.createElement("img");
         recentCheck.className = "recent";
         recentCheck.src = "images/recentCheck.webp";
         div.appendChild(recentCheck);
@@ -264,7 +265,7 @@ function makeWidget(name,id,dir,folder,recent){
 
 //buttons
 function prevPressed(){
-    index = findIndex(arrayOfContents, _video.id);
+    const index = findIndex(arrayOfContents, _video.id);
 
     if(index != 0){
         location.replace(document.querySelectorAll(".nextup")[index-1].href);
@@ -272,14 +273,14 @@ function prevPressed(){
 }
 function nextPressed(){
     console.log("next");
-    index = findIndex(arrayOfContents, _video.id);
+    const index = findIndex(arrayOfContents, _video.id);
 
     if(index < arrayOfContents.length-1){
         var newVideo = arrayOfContents[index+1];
         _video = newVideo;
         
         //setting gloabls to new video 
-        title = document.getElementById("title");
+        const title = document.getElementById("title");
         title.innerText = newVideo.Name.split(".mp4")[0];
         videoID = newVideo.id;
         configEdit(videoID);
@@ -302,7 +303,7 @@ function findIndex(arr, id){
 //onclick for removeFolder button
 function removeFolder(){
     if(confirm("Are you sure you wanna delete this folder?")){
-        deletUrl = new URL(url+"removeDir");
+        const deletUrl = new URL(url+"removeDir");
         deletUrl.searchParams.append("id", folderID);
         fetch(deletUrl, {method: "DELETE"})
         .then(response => response.json())
@@ -319,8 +320,6 @@ function removeFolder(){
 //send new timestamp to the db
 let go = true;
 function updateTimestamp(time,id){
-    console.log(time);
-    console.log(id);
     time = Math.round(time);
     
     //dont bother saving if its less then 1 time
@@ -333,9 +332,7 @@ function updateTimestamp(time,id){
         }
         go = false;
 
-        console.log("fireed");
-
-        formData = new FormData();
+        const formData = new FormData();
         formData.append("userID",userID);
         formData.append("videoID",id);
         formData.append("timestamp",time);
@@ -355,9 +352,9 @@ function updateTimestamp(time,id){
 //when the video is ended set timstamp to 0
 function videoEnded(event){
     console.log("ended");
-    formData = new FormData();
+    const formData = new FormData();
     formData.append("userID",userID);
-    formData.append("videoID",id);
+    formData.append("videoID",videoID);
     formData.append("timestamp",0);
     
     fetch(url+"updateTimestamp", {
@@ -374,8 +371,8 @@ function videoEnded(event){
 //onclick function for the check box
 //saves or unsaves the clicked video
 function favOnClick(event){
-    heart = event.srcElement;
-    src = heart.className;
+    const heart = event.srcElement;
+    const src = heart.className;
 
     if(src == "heart"){
         console.log("add");
@@ -387,11 +384,11 @@ function favOnClick(event){
 }
 //adds new fav 
 function addFav(id){
-    heart = document.getElementById(id+"-checkbox");
+    const heart = document.getElementById(id+"-checkbox");
     heart.src = "images/heartFilled.png";
     heart.className = "heartFilled";
 
-    formData = new FormData();
+    const formData = new FormData();
     formData.append("userID",urlParams.get("userID"));
     formData.append("videoID",id);
 
@@ -407,12 +404,12 @@ function addFav(id){
 }
 //adds new fav 
 function removeFav(id){
-    heart = document.getElementById(id+"-checkbox");
+    const heart = document.getElementById(id+"-checkbox");
     heart.src = "images/heartBlank.png";
     heart.className = "heart";
 
 
-    formData = new FormData();
+    const formData = new FormData();
     formData.append("userID",urlParams.get("userID"));
     formData.append("videoID",id);
 
@@ -480,7 +477,7 @@ function addNewVideo(event){
         }
     }
 
-    formData = new FormData();
+    const formData = new FormData();
     formData.append("videoID",videoID);
     formData.append("folderName",name);
     formData.append("description"," ");
@@ -515,7 +512,7 @@ function createSocket(){
     document.getElementById("progress").innerText = "Connecting . . . ";
 
     //add end watch together 
-    endButton = document.createElement("button");
+    const endButton = document.createElement("button");
     endButton.id = "endWatchButton"
     endButton.innerText = "End Watch Together"
     endButton.onclick = function(){
@@ -524,7 +521,7 @@ function createSocket(){
     }
     document.getElementById("headerButtons").appendChild(endButton);
 
-    formData = new FormData();
+    const formData = new FormData();
     formData.append("id",videoID);
 
     fetch(url + "openSocket", {
@@ -539,7 +536,7 @@ function openSocket(response){
     document.getElementById("progress").innerText = "";
     console.log("watch togeather open on: " + response);
 
-    socket = new WebSocket('ws://localhost:'+response);
+    const socket = new WebSocket('ws://localhost:'+response);
     _socket = socket;
     socket.onopen = function(event) {
       // Handle connection open
@@ -558,7 +555,7 @@ function openSocket(response){
             console.log("pausing");
 
         }else if(message.split("seek:").length > 1){
-            time = message.split("seek: ")[1];
+            const time = message.split("seek: ")[1];
             console.log("skipping to: "+ time);
             //checking if already at correct time //avoids loop
             if(video.currentTime != time){
@@ -573,7 +570,6 @@ function openSocket(response){
 }
 
 function sendWebsocket(){
-  meow = document.getElementById("timmy").value;
   _socket.send(message); 
 }
 

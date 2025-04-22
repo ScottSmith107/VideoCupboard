@@ -1,4 +1,5 @@
-let url = "https://"+IP+":3000/";
+// let url = "https://"+IP+":3000/";
+let url = "http://"+IP+":3000/";
 let users = [];
 let icons = [];
 //get all videos from the server
@@ -7,7 +8,7 @@ let getUsers = () => {
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            users = data;
+            const users = data;
             for (let index = 0; index < users.length; index++) {
                 makeWidget(users[index].name, users[index].userID,users[index].icon);
             }
@@ -19,19 +20,19 @@ let getUsers = () => {
 
 //makes video widget //I didnt feel like using react so here it is done
 function makeWidget(name,id,icon){
-    main = document.getElementById("userDiv");
-    div = document.createElement("div");
+    const main = document.getElementById("userDiv");
+    const div = document.createElement("div");
     div.id = "user";
     div.className = "user";
 
     //user link
-    content = document.createElement("p");
+    const content = document.createElement("p");
     content.href = "home.html?userID="+id;   
     content.innerText = name;
     content.className = "userContent";
 
     //edit user link
-    edit = document.createElement("Button");
+    const edit = document.createElement("Button");
     edit.onclick = function(){
         location.replace("editUser.html?userID="+id);
     }    
@@ -48,36 +49,36 @@ function makeWidget(name,id,icon){
 //creates form to add user
 function makeForm(){
     //so it doesnt double up forms
-    tmp = document.getElementById("addUserDiv");
+    const tmp = document.getElementById("addUserDiv");
     if(tmp){
         document.getElementById("body").removeChild(tmp);
     }
 
-    body = document.getElementById("body");
+    const body = document.getElementById("body");
 
-    div = document.createElement("div");
+    const div = document.createElement("div");
     div.id = "addUserDiv";
     div.className = "addUserDiv";
 
-    controlesDiv = document.createElement("div");
+    const controlesDiv = document.createElement("div");
     controlesDiv.className = "controlesDiv";
 
-    username = document.createElement("input");
+    const username = document.createElement("input");
     username.id = "username";
     username.className = "addFormUsername";
 
-    label = document.createElement("label");
+    const label = document.createElement("label");
     label.className = "label";
     label.setAttribute('for', 'username');
     label.innerText = "Username:";
     label.style.color = "black";
 
-    button = document.createElement("button");
+    const button = document.createElement("button");
     button.innerText = "add user";
     button.id = "addButton";
     button.onclick = addUser;
 
-    addImage = document.createElement("button");
+    const addImage = document.createElement("button");
     addImage.innerText = "Add new Icon";
     addImage.id = "addImage";
     addImage.addEventListener("click", function() {
@@ -85,7 +86,7 @@ function makeForm(){
         document.getElementById("fileInput").click();
     });
 
-    iconDiv = getIcons();
+    const iconDiv = getIcons();
 
     controlesDiv.appendChild(label);
     controlesDiv.appendChild(username);
@@ -100,12 +101,12 @@ function makeForm(){
 //adds made user to the db
 function addUser(){
 
-    username = document.getElementById("username").value;
-    selectedRadio = allIcons = document.querySelectorAll(".iconChecked")[0];
+    const username = document.getElementById("username").value;
+    const selected = allIcons = document.querySelectorAll(".iconChecked")[0];
     
-    if(selectedRadio && username){
-        iconID = selectedRadio.id;
-        formData = new FormData();
+    if(selected && username){
+        const iconID = selected.id;
+        const formData = new FormData();
         formData.append("username",username);
         formData.append("iconID",iconID);
         
@@ -129,7 +130,7 @@ function addUser(){
 //gets icon from id
 function setIcon(iconID,div,name){
 
-    formData = new FormData();
+    const formData = new FormData();
     formData.append("iconID",iconID);
     
     fetch(url+"getIcon", {
@@ -138,9 +139,9 @@ function setIcon(iconID,div,name){
     })
     .then(response => response.json())
     .then(data => {
-        path = data[0].fullPath;
+        const path = data[0].fullPath;
 
-        img = document.createElement("img");
+        const img = document.createElement("img");
         img.id = "userIcon";
         img.className = "userIcon";
         img.src = url + path;
@@ -156,53 +157,33 @@ function setIcon(iconID,div,name){
 
 }
 
-//deletes user
-function removeUser(){
-
-    //get user id some way
-    id = 0;
-
-    formData = new FormData();
-    formData.append("id",id);
-    
-    fetch(url+"removeUser", {
-        method: "DELETE",
-        body: formData,
-    })
-    .then(response => response.json())
-    .then()
-    .catch(error => {
-        console.error("couldnt delete user", error);
-    });
-}
-
 //gets all the icons from the db and places them all in a div
 //returns the div
 function getIcons(){
-    let div = document.createElement("div");
+    const  div = document.createElement("div");
     div.className = "iconsDiv";
 
     fetch(url+"allIcons")
     .then(response => response.json())
     .then(data => {
-        icons = data;
+        const icons = data;
         console.log(data);
         for (let i = 0; i < data.length; i++) {
-            img = document.createElement("img");
+            const img = document.createElement("img");
             img.src = url + data[i].fullPath;
             img.id = data[i].iconID;
             img.className = "iconNew";
             img.onclick = function(){   
                 
                 //resets icon that has been selected 
-                allIcons = document.querySelectorAll(".iconChecked")
+                const allIcons = document.querySelectorAll(".iconChecked")
                 if(allIcons.length>0){
                     allIcons[0].className="iconNew";
                 }
 
                 //selects new icon
-                id = data[i].iconID;
-                icon = document.getElementById(id);
+                const id = data[i].iconID;
+                const icon = document.getElementById(id);
                 if(icon.className = "iconNew"){
                     icon.className="iconChecked";
                 }
@@ -222,9 +203,9 @@ function getIcons(){
 //adds new iamge to the icon list
 function addIcon(event){
     console.log(event.target.files);
-    files = event.target.files;
+    const files = event.target.files;
 
-    formData = new FormData();
+    const formData = new FormData();
     formData.append('icon', "icon");
     for (let i = 0; i < files.length; i++) {
         formData.append('files', files[i]);

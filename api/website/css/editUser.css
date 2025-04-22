@@ -17,6 +17,11 @@ button{
     background-color: black;
     cursor:pointer;
 }
+
+#backButton{
+    margin-right: auto;
+}
+
 .mainIcon{
     order: 1;
 }
@@ -47,12 +52,12 @@ button{
     gap: 10px;
     width: fit-content;
 
-    width: 30%;
+    width: 50%;
 }
 .icon{
     width: calc(100% / 3 - 20px);
     border-radius: 18%;
-    border-color: #4E2C5D;
+    border-color: black;
     border-style: solid;
 
 }

@@ -173,6 +173,19 @@ exports.getRecent = function getRecent(userID){
     });
 }
 
+//gets gets the most recent 10 videos from watching from id
+exports.getRecentLimit = function getRecentLimit(userID){
+    return new Promise((resolve, reject) => {
+        db.query('SELECT * FROM video JOIN watching ON video.id = watching.videoID WHERE watching.userId = ? ORDER BY whenUploaded DESC LIMIT 8', [userID], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
 //updates username and icon //fix\\
 exports.updateUser = function updateUser(name,iconID,userID){
     return new Promise((resolve, reject) => {
