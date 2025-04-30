@@ -1,5 +1,5 @@
-// let url = "https://"+IP+":3000/";
-let url = "http://"+IP+":3000/";
+let url = "https://"+IP+":3000/";
+// let url = "http://"+IP+":3000/";
 let files;
 let icon;
 
@@ -104,4 +104,10 @@ function display(response){
     document.getElementById("error").innerText = "Upload Completed";
     files =[];
     icon = [];
+}
+
+let userID;
+function onload(){
+    const urlParams = new URLSearchParams(window.location.search);
+    userID = urlParams.get("userID");
 }

@@ -1,11 +1,11 @@
-// let url = "https://"+IP+":3000/";
-let url = "http://"+IP+":3000/";
+let url = "https://"+IP+":3000/";
+// let url = "http://"+IP+":3000/";
 let user;
 const urlParams = new URLSearchParams(window.location.search);
 // Function to get URL parameters
-function getQueryParam() {
+async function getQueryParam() {
     const userID = urlParams.get("userID");
-    user = getUser(userID);
+    user = await getUser(userID);
 }
 
 //gets the user from the db
@@ -20,7 +20,7 @@ function getUser(userID){
     })
     .then(response => response.json())
     .then(data => {
-        const user = data[0];
+        user = data[0];
         displayUser(user);
         getIcons();
     })
@@ -42,6 +42,9 @@ function getIcons(){
     fetch(url+"allIcons")
     .then(response => response.json())
     .then(data => {
+        console.log("icons");
+        console.log(data);
+        console.log(user);
         for (let i = 0; i < data.length; i++) {
 
             //checks weather this is the user or not

@@ -14,9 +14,11 @@
   </head>
   <body onload=onload() style="background-image: url(images/shelfBack.png)">
     <div id="navBar">
-      <button id="uploadButton" onclick=gotoUpload()>Upload New Video</button>
       <h1>Video Cupboard</h1>
-      <button id="logoutButton" onclick=logout() > LogOut</button>
+      <div class="navButtons"> 
+        <button id="uploadButton" onclick=gotoUpload()>Upload New Video</button>
+        <button id="logoutButton" onclick=logout() > LogOut</button>
+      </div>
     </div>
 
     <div id="recent" >

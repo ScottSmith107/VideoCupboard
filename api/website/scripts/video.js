@@ -1,5 +1,5 @@
-// let url = "https://"+IP+":3000/";
-let url = "http://"+IP+":3000/";
+let url = "https://"+IP+":3000/";
+// let url = "http://"+IP+":3000/";
 let urlParams = new URLSearchParams(window.location.search);
 let arrayOfContents = [];
 let folderID;
@@ -33,7 +33,6 @@ async function getQueryParam() {
     }
     else{//if not a folder then play the video
         play(videoID);
-        findFolder(dir);
         document.body.style.backgroundImage = "url('../images/folderBackground.jfif')";
     }
 
@@ -60,7 +59,7 @@ function recent(userID,videoID){
                     recents.set(video.videoID,true)
                 }
             }
-            findFolder(videoID)
+            findFolder(urlParams.get("dir"))
         })
         .catch(error => {
             console.error("couldnt make connection to database", error);
@@ -226,10 +225,16 @@ function findFolder(index){
     .then(data =>{
         arrayOfContents = data;
         const arr = data;
+        console.log("all videos in folder");
+        console.log(data);
+        //reset the div
+        document.getElementById("videosDiv").innerHTML = "";
+
         for (let index = 0; index < arr.length; index++) {
             const recent = ((recents.has(arr[index].id)) ? true : false ) 
             makeWidget(arr[index].Name, arr[index].id, arr[index].dir, arr[index].folder,recent);
         }
+
     })
     .catch(error => {
         console.error("couldnt make connection to database", error);
@@ -273,7 +278,9 @@ function prevPressed(){
 }
 function nextPressed(){
     console.log("next");
-    const index = findIndex(arrayOfContents, _video.id);
+    let index = findIndex(arrayOfContents, _video.id);
+    console.log(_video);
+    console.log(arrayOfContents);
 
     if(index < arrayOfContents.length-1){
         var newVideo = arrayOfContents[index+1];
@@ -560,9 +567,10 @@ function openSocket(response){
             //checking if already at correct time //avoids loop
             if(video.currentTime != time){
                 video.currentTime = time;
+                video.play();
             }
         }else{ //buffering or anything else
-            video.pause();
+            // video.pause();
             console.log("other user buffering");
         }
     };

@@ -63,6 +63,7 @@ button{
 }
 
 .nameDiv{
+  height: 100%;
   padding: 5px 5px 0px 5px;
 
   display: grid;
@@ -108,15 +109,17 @@ a:visited {
 }
 
 p{
+  color: black;
   cursor:pointer;
 }
 
 #videosLabel{
+  color: black;
   padding-right: 7px;
 }
 
 .removeAll:hover{
-  color: #4E2C5D;
+  color: white;
 }
 
 @media (max-width: 1000px) {

@@ -1,4 +1,4 @@
-let url = "http://"+IP+":3000/";
+let url = "https://"+IP+":3000/";
 
 let _framework;
 let player;
@@ -37,13 +37,15 @@ window['__onGCastApiAvailable'] = function(isAvailable) {
 let videoIndex = 0;
 let _queue;
 
-function setup(){
-  _queue = createQueue();
+async function setup(){
+  _queue = await createQueue();
   console.log(_queue);
   playVideo(_queue[0]);
 }
 
 function playVideo(media){
+
+  console.log(media);
 
   const request = new chrome.cast.media.LoadRequest(media);
 
@@ -55,7 +57,10 @@ function playVideo(media){
     console.log("media loaded"); 
 
    },
-   function(errorCode) { console.log('Error code: ' + errorCode); }
+   function(errorCode) { 
+    console.log(request); 
+    console.log('Error code: ' + errorCode); 
+   }
   )
   .then(play);
 }
@@ -77,11 +82,15 @@ function createQueue(){
       
       // needs testing \\  v v v v v v 
 
+      console.log("url: ", fullUrl); 
+      console.log("video"); 
+      console.log(video); 
+
       //checking fileType
       if(video.Name.split(".")[video.Name.split(".").length-1] == "mp3" || video.Name.split(".")[video.Name.split(".").length-1] == "MP3"){
-        const media = new chrome.cast.media.MediaInfo(fullUrl, 'audio/mp3');
+        var media = new chrome.cast.media.MediaInfo(fullUrl, 'audio/mp3');
       }else{
-        const media = new chrome.cast.media.MediaInfo(url + video.Full_path, 'video/mp4');
+        var media = new chrome.cast.media.MediaInfo(fullUrl, 'video/mp4');
       }
       queue.push(media);
     }

@@ -146,6 +146,10 @@ a:visited {
     /* background-color: white; */
 }
 
+.userEdit, .userContent, .addNewUser, #addButton , #addImage, #username, .label{
+    font-size: 22px;
+}
+
 @media (max-width: 1000px) {
     #user{
         width: 100%;
@@ -175,5 +179,6 @@ a:visited {
     .addUserDiv{
         border-radius: 2%;
     }
+
 
 }
