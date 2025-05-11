@@ -64,11 +64,12 @@ const storage = multer.diskStorage({
                 //make the new dir with fs
                 fs.mkdir(newFolder, { recursive: true }, (err) => {
                     if (err) {
-                      return cb(err);
+                        return cb(err);
                     }
                     // adds new folder to db 
                     console.log("iconpath: ",iconPath);
                     data.uploadFile(folderName ,desc ,0 ,folderName,1,iconPath);
+                    console.log(newFolder);
                     cb(null, newFolder);
                 });
             }else{
@@ -149,17 +150,13 @@ app.post('/upload-folder', upload.array('files'),async (req, res) => {
     if(files[0].mimetype.split("/")[0] == "image"){
         iconPath = "videoIcon/"+files[0].originalname;
         i = 1;
-    }else{
-        tmp = await data.getPath(videoID);
-        iconPath = tmp[0].icon
-
     }
-
 
     //folder name for dir
     folderName = req.body.folderName;
     dir =  await data.getIdFromName(folderName);
-
+    console.log("dir");
+    console.log(dir);
     //adds each file by itself
     for (; i < files.length; i++) {
         file = files[i];

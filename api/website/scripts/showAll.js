@@ -1,5 +1,6 @@
-let url = "https://"+IP+":3000/";
+// let url = "https://"+IP+":3000/";
 // let url = "http://"+IP+":3000/";
+let url = "https://desktop-4krngi0.taileab52c.ts.net/";
 let allvideos =[];
 let favoriteVideos = new Map();
 let userID;
@@ -13,11 +14,11 @@ function onload(){
     //0 is favs
     //1 is recents      //this was done bcause i didnt wanna make a new page and the page could be dual use so easily
     if(type == 1){
-        document.getElementById("videosLabel").innerText = "All Recently Watched Videos";
+        document.getElementById("videosLabel").innerText = "Recently Watched ";
         getFavorites(userID)
         recent(userID);
     }else if(type == 0){
-        document.getElementById("videosLabel").innerText = "All Favorited Videos";
+        document.getElementById("videosLabel").innerText = "Favorites";
         favorites(userID);
     }
 

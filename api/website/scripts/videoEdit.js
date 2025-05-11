@@ -29,7 +29,7 @@ function getVideo(videoID){
 
 //displays the video
 function displayVideo(video){
-    const video = video[0];
+    video = video[0];
 
     const name = document.getElementById("videoName");
     name.value  = video.Name;
