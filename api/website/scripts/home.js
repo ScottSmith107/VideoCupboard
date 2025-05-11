@@ -19,13 +19,14 @@ function onload(){
         .then(response => response.json())
         .then(data => {
             console.log("favorites");
+            console.log(window);
             console.log(data);
             if(data.length > 0){
                 //reset container
                 document.getElementById("favoritesItems").innerHTML ="";
                 //displays all on phone but only 3 on desktop
-                const phoneSize = window.matchMedia('(max-width: 1000px)');
-                const halfScreen = window.matchMedia('(min-width: 1000px)');
+                const phoneSize = window.matchMedia('(max-width: 800px)');
+                const halfScreen = window.matchMedia('(min-width: 801px)');
                 const fullScreen = window.matchMedia('(min-width: 1400px)');
                 //adds all to widget
                 for (let i = 0; i < data.length; i++) {
@@ -90,7 +91,7 @@ function recent(userID){
     formData = new FormData();
     formData.append("userID",userID);
 
-    const phoneSize = window.matchMedia('(max-width: 1000px)');
+    const phoneSize = window.matchMedia('(max-width: 800px)');
     if(phoneSize.matches){
         fetch(url+"getRecent", {
             method: "PUT",
@@ -130,7 +131,7 @@ function recent(userID){
                 //clear div
                 document.getElementById("recentItems").innerHTML ="";
                 //diff sizes for diff screens
-                const halfScreen = window.matchMedia('(min-width: 1000px)');
+                const halfScreen = window.matchMedia('(min-width: 801px)');
                 const fullScreen = window.matchMedia('(min-width: 1400px)');
                 //add widgets
                 for (let i = 0; i < data.length; i++) {

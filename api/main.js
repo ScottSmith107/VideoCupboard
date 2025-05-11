@@ -1,5 +1,4 @@
 const express = require('express');
-const https = require('https');
 const fs = require('fs');
 const data = require("./videos.js");
 
@@ -10,14 +9,6 @@ let userIconPath = path.join(__dirname, "icons")
 
 const multer = require("multer");
 const { userInfo } = require('os');
-
-//ssl certs
-// var key = fs.readFileSync(__dirname + '/../certs/selfsigned.key');
-// var cert = fs.readFileSync(__dirname + '/../certs/selfsigned.crt');
-// var options = {
-//   key: key,
-//   cert: cert
-// };
 
 //import diff loctions
 const fav = require('./apiMethods/fav');
@@ -123,28 +114,15 @@ app.use('/', user);
 app.use('/', video);
 app.use('/', websocket);
 
-
-require('dotenv').config();
-app.get('/config.js', (req, res) => {
-    res.setHeader('Content-Type', 'application/javascript');
-    res.send(`window.APP_CONFIG = { IP: "${process.env.IP}" };`);
-});
 ///sends all files listed in the videos dir back to caller as json
 app.get('/', async (req, res) => {
     res.sendFile(path.join(websitePath,"index.html"));
 });
 
-
-
 app.use(express.static(videoPath));
 app.use(express.static(userIconPath));
 app.use(express.static(websitePath));
 
-// var server = https.createServer(options, app);
-
-// server.listen(port, () => {
-//     console.log(`Example app listening on port ${port}!`);
-// });
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}!`);

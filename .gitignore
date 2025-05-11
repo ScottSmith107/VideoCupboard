@@ -1,3 +1,4 @@
 node_modules/
 certs/
 api/.env
+videos/
