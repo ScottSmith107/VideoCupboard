@@ -80,44 +80,34 @@ function createQueue(){
 
     //check if folder
     if(video.folder == 0){
-      // let path = video.Full_path.replace(/\\/g, '/');
-      // path = encodeURI(path);
-      // const fullUrl = url + path;
+      let path = video.Full_path.replace(/\\/g, '/');
+      path = encodeURI(path);
+      const fullUrl = url + path;
 
       // console.log("url: ", fullUrl); 
       // console.log("video"); 
       // console.log(video); 
 
-      //checking fileType
-      // if(video.Name.split(".")[video.Name.split(".").length-1] == "mp3" || video.Name.split(".")[video.Name.split(".").length-1] == "MP3"){
-      //   var media = new chrome.cast.media.MediaInfo(fullUrl, 'audio/mp3');
-      //   media.streamType = chrome.cast.media.StreamType.BUFFERED;
-      //   media.contentUrl = media.contentId;
-      //   media.metadata = new chrome.cast.media.GenericMediaMetadata();
-      //   media.metadata.title = video.Name;
-      //   media.autoplay = true;
-      //   media.preloadTime = 10;
-      //   media.startTime = 0;
-      // }else{
-      //   var media = new chrome.cast.media.MediaInfo(fullUrl, 'video/mp4');
-      //   media.contentUrl = media.contentId;
-      //   media.streamType = chrome.cast.media.StreamType.BUFFERED;
-      //   media.metadata = new chrome.cast.media.GenericMediaMetadata();
-      //   media.metadata.title = video.Name;
-      //   media.autoplay = true;
-      //   media.preloadTime = 10;
-      //   media.startTime = 0;
-      // }
-
-      var currentMediaURL = "https://storage.googleapis.com/automotive-media/Jazz_In_Paris.mp3";
-      var media = new chrome.cast.media.MediaInfo(currentMediaURL, "video/mp4");
-      media.contentUrl = media.contentId;
-      media.streamType = chrome.cast.media.StreamType.BUFFERED;
-      media.metadata = new chrome.cast.media.GenericMediaMetadata();
-      media.metadata.title = video.Name;
-      media.autoplay = true;
-      media.preloadTime = 10;
-      media.startTime = 0;
+      // checking fileType
+      if(video.Name.split(".")[video.Name.split(".").length-1] == "mp3" || video.Name.split(".")[video.Name.split(".").length-1] == "MP3"){
+        var media = new chrome.cast.media.MediaInfo(fullUrl, 'audio/mp3');
+        media.streamType = chrome.cast.media.StreamType.BUFFERED;
+        media.contentUrl = media.contentId;
+        media.metadata = new chrome.cast.media.GenericMediaMetadata();
+        media.metadata.title = video.Name;
+        media.autoplay = true;
+        media.preloadTime = 10;
+        media.startTime = 0;
+      }else{
+        var media = new chrome.cast.media.MediaInfo(fullUrl, 'video/mp4');
+        media.contentUrl = media.contentId;
+        media.streamType = chrome.cast.media.StreamType.BUFFERED;
+        media.metadata = new chrome.cast.media.GenericMediaMetadata();
+        media.metadata.title = video.Name;
+        media.autoplay = true;
+        media.preloadTime = 10;
+        media.startTime = 0;
+      }
       queue.push(media);
     }
   }
@@ -129,57 +119,63 @@ function play(){
   
   player = new _framework.RemotePlayer();
   playerController = new _framework.RemotePlayerController(player);
+    
+  //event for timstamping
+  playerController.addEventListener(
+    _framework.RemotePlayerEventType.CURRENT_TIME_CHANGED,
+    function() {
+      console.log("CURRENT_TIME_CHANGED");
+      var time = player.currentTime;
+        if(videoIndex > arrayOfContents.length){
   
-
-  //open later for timstamping \\
-
-  //add listeners 
-  // playerController.addEventListener(
-  //   _framework.RemotePlayerEventType.CURRENT_TIME_CHANGED,
-  //   function() {
-  //     console.log("CURRENT_TIME_CHANGED");
-  //     var time = player.currentTime;
-  //       if(videoIndex > arrayOfContents.length){
-  
-  //       }
-  //       else if(videoIndex == arrayOfContents.length){
-  //         updateTimestamp(time,arrayOfContents[videoIndex-1].id);
-  //       }else{
-  //         updateTimestamp(time,arrayOfContents[videoIndex].id);
-  //       }
-  //   }
-  // );
+        }
+        else if(videoIndex == arrayOfContents.length){
+          updateTimestamp(time,arrayOfContents[videoIndex-1].id);
+        }else{
+          updateTimestamp(time,arrayOfContents[videoIndex].id);
+        }
+    }
+  );
 
   playerController.addEventListener(
     _framework.RemotePlayerEventType.PLAYER_STATE_CHANGED,
     function(event) {
         console.log('PLAYER_STATE_CHANGED TO ' + player.playerState);
         if (player.playerState === 'IDLE') {
-          console.log('media ended');
-          
-          videoIndex++;
-          if(videoIndex <= (_queue.length-1)){
-            console.log('playing next in queue');
-            console.log("index: " + videoIndex);
-            console.log(_queue[videoIndex]);
-            playVideo(_queue[videoIndex]);
-          }else{
-            console.log("end of queue reached");
+
+          //need to wait as it will 
+          // be idle for a moment before switching
+          setTimeout(() => {
+    
+            if (player.playerState === 'IDLE') {
+              console.log('media ended');
+              
+              videoIndex++;
+              if(videoIndex <= (_queue.length-1)){
+                console.log('playing next in queue');
+                console.log("index: " + videoIndex);
+                playVideo(_queue[videoIndex]);
+              }else{
+                console.log("end of queue reached");
+      
+              }
   
-          }
+            }
+          }, 2000);
+
         }
     }
   );
 
-  playerController.addEventListener(
-    _framework.RemotePlayerEventType.IS_MEDIA_LOADED_CHANGED,
-    () => {
-        console.log("Media loaded state changed:", player.isMediaLoaded);
-        if (player.isMediaLoaded) {
-          // playerController.playOrPause();
-        }
-    }
-  );
+  // playerController.addEventListener(
+  //   _framework.RemotePlayerEventType.IS_MEDIA_LOADED_CHANGED,
+  //   () => {
+  //       console.log("Media loaded state changed:", player.isMediaLoaded);
+  //       if (player.isMediaLoaded) {
+  //         // playerController.playOrPause();
+  //       }
+  //   }
+  // );
 
 }
 
