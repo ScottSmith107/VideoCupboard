@@ -1,6 +1,13 @@
+html{
+    height: 100%;
+}
 body,button{
     font-family: "Major Mono Display", monospace;
     color: white;
+}
+body{
+    color: black;
+    background-size: 100% 100%;
 }
 
 .main{
@@ -9,6 +16,14 @@ body,button{
     align-items: center;
     justify-content: flex-start;
     gap: 10px;
+
+    margin-right: 35%;
+    margin-left: 35%;
+    padding-bottom: 10px;
+    border-style: solid;
+    border-color: black;
+    border-radius: 5%;
+    background-color: white;
 }
 
 .icon{
@@ -31,25 +46,34 @@ body,button{
 }
 
 button{
-    background-color: #4E2C5D;
+    background-color: black;
     cursor:pointer;
 }
 
 .icon{
-    width: 20%;
+    margin-top: 5px;
+    width: 50%;
     max-width: 200px;
     border-radius: 5%;
-    border-color: #4E2C5D;
+    border-color: black;
     border-style: solid;
 }
 
 #videoName,#videoDesc{
     color: white;
-    background-color: #4E2C5D;
+    background-color: black;
     width: auto;
 }
 
 #fileInput{
     border-style: solid;
-    border-color: #4E2C5D;
+    border-color: black;
+}
+
+@media (max-width: 1000px) {
+    .main{
+        margin-top: 10px;
+        margin-right: 10%;
+        margin-left: 10%;
+    }
 }

@@ -12,10 +12,13 @@
     </script>
     <script src="scripts/home.js"></script>
   </head>
-  <body onload=onload() style="background-image: url(images/indexBackground.png)">
+  <body onload=onload() style="background-image: url(images/shelfBack.png)">
     <div id="navBar">
-      <button id="uploadButton" onclick=gotoUpload()>Upload New Video</button>
-      <button id="logoutButton" onclick=logout() > LogOut</button>
+      <h1>Video Cupboard</h1>
+      <div class="navButtons"> 
+        <button id="uploadButton" onclick=gotoUpload()>Upload New Video</button>
+        <button id="logoutButton" onclick=logout() > LogOut</button>
+      </div>
     </div>
 
     <div id="recent" >
@@ -39,10 +42,22 @@
     </div>
     
     <div id="videosDiv" >
-      <h2 id="videosLabel">Everything Else</h2>
+      <div class="controls">
+        <h2 id="videosLabel">Everything Else</h2>
+        <!-- filters -->
+         <div class="buttonDiv">
+          <button id="allFilter" class="filterButton" onclick="filterAll()">All</button>
+          <button id="folderFilter" class="filterButton" onclick="filterFolders()">Folders</button>
+          <button id="singleFilter" class="filterButton" onclick="filterSingle()">Singles</button>
+          <button id="abcFilter" class="filterButton" onclick="filterAbc()">Alphabetically</button>
+        </div>
+      </div>
       <div id="videosItems"></div>
     </div>
     <p id="videos"></p>
+
+    <div class="controls" id="footer">
+    </div>
 
   </body>
 </html>

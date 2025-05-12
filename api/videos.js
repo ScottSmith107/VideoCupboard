@@ -59,7 +59,7 @@ exports.getIcon = function getIcon(iconID){
 //gets the dir for a video by the name
 exports.getDir = function getDir(index){
     return new Promise((resolve, reject) => {
-        db.query('SELECT * FROM video WHERE dir = ?', [index], (error,results) => {
+        db.query('SELECT * FROM video WHERE dir = ? AND folder = 0', [index], (error,results) => {
             if (error) {
                 reject(error);
             } else {
@@ -173,6 +173,19 @@ exports.getRecent = function getRecent(userID){
     });
 }
 
+//gets gets the most recent 10 videos from watching from id
+exports.getRecentLimit = function getRecentLimit(userID){
+    return new Promise((resolve, reject) => {
+        db.query('SELECT * FROM video JOIN watching ON video.id = watching.videoID WHERE watching.userId = ? ORDER BY whenUploaded DESC LIMIT 8', [userID], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
 //updates username and icon //fix\\
 exports.updateUser = function updateUser(name,iconID,userID){
     return new Promise((resolve, reject) => {
@@ -229,6 +242,19 @@ exports.updateVideoName = function updateVideoName(videoId,videoName,desc){
 exports.uploadFile = function uploadFile(name ,desc ,dir ,fullPath,folder,icon){
     return new Promise((resolve, reject) => {
         db.query('INSERT INTO `video` (`Name`, `Description`, `dir`, `Full_path`,`folder`,`icon`) VALUES (?, ?, ?, ?,?,?)', [name ,desc ,dir ,fullPath,folder,icon], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//uploads singular file to db
+exports.uploadIcon = function uploadIcon(iconID ,fullPath){
+    return new Promise((resolve, reject) => {
+        db.query('INSERT INTO `icons` (`iconID`, `fullPath`) VALUES (?, ?)', [iconID ,fullPath], (error,results) => {
             if (error) {
                 reject(error);
             } else {

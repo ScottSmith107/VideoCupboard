@@ -1,3 +1,6 @@
+html{
+    height: 100%;
+}
 body{
     display: flex;
     flex-direction: column;
@@ -5,12 +8,18 @@ body{
     justify-content: flex-start;
     gap: 10px;
     font-family: "Major Mono Display", monospace;
+
+    background-size: 100% 100%;
 }
 
 button{
     color: white;
-    background-color: #4E2C5D;
+    background-color: black;
     cursor:pointer;
+}
+
+#backButton{
+    margin-right: auto;
 }
 
 .mainIcon{
@@ -22,7 +31,6 @@ button{
 .otherIcon{
     order: 3;
 }
-
 #mainIcon{
     width: 100%;
     height: 50%;
@@ -44,12 +52,12 @@ button{
     gap: 10px;
     width: fit-content;
 
-    width: 30%;
+    width: 50%;
 }
 .icon{
     width: calc(100% / 3 - 20px);
     border-radius: 18%;
-    border-color: #4E2C5D;
+    border-color: black;
     border-style: solid;
 
 }

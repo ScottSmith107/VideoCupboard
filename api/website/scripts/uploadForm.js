@@ -1,21 +1,34 @@
-let url = "http://"+IP+":3000/";
+let url = IP;
 let files;
 let icon;
 
 document.getElementById('fileInput').addEventListener('change', (event) => {
     files = event.target.files;
 
-    //check if the files are vaild
+    //check if the files are vaild                                                                  //redo
     for (let i = 0; i < files.length; i++) {
-        file = files[i];
-        //pulles the extention from the name
-        extention = file.name.split('.')[file.name.split('.').length-1];
-        if(!(extention == "MP4" || extention == "mp4" || extention == "MP3" || extention == "mp3")){
-            files = event.target.files = undefined;
-            document.getElementById("error").innerText = "please only submit mp3/mp4's"
+        const file = files[i];
+
+        const name = file.name;
+        if(name.length > 127){
+            alert("All file titles need to be shorter then 128 character.")
+            files = event.target.files = [];
+            break;
         }else{
-            document.getElementById("error").innerText = ""
+            //pulles the extention from the name
+            extention = file.name.split('.')[file.name.split('.').length-1];
+            if(!(extention == "MP4" || extention == "mp4" || extention == "MP3" || extention == "mp3")){
+                if(confirm("If you dont submit a MP3 or MP4 you may encounter issues.")){//so they know they might have issues
+                    console.log("good");
+                }else{
+                    files = event.target.files = [];
+                }
+                break;
+            }else{
+                document.getElementById("error").innerText = ""
+            }
         }
+
     }
 });
 document.getElementById('iconInput').addEventListener('change', (event) => {
@@ -31,13 +44,13 @@ function addFile(){
 
     document.getElementById("error").innerText = "Loading . . ."
     
-    description = document.getElementById("Description").value;
+    const description = document.getElementById("Description").value;
 
-    formData = new FormData();
+    const formData = new FormData();
     //adds icon if user wants one
     if(icon){
         //"adds" the icon to the end of the video files the user supplies 
-        let dataTransfer = new DataTransfer();
+        const dataTransfer = new DataTransfer();
         dataTransfer.items.add(icon);
         for (let i = 0; i < files.length; i++) {
             dataTransfer.items.add(files[i]);
@@ -92,7 +105,8 @@ function display(response){
     icon = [];
 }
 
+let userID;
 function onload(){
-    const urlParams = new URLSearchParams(window.location.search); 
+    const urlParams = new URLSearchParams(window.location.search);
     userID = urlParams.get("userID");
 }

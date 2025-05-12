@@ -11,11 +11,16 @@
       let IP = window.APP_CONFIG.IP;
     </script>
     <script src="scripts/video.js"></script>
-  </head>
-  <button id="home" onclick="location.replace('home.html?userID='+userID)">Home</button>
-  <a id="edit">EDIT</a>
 
-  <body onload=getQueryParam() , style="background-image: url(images/indexBackground.png)">
+  </head>
+  <div id="headerButtons">
+    <button id="home" onclick="location.replace('home.html?userID='+userID)">Home</button>
+    <button id="watchTogether" onclick=createSocket()>watch together</button>
+    <p id="progress"></p>
+    <a id="edit">EDIT</a>
+  </div>
+
+  <body onload=getQueryParam() class="folder">
 
     <div id="tester">
       <div id="header">
@@ -37,8 +42,10 @@
       </div>
 
       <p id="error"></p>
-    </div>
+    </div>   
 
+    <script src="scripts/cast/cast.js" type="module"></script> 
+    <script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
   </body>
 </html>
 

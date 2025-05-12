@@ -18,6 +18,7 @@ const icon = require('./apiMethods/icon');
 const timestamp = require('./apiMethods/timestamp');
 const user = require('./apiMethods/user');
 const video = require('./apiMethods/video');
+const websocket = require('./apiMethods/websocket');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -35,21 +36,25 @@ const storage = multer.diskStorage({
         if(file.mimetype.split("/")[0] == "image"){
             
             if(folderName){
-                //makes the new folde with the icon
+                //makes the new folder with the icon
                 console.log("new folder-icon");
 
                 //make new path
                 newFolder = path.join(__dirname, "videos", folderName);
-                //make the new dir with fs
-                fs.mkdir(newFolder, { recursive: true }, (err) => {
-                    if (err) {
-                        return cb(err);
-                    }
-                    // adds new folder to db 
-                    iconPath = "videoIcon/"+file.originalname;
-                    console.log("iconpath: ",iconPath);
-                    data.uploadFile(folderName ,desc ,0 ,folderName,1,iconPath);
-                });
+                if(!fs.existsSync(newFolder)){
+                    //make the new dir with fs
+                    fs.mkdir(newFolder, { recursive: true }, (err) => {
+                        if (err) {
+                            return cb(err);
+                        }
+                        //tells icon where to go
+                        iconPath = "videoIcon/"+file.originalname;
+                        console.log("iconpath: ",iconPath);
+                        // adds new folder to db 
+                        data.uploadFile(folderName ,desc ,0 ,folderName,1,iconPath);
+                    });
+                }
+
             }
                     
             return cb(null, path.join(videoPath,"videoIcon"));
@@ -93,7 +98,7 @@ const app = express();
 const port = 3000;
 
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'http://192.168.1.124');
+    res.header('Access-Control-Allow-Origin', 'http://'+process.env.IP);
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT');
     next();
@@ -106,23 +111,23 @@ app.use('/', icon);
 app.use('/', timestamp);
 app.use('/', user);
 app.use('/', video);
-
+app.use('/', websocket);
 
 require('dotenv').config();
 app.get('/config.js', (req, res) => {
     res.setHeader('Content-Type', 'application/javascript');
-    res.send(`window.APP_CONFIG = { IP: "${process.env.IP}" };`);
-});
-///sends all files listed in the videos dir back to caller as json
-app.get('/', async (req, res) => {
-    res.sendFile(path.join(websitePath,"index.html"));
+    res.send(`window.APP_CONFIG = { IP: "${'http://'+process.env.IP+':3000/'}" };`);
 });
 
-app.listen(port, function() {
-    console.log(`Example app listening on port ${port}!`);
+app.get('/', async (req, res) => {
+    res.sendFile(path.join(websitePath,"index.html"));
 });
 
 app.use(express.static(videoPath));
 app.use(express.static(userIconPath));
 app.use(express.static(websitePath));
-    
+
+
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}!`);
+});
