@@ -1,6 +1,4 @@
-// let url = "https://"+IP+":3000/";
-// let url = "http://"+IP+":3000/";
-let url = "https://desktop-4krngi0.taileab52c.ts.net/";
+let url = IP;
 let allvideos =[];
 let favoriteVideos = new Map();
 let userID;

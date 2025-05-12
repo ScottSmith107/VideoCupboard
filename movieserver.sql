@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 21, 2025 at 12:57 AM
+-- Generation Time: May 11, 2025 at 01:04 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -38,8 +38,9 @@ CREATE TABLE `favorites` (
 --
 
 INSERT INTO `favorites` (`userID`, `videoID`, `whenUploaded`) VALUES
-(0, 207, '2025-03-19 01:10:32'),
-(6, 180, '2025-03-19 01:10:32');
+(7, 382, '2025-04-16 10:14:19'),
+(7, 453, '2025-04-27 04:11:10'),
+(7, 494, '2025-05-09 09:41:01');
 
 -- --------------------------------------------------------
 
@@ -78,9 +79,8 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`userID`, `name`, `icon`) VALUES
-(22, 'Amber', 6),
-(23, 'Scott', 7),
-(24, 'Scott0', 8);
+(35, 'Scott', 7),
+(37, 'Amber!', 6);
 
 -- --------------------------------------------------------
 
@@ -92,21 +92,12 @@ CREATE TABLE `video` (
   `Name` varchar(128) NOT NULL,
   `Description` varchar(32) NOT NULL,
   `dir` int(11) NOT NULL COMMENT 'the id of the folder where the item is stored',
-  `Full_path` varchar(128) NOT NULL COMMENT 'full file path to the item\r\n',
+  `Full_path` varchar(256) NOT NULL COMMENT 'full file path to the item\r\n',
   `folder` tinyint(1) NOT NULL,
   `icon` varchar(128) NOT NULL COMMENT 'contains file path to icon',
   `id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `video`
---
-
-INSERT INTO `video` (`Name`, `Description`, `dir`, `Full_path`, `folder`, `icon`, `id`) VALUES
-('Los Retros - Someone To Spend Time With.mp4', 'song', 0, 'Los Retros - Someone To Spend Time With.mp4', 0, 'videoIcon/jim_icon.jpg', 1),
-('The.Notebook.2004.1080p.mp4', 'Its the notebook lol', 0, 'The.Notebook.2004.1080p.mp4', 0, 'videoIcon/notebook.JPEG', 180),
-('pentagram songs', '', 0, 'pentagram songs', 1, 'videoIcon/pentagramIcon.png', 231),
-('1 Buck Spin.mp3', '', 231, 'pentagram songs\\1 Buck Spin.mp3', 0, 'videoIcon/pentagramIcon.png', 232);
 
 -- --------------------------------------------------------
 
@@ -125,9 +116,6 @@ CREATE TABLE `watching` (
 -- Dumping data for table `watching`
 --
 
-INSERT INTO `watching` (`userID`, `videoID`, `time`, `whenUploaded`) VALUES
-(6, 180, 2677, '2025-03-20 06:13:26');
-
 --
 -- Indexes for dumped tables
 --
@@ -142,8 +130,7 @@ ALTER TABLE `icons`
 -- Indexes for table `user`
 --
 ALTER TABLE `user`
-  ADD PRIMARY KEY (`userID`),
-  ADD UNIQUE KEY `name` (`name`);
+  ADD PRIMARY KEY (`userID`);
 
 --
 -- Indexes for table `video`
@@ -159,19 +146,19 @@ ALTER TABLE `video`
 -- AUTO_INCREMENT for table `icons`
 --
 ALTER TABLE `icons`
-  MODIFY `iconID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `iconID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `video`
 --
 ALTER TABLE `video`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=246;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=501;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -1,6 +1,4 @@
-// let url = "https://"+IP+":3000/";
-let url = "https://desktop-4krngi0.taileab52c.ts.net/";
-
+let url = IP;
 let _framework;
 let player;
 let playerController;

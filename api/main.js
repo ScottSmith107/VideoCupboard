@@ -98,8 +98,7 @@ const app = express();
 const port = 3000;
 
 app.use((req, res, next) => {
-    // res.header('Access-Control-Allow-Origin', 'https://'+process.env.IP);
-    res.header('Access-Control-Allow-Origin', 'https://desktop-4krngi0.taileab52c.ts.net/');
+    res.header('Access-Control-Allow-Origin', 'http://'+process.env.IP);
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT');
     next();
@@ -114,7 +113,12 @@ app.use('/', user);
 app.use('/', video);
 app.use('/', websocket);
 
-///sends all files listed in the videos dir back to caller as json
+require('dotenv').config();
+app.get('/config.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.send(`window.APP_CONFIG = { IP: "${'http://'+process.env.IP+':3000/'}" };`);
+});
+
 app.get('/', async (req, res) => {
     res.sendFile(path.join(websitePath,"index.html"));
 });
