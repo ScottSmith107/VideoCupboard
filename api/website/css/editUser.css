@@ -1,0 +1,89 @@
+html{
+    height: 100%;
+}
+body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    font-family: "Major Mono Display", monospace;
+
+    background-size: 100% 100%;
+}
+
+button{
+    color: white;
+    background-color: black;
+    cursor:pointer;
+}
+
+#backButton{
+    margin-right: auto;
+}
+
+.mainIcon{
+    order: 1;
+}
+.button{
+    order: 2;
+}
+.otherIcon{
+    order: 3;
+}
+#mainIcon{
+    width: 100%;
+    height: 50%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+.userIcon{
+    width: 30%;
+    order: 1;
+    border-radius: 18%;
+}
+
+.otherIcon{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: fit-content;
+
+    width: 50%;
+}
+.icon{
+    width: calc(100% / 3 - 20px);
+    border-radius: 18%;
+    border-color: black;
+    border-style: solid;
+
+}
+.icon:hover{
+    border-color: white;
+}
+.iconChecked{
+    width: calc(100% / 3 - 20px); 
+    border-radius: 18%;
+
+    border-style: solid;
+    border-color: white;
+}
+
+#username{
+    margin-left: 10px;
+}
+
+@media (max-width: 1000px) {
+    .otherIcon{
+        width: 100%;
+    }
+    .icon{
+        width: 25%;
+    }
+    .iconChecked{
+        width: 25%;
+    }
+}

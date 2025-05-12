@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 25, 2025 at 12:28 AM
+-- Generation Time: May 11, 2025 at 01:04 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -32,6 +32,15 @@ CREATE TABLE `favorites` (
   `videoID` int(11) NOT NULL,
   `whenUploaded` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `favorites`
+--
+
+INSERT INTO `favorites` (`userID`, `videoID`, `whenUploaded`) VALUES
+(7, 382, '2025-04-16 10:14:19'),
+(7, 453, '2025-04-27 04:11:10'),
+(7, 494, '2025-05-09 09:41:01');
 
 -- --------------------------------------------------------
 
@@ -65,6 +74,14 @@ CREATE TABLE `user` (
   `icon` int(11) NOT NULL COMMENT 'iconID'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`userID`, `name`, `icon`) VALUES
+(35, 'Scott', 7),
+(37, 'Amber!', 6);
+
 -- --------------------------------------------------------
 
 --
@@ -75,11 +92,12 @@ CREATE TABLE `video` (
   `Name` varchar(128) NOT NULL,
   `Description` varchar(32) NOT NULL,
   `dir` int(11) NOT NULL COMMENT 'the id of the folder where the item is stored',
-  `Full_path` varchar(128) NOT NULL COMMENT 'full file path to the item\r\n',
+  `Full_path` varchar(256) NOT NULL COMMENT 'full file path to the item\r\n',
   `folder` tinyint(1) NOT NULL,
   `icon` varchar(128) NOT NULL COMMENT 'contains file path to icon',
   `id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 -- --------------------------------------------------------
 
@@ -95,6 +113,10 @@ CREATE TABLE `watching` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Dumping data for table `watching`
+--
+
+--
 -- Indexes for dumped tables
 --
 
@@ -108,8 +130,7 @@ ALTER TABLE `icons`
 -- Indexes for table `user`
 --
 ALTER TABLE `user`
-  ADD PRIMARY KEY (`userID`),
-  ADD UNIQUE KEY `name` (`name`);
+  ADD PRIMARY KEY (`userID`);
 
 --
 -- Indexes for table `video`
@@ -125,19 +146,19 @@ ALTER TABLE `video`
 -- AUTO_INCREMENT for table `icons`
 --
 ALTER TABLE `icons`
-  MODIFY `iconID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `iconID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `video`
 --
 ALTER TABLE `video`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=246;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=501;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

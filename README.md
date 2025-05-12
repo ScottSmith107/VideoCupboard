@@ -1,4 +1,4 @@
-# VideoCupboard
+# Project Title
 
 This basic full stack web app allows you to upload your open mp3/mp4's for anyone on the local network to watch and, with some port forwarding the greater world.
 
@@ -17,7 +17,7 @@ IP=
 DB_IP=
 DB_NAME=
 PORT=
-USER=
+USER=root
 PASSWORD= 
 ```
 
@@ -33,6 +33,6 @@ I like pm2 for the deployment, so you don't need a tab open, but to each their o
 I have elected to exclude my scripts from that installer, so you may see what the installer and the powershell script will be doing before running it.
 
 3. Once installed, all you need to do is run the mysetup.exe and give it some creds so it can add the SQL file to your mariaDB and then the port that the db is hosted on.
-  if you dont supplly a password the script will then ask you for one
+   if you dont supplly a password the script will then ask you for one
 
 5. Then you will be able to see the app running on https://YOUR_IPV4:3000/

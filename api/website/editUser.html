@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>MovieTown</title>
+    <link rel="stylesheet" href="css/editUser.css">
+    <script src="/config.js"></script>
+    <script>
+      let IP = window.APP_CONFIG.IP;
+    </script>
+    <script src="scripts/editUser.js"></script>
+  </head>
+
+  <body id="body" onload=getQueryParam() , style="  background-image: url(images/indexBackground.jpeg);">
+    <button id="backButton" onclick="location.replace('index.html')">Back</button>
+    <input type="text" id="username">
+    <button id="deleteButton" onclick=deleteUser()> Delete User</button>
+    <div id="mainIcon" class="mainIcon"></div>
+    <button id="updateButton" class="button" onclick=updateUser() >Update User</button>
+    <div id="otherIcon" class="otherIcon"></div>
+  </body>
+</html>
+

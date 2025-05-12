@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>MovieTown</title>
+    <link rel="stylesheet" href="css/video.css">
+    <script src="/config.js"></script>
+    <script>
+      let IP = window.APP_CONFIG.IP;
+    </script>
+    <script src="scripts/video.js"></script>
+
+  </head>
+  <div id="headerButtons">
+    <button id="home" onclick="location.replace('home.html?userID='+userID)">Home</button>
+    <button id="watchTogether" onclick=createSocket()>watch together</button>
+    <p id="progress"></p>
+    <a id="edit">EDIT</a>
+  </div>
+
+  <body onload=getQueryParam() class="folder">
+
+    <div id="tester">
+      <div id="header">
+        <h1 id="title" >title</h1>
+      </div>
+      
+      <div id="main">
+        <div id="playerDiv">
+        </div>
+      </div>
+      
+      <div id="videosDiv">
+      </div>
+      
+      <div id="removeButton">
+      </div>
+
+      <div id="color">
+      </div>
+
+      <p id="error"></p>
+    </div>   
+
+    <script src="scripts/cast/cast.js" type="module"></script> 
+    <script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+  </body>
+</html>
+

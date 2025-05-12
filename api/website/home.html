@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>MovieTown</title>
+    <link rel="stylesheet" href="css/home.css">
+    <script src="/config.js"></script>
+    <script>
+      let IP = window.APP_CONFIG.IP;
+    </script>
+    <script src="scripts/home.js"></script>
+  </head>
+  <body onload=onload() style="background-image: url(images/shelfBack.png)">
+    <div id="navBar">
+      <h1>Video Cupboard</h1>
+      <div class="navButtons"> 
+        <button id="uploadButton" onclick=gotoUpload()>Upload New Video</button>
+        <button id="logoutButton" onclick=logout() > LogOut</button>
+      </div>
+    </div>
+
+    <div id="recent" >
+      <div class="controls">
+        <h2 id="recentLabel">Recently Watched</h2>
+        <a id="showRecents" class="showAll">Show all</a>
+      </div>
+      <div id="recentItems">
+        <p>nothing to show</p>
+      </div>
+    </div>
+    
+    <div id="favorites" >
+      <div class="controls">
+        <h2 id="favoritesLabel">Favorites</h2>
+        <a id="showfavorites" class="showAll"> Show All</a>
+      </div>
+      <div id="favoritesItems">
+        <p>nothing to show</p>
+      </div>
+    </div>
+    
+    <div id="videosDiv" >
+      <div class="controls">
+        <h2 id="videosLabel">Everything Else</h2>
+        <!-- filters -->
+         <div class="buttonDiv">
+          <button id="allFilter" class="filterButton" onclick="filterAll()">All</button>
+          <button id="folderFilter" class="filterButton" onclick="filterFolders()">Folders</button>
+          <button id="singleFilter" class="filterButton" onclick="filterSingle()">Singles</button>
+          <button id="abcFilter" class="filterButton" onclick="filterAbc()">Alphabetically</button>
+        </div>
+      </div>
+      <div id="videosItems"></div>
+    </div>
+    <p id="videos"></p>
+
+    <div class="controls" id="footer">
+    </div>
+
+  </body>
+</html>
+

@@ -1,4 +1,4 @@
-# if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
+if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
 
 $mypath = $MyInvocation.MyCommand.Path
 $out = Split-Path $mypath -Parent -Resolve
@@ -33,9 +33,11 @@ if($Output -like "*pm2*"){
 Set-Location $out
 
 # getting app ready
-npm install ./movieserver-1.0.0.tgz
+npm install ./movieserver.tgz
 
-Set-Location $out'\node_modules\movieserver'
+Set-Location $out'\api'
+
+npm install
 
 # get the hostname
 $HostIP = (
