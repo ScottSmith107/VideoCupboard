@@ -116,7 +116,8 @@ app.use('/', websocket);
 require('dotenv').config();
 app.get('/config.js', (req, res) => {
     res.setHeader('Content-Type', 'application/javascript');
-    res.send(`window.APP_CONFIG = { IP: "${'http://'+process.env.IP+':3000/'}" };`);
+    // res.send(`window.APP_CONFIG = { IP: "${'http://'+process.env.IP+':3000/'}" };`);
+    res.send(`window.APP_CONFIG = { IP: "${'https://'+process.env.IP}" };`);
 });
 
 app.get('/', async (req, res) => {

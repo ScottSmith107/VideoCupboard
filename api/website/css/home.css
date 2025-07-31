@@ -159,6 +159,12 @@ h1{
 .link{
   grid-area: n;
   margin-top: auto;
+
+  word-break: break-word;       
+  white-space: normal;          
+  overflow-wrap: break-word;
+  display: block;
+  max-width: 100%;
 }
 .desc{
   grid-area: d;
@@ -201,6 +207,7 @@ a.link:visited {
 }
 .showAll:hover{
   color: white;
+  cursor:pointer;
 }
 
 .filterButton{
@@ -279,10 +286,6 @@ a.link:visited {
     scroll-snap-align: start;
     width: calc(80% / 3);
     gap: 5px;
-  }
-
-  .link{
-    word-wrap: break-word;
   }
 
   .nameDiv{

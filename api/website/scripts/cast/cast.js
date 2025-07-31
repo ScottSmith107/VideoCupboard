@@ -80,32 +80,23 @@ function createQueue(){
     if(video.folder == 0){
       let path = video.Full_path.replace(/\\/g, '/');
       path = encodeURI(path);
-      const fullUrl = url + path;
-
-      // console.log("url: ", fullUrl); 
-      // console.log("video"); 
-      // console.log(video); 
+      const fullUrl = url + path; 
 
       // checking fileType
       if(video.Name.split(".")[video.Name.split(".").length-1] == "mp3" || video.Name.split(".")[video.Name.split(".").length-1] == "MP3"){
         var media = new chrome.cast.media.MediaInfo(fullUrl, 'audio/mp3');
-        media.streamType = chrome.cast.media.StreamType.BUFFERED;
-        media.contentUrl = media.contentId;
-        media.metadata = new chrome.cast.media.GenericMediaMetadata();
-        media.metadata.title = video.Name;
-        media.autoplay = true;
-        media.preloadTime = 10;
-        media.startTime = 0;
       }else{
         var media = new chrome.cast.media.MediaInfo(fullUrl, 'video/mp4');
-        media.contentUrl = media.contentId;
-        media.streamType = chrome.cast.media.StreamType.BUFFERED;
-        media.metadata = new chrome.cast.media.GenericMediaMetadata();
-        media.metadata.title = video.Name;
-        media.autoplay = true;
-        media.preloadTime = 10;
-        media.startTime = 0;
       }
+      
+      media.contentUrl = media.contentId;
+      media.streamType = chrome.cast.media.StreamType.BUFFERED;
+      media.metadata = new chrome.cast.media.GenericMediaMetadata();
+      media.metadata.title = video.Name;
+      media.autoplay = true;
+      media.preloadTime = 10;
+      media.startTime = 0;
+
       queue.push(media);
     }
   }
@@ -139,123 +130,36 @@ function play(){
     _framework.RemotePlayerEventType.PLAYER_STATE_CHANGED,
     function(event) {
         console.log('PLAYER_STATE_CHANGED TO ' + player.playerState);
-        if (player.playerState === 'IDLE') {
+        
+        if (player.playerState === 'IDLE' || player.playerState === 'BUFFERING' ) {
 
-          //need to wait as it will 
-          // be idle for a moment before switching
-          setTimeout(() => {
-    
-            if (player.playerState === 'IDLE') {
-              console.log('media ended');
-              
-              videoIndex++;
-              if(videoIndex <= (_queue.length-1)){
-                console.log('playing next in queue');
-                console.log("index: " + videoIndex);
-                playVideo(_queue[videoIndex]);
-              }else{
-                console.log("end of queue reached");
+          length = GetVideoLength();
+
+          if (Math.round(player.currentTime) >= length) {
+            console.log('media ended');
+            
+            videoIndex++;
+            if(videoIndex <= (_queue.length-1)){
+              console.log('playing next in queue');
+              console.log("index: " + videoIndex);
+              playVideo(_queue[videoIndex]);
+            }else{
+              console.log("end of queue reached");
       
-              }
-  
             }
-          }, 2000);
+  
+          }
 
         }
     }
   );
 
-  // playerController.addEventListener(
-  //   _framework.RemotePlayerEventType.IS_MEDIA_LOADED_CHANGED,
-  //   () => {
-  //       console.log("Media loaded state changed:", player.isMediaLoaded);
-  //       if (player.isMediaLoaded) {
-  //         // playerController.playOrPause();
-  //       }
-  //   }
-  // );
-
 }
 
-
-
-
-
-
-
-
-
-// let url = "http://"+IP+":3000/";
-
-// let initializeCastApi = function() {
-//     cast.framework.CastContext.getInstance().setOptions({
-//         receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
-//       autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
-//     });
-
-//     //creating listener
-//     cast.framework.CastContext.getInstance().addEventListener(
-//         cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
-//         (event) => {
-//           if (event.sessionState === "SESSION_STARTED") {
-//             console.log("Casting started!");
-    
-//             //play media
-//             playCurrVideo();
-//           }
-//         }
-//     );
-
-//   };
-
-// window['__onGCastApiAvailable'] = function(isAvailable) {
-//     if (isAvailable) {
-//         initializeCastApi();
-//     }
-// };
-
-// function playCurrVideo(){
-
-//     // currentMediaURL = url + _video.Full_Path;
-//     var currentMediaURL = "https://storage.googleapis.com/automotive-media/Jazz_In_Paris.mp3";
-
-//     var mediaInfo = new chrome.cast.media.MediaInfo(currentMediaURL, "video/mp4");
-//     var request = new chrome.cast.media.LoadRequest(mediaInfo);
-//     var castSession = cast.framework.CastContext.getInstance().getCurrentSession();
-//     console.log(castSession);
-
-//     castSession.loadMedia(request).then(
-//     function() { 
-//       console.log('Load succeed');
-
-//       var player = new cast.framework.RemotePlayer();
-//       var playerController = new cast.framework.RemotePlayerController(player);
-
-//       playerController.addEventListener(
-//         cast.framework.RemotePlayerEventType.IS_MEDIA_LOADED_CHANGED,
-//         () => {
-//             console.log("IS_MEDIA_LOADED_CHANGED:", player.isMediaLoaded);
-//             if (player.isMediaLoaded) {
-//                 console.log("Media loaded, playing...");
-//                 playerController.playOrPause(); // play when ready
-//             }
-//         }
-//     );
-  
-//     playerController.addEventListener(
-//         cast.framework.RemotePlayerEventType.PLAYER_STATE_CHANGED,
-//         () => {
-//             console.log("Player state:", player.playerState);
-//         }
-//     );
-
-//       console.log(player);
-//       if(player.isMediaLoaded == true){
-//         console.log("loaded");
-//         playerController.playOrPause();
-//       }else{
-//         console.log("not loaded");
-//       }
-//     },
-//     function(errorCode) { console.log('Error code: ' + errorCode); });
-// }
+//returns the length of the video
+function GetVideoLength(){
+  const context = _framework.CastContext.getInstance();
+  const session = context.getCurrentSession();
+  const media = session.getMediaSession();
+  return Math.round(media.media.duration);
+}

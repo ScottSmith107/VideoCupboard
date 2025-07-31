@@ -9,7 +9,7 @@ let getUsers = () => {
             console.log(data);
             const users = data;
             for (let index = 0; index < users.length; index++) {
-                makeWidget(users[index].name, users[index].userID,users[index].icon);
+                makeWidget(users[index].name, users[index].userID,users[index].fullPath);
             }
         })
         .catch(error => {
@@ -18,7 +18,7 @@ let getUsers = () => {
 }
 
 //makes video widget //I didnt feel like using react so here it is done
-function makeWidget(name,id,icon){
+function makeWidget(name,id,iconPath){
     const main = document.getElementById("userDiv");
     const div = document.createElement("div");
     div.id = "user";
@@ -37,10 +37,18 @@ function makeWidget(name,id,icon){
     }    
     edit.innerText = "Edit User";
     edit.className = "userEdit";
+
+    const img = document.createElement("img");
+    img.id = "userIcon";
+    img.className = "userIcon";
+    img.src = url + iconPath;
+    img.onclick = function(){
+        location.replace("home.html?userID="+id);
+    }
     
-    setIcon(icon,div,name);
     div.appendChild(content)
     div.appendChild(edit)
+    div.appendChild(img)
     main.appendChild(div);
 
 }
@@ -124,36 +132,6 @@ function addUser(){
         alert("Please select an icon and username");
     }
     
-}
-
-//gets icon from id
-function setIcon(iconID,div,name){
-
-    const formData = new FormData();
-    formData.append("iconID",iconID);
-    
-    fetch(url+"getIcon", {
-        method: "PUT",
-        body: formData,
-    })
-    .then(response => response.json())
-    .then(data => {
-        const path = data[0].fullPath;
-
-        const img = document.createElement("img");
-        img.id = "userIcon";
-        img.className = "userIcon";
-        img.src = url + path;
-        img.onclick = function(){
-            location.replace("home.html?userID="+iconID);
-        }
-
-        div.appendChild(img);
-    })
-    .catch(error => {
-        console.error("couldnt set new icon", error);
-    });
-
 }
 
 //gets all the icons from the db and places them all in a div

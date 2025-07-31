@@ -20,7 +20,7 @@ exports.allVideos = function allVideos(){
 //get all videos
 exports.allUsers = function allUsers(){
     return new Promise((resolve, reject) => {
-        db.query('SELECT * FROM user', (error,results) => {
+        db.query('SELECT user.userID, user.name, icons.fullPath FROM `user` inner JOIN icons on icons.iconID = USER.icon', (error,results) => {
             if (error) {
                 reject(error);
             } else {

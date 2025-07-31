@@ -325,7 +325,7 @@ function removeFolder(){
 
 //send new timestamp to the db
 let go = true;
-function updateTimestamp(time,id){
+function updateTimestamp(time){
     time = Math.round(time);
     
     //dont bother saving if its less then 1 time
@@ -340,7 +340,7 @@ function updateTimestamp(time,id){
 
         const formData = new FormData();
         formData.append("userID",userID);
-        formData.append("videoID",id);
+        formData.append("videoID",videoID);
         formData.append("timestamp",time);
         
         fetch(url+"updateTimestamp", {
@@ -537,15 +537,16 @@ function createSocket(){
     .then(response => response.json())
     .then(openSocket)
 }
+let seeked = true;
 function openSocket(response){
 
     document.getElementById("progress").innerText = "";
-    console.log("watch togeather open on: " + response);
 
-    const socket = new WebSocket('ws://localhost:'+response);
+    const socket = new WebSocket('wss://desktop-4krngi0.taileab52c.ts.net:'+response);
     _socket = socket;
     socket.onopen = function(event) {
-      // Handle connection open
+        // Handle connection open
+        console.log("watch togeather open on: " + response);
     };
     
     // Handle received message
@@ -553,23 +554,34 @@ function openSocket(response){
         message = event.data
 
         if(message == "play"){
+            video.removeEventListener("play", playEvent);
             video.play()
+            setTimeout(() =>{
+                video.addEventListener("play", playEvent);
+            },5000)
             console.log("playing");
 
         }else if(message == "pause"){
+            video.removeEventListener("pause", pauseEvent);
             video.pause();
+            setTimeout(() =>{
+                video.addEventListener("pause", pauseEvent);
+            },5000)
             console.log("pausing");
 
         }else if(message.split("seek:").length > 1){
-            const time = message.split("seek: ")[1];
-            console.log("skipping to: "+ time);
-            //checking if already at correct time //avoids loop
-            if(video.currentTime != time){
-                video.currentTime = time;
-                video.play();
+            if(seeked){
+                seeked = false;
+                const time = message.split("seek: ")[1];
+                console.log("skipping to: "+ time);
+                //checking if already at correct time //avoids loop
+                if(video.currentTime != time){
+                    video.currentTime = time;
+                }
+            }else{
+                seeked = true;
             }
         }else{ //buffering or anything else
-            // video.pause();
             console.log("other user buffering");
         }
     };
