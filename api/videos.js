@@ -20,7 +20,7 @@ exports.allVideos = function allVideos(){
 //get all videos
 exports.allUsers = function allUsers(){
     return new Promise((resolve, reject) => {
-        db.query('SELECT user.userID, user.name, icons.fullPath FROM `user` inner JOIN icons on icons.iconID = USER.icon', (error,results) => {
+        db.query('SELECT user.userID, user.name, icons.fullPath FROM `user` inner JOIN icons on icons.iconID = user.icon', (error,results) => {
             if (error) {
                 reject(error);
             } else {
@@ -241,7 +241,7 @@ exports.updateVideoName = function updateVideoName(videoId,videoName,desc){
 //uploads singular file to db
 exports.uploadFile = function uploadFile(name ,desc ,dir ,fullPath,folder,icon){
     return new Promise((resolve, reject) => {
-        db.query('INSERT INTO `video` (`Name`, `Description`, `dir`, `Full_path`,`folder`,`icon`) VALUES (?, ?, ?, ?,?,?)', [name ,desc ,dir ,fullPath,folder,icon], (error,results) => {
+        db.query('INSERT INTO `video` (`Name`, `Description`, `dir`, `Full_path`,`folder`,`icon`) VALUES (?, ?, ?, ?, ?, ?)', [name ,desc ,dir ,fullPath,folder,icon], (error,results) => {
             if (error) {
                 reject(error);
             } else {
@@ -254,7 +254,7 @@ exports.uploadFile = function uploadFile(name ,desc ,dir ,fullPath,folder,icon){
 //uploads singular file to db
 exports.uploadIcon = function uploadIcon(iconID ,fullPath){
     return new Promise((resolve, reject) => {
-        db.query('INSERT INTO `icons` (`iconID`, `fullPath`) VALUES (?, ?)', [iconID ,fullPath], (error,results) => {
+        db.query('INSERT INTO `icons` (`fullPath`) VALUES (?)', [fullPath], (error,results) => {
             if (error) {
                 reject(error);
             } else {

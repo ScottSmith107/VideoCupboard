@@ -36,7 +36,7 @@ document.getElementById('iconInput').addEventListener('change', (event) => {
 });
 
 // sents passsed in file to server
-function addFile(){
+async function addFile(){
     if(!files){
         document.getElementById("error").innerText ="Please add File";
         return;
@@ -46,7 +46,6 @@ function addFile(){
     
     const description = document.getElementById("Description").value;
 
-    const formData = new FormData();
     //adds icon if user wants one
     if(icon){
         //"adds" the icon to the end of the video files the user supplies 
@@ -59,40 +58,56 @@ function addFile(){
         files = dataTransfer.files;
     }
 
-    formData.append("description",description);
-
     //if folder
     if (document.getElementById("folderName").value){
-        formData.append("folderName",document.getElementById("folderName").value);
+        
         console.log("is folder");
-        for (let i = 0; i < files.length; i++) {
+        let i = 0
+        if (icon) i = 1;
+        for (; i < files.length; i++) {
+            const formData = new FormData();
+            formData.append("folderName",document.getElementById("folderName").value);
+            formData.append("description",description);
+            //0 will always be the icon//icons wont be doubled up
+            if(icon) formData.append('files', files[0]);
             formData.append('files', files[i]);
-        }
+            
+            try{
+                let result = await fetch(url+"upload-folder", {
+                    method: "POST",
+                    body: formData,
+                });
 
-        fetch(url+"upload-folder", {
-            method: "POST",
-            body: formData,
-        })
-        .then(response => response.json())
-        .then(display)
-        .catch(error => {
-            console.error("couldnt upload folder", error);
-        });
+            }catch (error){
+                console.error(error);
+            }
+
+        }
+        display();
+
     } else{//not a folder
 
-        for (let i = 0; i < files.length; i++) {
-            formData.append('files', files[i]);
-        }
+        let i = 0
+        if (icon) i = 1;
+        for (; i < files.length; i++) {
+            const formData = new FormData();
+            formData.append("description",description);
 
-        fetch(url+"upload", {
-            method: "POST",
-            body: formData,
-        })
-        .then(response => response.json())
-        .then(display)
-        .catch(error => {
-            console.error("couldnt uploads file/s", error);
-        });
+            //0 will always be the icon//icons wont be doubled up
+            if(icon) formData.append('files', files[0]);
+            formData.append('files', files[i]);
+
+            try{
+                let result = await fetch(url+"upload", {
+                    method: "POST",
+                    body: formData,
+                });
+
+            }catch(error){
+                console.error(error);
+            }
+        }
+        display();
     }
     
 }

@@ -195,7 +195,7 @@ function addIcon(event){
     .then(response => response.json())
     .then(makeForm)
     .catch(error => {
-        console.error("couldnt upload new video to folder", error);
+        console.error("couldnt upload new icon", error);
     });
 
 }

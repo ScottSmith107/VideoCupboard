@@ -4,8 +4,8 @@ const data = require("./videos.js");
 
 const path = require('path');
 let websitePath= path.join(__dirname,"website")
-let videoPath = path.join(__dirname, "videos")
-let userIconPath = path.join(__dirname, "icons")
+let videoPath = path.join("","/mnt/mydrive/videos")
+let userIconPath = path.join("", "/mnt/mydrive/videos/icons")
 
 const multer = require("multer");
 const { userInfo } = require('os');
@@ -20,79 +20,79 @@ const user = require('./apiMethods/user');
 const video = require('./apiMethods/video');
 const websocket = require('./apiMethods/websocket');
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
 
-        console.log("file");
-        console.log(file);
-        console.log("");
+//         console.log("file");
+//         console.log(file);
+//         console.log("");
         
-        //get foldername
-        folderName = req.body.folderName;
-        desc = req.body.description;
+//         //get foldername
+//         folderName = req.body.folderName;
+//         desc = req.body.description;
 
-        iconPath ="";
-        //if its an image then upload diffrent
-        if(file.mimetype.split("/")[0] == "image"){
+//         iconPath ="";
+//         //if its an image then upload diffrent
+//         if(file.mimetype.split("/")[0] == "image"){
             
-            if(folderName){
-                //makes the new folder with the icon
-                console.log("new folder-icon");
+//             if(folderName){
+//                 //makes the new folder with the icon
+//                 console.log("new folder-icon");
 
-                //make new path
-                newFolder = path.join(__dirname, "videos", folderName);
-                if(!fs.existsSync(newFolder)){
-                    //make the new dir with fs
-                    fs.mkdir(newFolder, { recursive: true }, (err) => {
-                        if (err) {
-                            return cb(err);
-                        }
-                        //tells icon where to go
-                        iconPath = "videoIcon/"+file.originalname;
-                        console.log("iconpath: ",iconPath);
-                        // adds new folder to db 
-                        data.uploadFile(folderName ,desc ,0 ,folderName,1,iconPath);
-                    });
-                }
+//                 //make new path
+//                 newFolder = path.join(videoPath, folderName);
+//                 if(!fs.existsSync(newFolder)){
+//                     //make the new dir with fs
+//                     fs.mkdir(newFolder, { recursive: true }, (err) => {
+//                         if (err) {
+//                             return cb(err);
+//                         }
+//                         //tells icon where to go
+//                         iconPath = "videoIcon/"+file.originalname;
+//                         console.log("iconpath: ",iconPath);
+//                         // adds new folder to db 
+//                         data.uploadFile(folderName ,desc ,0 ,folderName,1,iconPath);
+//                     });
+//                 }
 
-            }
+//             }
                     
-            return cb(null, path.join(videoPath,"videoIcon"));
-        }
+//             return cb(null, path.join(videoPath,"videoIcon"));
+//         }
 
-        if(folderName){
-            console.log("folder vaild");
-            //make new path
-            newFolder = path.join(__dirname, "videos", folderName);
+//         if(folderName){
+//             console.log("folder vaild");
+//             //make new path
+//             newFolder = path.join(videoPath, folderName);
     
-            //if there is a folder without an icon
-            if(!fs.existsSync(newFolder)){
-                console.log("new folder");
-                //make the new dir with fs
-                fs.mkdir(newFolder, { recursive: true }, (err) => {
-                    if (err) {
-                      return cb(err);
-                    }
-                    // adds new folder to db 
-                    console.log("iconpath: ",iconPath);
-                    data.uploadFile(folderName ,desc ,0 ,folderName,1,iconPath);
-                    cb(null, newFolder);
-                });
-            }else{
-                cb(null, newFolder);
-            }
+//             //if there is a folder without an icon
+//             if(!fs.existsSync(newFolder)){
+//                 console.log("new folder");
+//                 //make the new dir with fs
+//                 fs.mkdir(newFolder, { recursive: true }, (err) => {
+//                     if (err) {
+//                       return cb(err);
+//                     }
+//                     // adds new folder to db 
+//                     console.log("iconpath: ",iconPath);
+//                     data.uploadFile(folderName ,desc ,0 ,folderName,1,iconPath);
+//                     cb(null, newFolder);
+//                 });
+//             }else{
+//                 cb(null, newFolder);
+//             }
     
-        }else{
-            console.log("folder unvaild");
-            cb(null, videoPath);
-        }
+//         }else{
+//             console.log("folder unvaild");
+//             cb(null, videoPath);
+//         }
 
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
-    }
-  })
-const upload = multer({ storage: storage })
+//     },
+//     filename: function (req, file, cb) {
+//         cb(null, file.originalname);
+//     }
+//   })
+const upload = multer({ storage: multer.memoryStorage() })
 
 const app = express();
 const port = 3000;
@@ -129,6 +129,7 @@ app.use(express.static(userIconPath));
 app.use(express.static(websitePath));
 
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`Example app listening on port ${port}!`);
 });
+server.setTimeout(60 * 60 * 1000); // 1 hour timeout 

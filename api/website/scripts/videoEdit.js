@@ -1,10 +1,12 @@
 let url = IP;
 let video;
 let userID;
+let isFolder;
 const urlParams = new URLSearchParams(window.location.search);
 function onload() {
     videoID = urlParams.get("videoID");
     userID = urlParams.get("userID");
+    isFolder = urlParams.get("folder");
 
     //sets the params of the home button
     document.getElementById("home").href = "home.html?userID="+userID;
@@ -74,17 +76,27 @@ function update(){
 
 //removes the displayed video
 function remove(){
-    if(confirm("Are you sure you want to delete this video?")){
+    if(confirm("Are you sure you want to delete this?")){
         const id = urlParams.get("videoID");
-
-        const deletUrl = new URL(url+"remove");
-        deletUrl.searchParams.append("id", id);
-        fetch(deletUrl, {method: "DELETE"})
-        .then(response => response.json())
-        .then()
-        .catch(error => {
-            console.error("couldnt delete current video", error);
-        });
+        if(isFolder == 1){
+            const deletUrl = new URL(url+"removeDir");
+            deletUrl.searchParams.append("id", id);
+            fetch(deletUrl, {method: "DELETE"})
+            .then(response => response.json())
+            .then()
+            .catch(error => {
+                console.error("couldnt delete current video", error);
+            });
+        }else{//not folder
+            const deletUrl = new URL(url+"remove");
+            deletUrl.searchParams.append("id", id);
+            fetch(deletUrl, {method: "DELETE"})
+            .then(response => response.json())
+            .then()
+            .catch(error => {
+                console.error("couldnt delete current video", error);
+            });
+        }
 
         //go to home screen
         location.replace("home.html?userID="+userID);

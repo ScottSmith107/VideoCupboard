@@ -2,6 +2,7 @@ let url = IP;
 let urlParams = new URLSearchParams(window.location.search);
 let arrayOfContents = [];
 let folderID;
+let isFolder;
 let videoID;
 let userID;
 let video;
@@ -17,6 +18,7 @@ async function getQueryParam() {
     videoID = urlParams.get("index");
     userID = urlParams.get("userID");
     const folder = urlParams.get("folder");
+    isFolder = folder;
     dir = urlParams.get("dir");
     fav = await getFavs(userID,videoID);
 
@@ -458,7 +460,7 @@ async function getFavs(userID,videoID){
 //configs the edit screen so it goes to the right place
 function configEdit(videoID){
     document.getElementById("edit").href = "videoEdit.html?videoID="+videoID + 
-    "&userID=" + userID;
+    "&userID=" + userID + "&folder=" + isFolder;
 }
 
 //change event for new file input
