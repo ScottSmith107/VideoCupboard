@@ -75,6 +75,7 @@ async function addFile(){
             try{
                 let result = await fetch(url+"upload-folder", {
                     method: "POST",
+                    headers:{'Transfer-Encoding': 'chunked'},
                     body: formData,
                 });
 
@@ -100,6 +101,7 @@ async function addFile(){
             try{
                 let result = await fetch(url+"upload", {
                     method: "POST",
+                    headers:{'Transfer-Encoding': 'chunked'},
                     body: formData,
                 });
 

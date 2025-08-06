@@ -44,8 +44,6 @@ app.post('/upload', upload.array('files'),async (req, res) => {
         console.log("iconpath: ",newIconPath);
         //writing icon
         await fs.promises.writeFile(path.join(iconPath, files[0].originalname), files[0].buffer);
-        //deref buffer 
-        // req.files[0].buffer = null;
     }
 
     //adds each file by itself
@@ -59,8 +57,6 @@ app.post('/upload', upload.array('files'),async (req, res) => {
         //write file
         videoLoc = path.join(videoPath, file.originalname);
         await fs.promises.writeFile(videoLoc, files[i].buffer);
-        //deref buffer 
-        // req.files[i].buffer = null;
     }
 
     res.send(output);
@@ -89,8 +85,6 @@ app.post('/upload-folder', upload.array('files'),async (req, res) => {
         console.log("iconpath: ",newIconPath);
         //writing icon
         await fs.promises.writeFile(path.join(iconPath, files[0].originalname), files[0].buffer);
-        //deref buffer 
-        req.files[0].buffer = null;
     }
 
     //make new path
@@ -119,8 +113,6 @@ app.post('/upload-folder', upload.array('files'),async (req, res) => {
         //write file
         videoLoc = path.join(videoPath, folderName, file.originalname);
         await fs.promises.writeFile(videoLoc, files[i].buffer);
-        //deref buffer 
-        req.files[i].buffer = null;
     }
 
     res.send(output);
