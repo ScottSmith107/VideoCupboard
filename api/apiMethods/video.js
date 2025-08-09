@@ -3,8 +3,8 @@ const fs = require('fs');
 const data = require("../videos.js");
 
 const path = require('path');
-let videoPath = path.join("","/mnt/mydrive/videos");
-let iconPath = path.join("", "/mnt/mydrive/videos/videoIcon");
+let videoPath = path.join("",process.env.STORAGE_DIR);
+let iconPath = path.join(process.env.STORAGE_DIR, "videoIcon");
 
 const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() })

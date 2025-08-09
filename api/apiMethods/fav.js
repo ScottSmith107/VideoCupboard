@@ -3,8 +3,7 @@ const fs = require('fs');
 const data = require("../videos.js");
 
 const path = require('path');
-let videoPath = path.join(__dirname, '..' ,"videos")
-let userIconPath = path.join(__dirname, '..' ,"icons")
+let videoPath = path.join("",process.env.STORAGE_DIR);
 
 const multer = require("multer");
 const { userInfo } = require('os');

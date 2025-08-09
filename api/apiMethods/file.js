@@ -3,9 +3,9 @@ const fs = require('fs');
 const data = require("../videos.js");
 
 const path = require('path');
-let videoPath = path.join("","/mnt/mydrive/videos");
-let iconPath = path.join("", "/mnt/mydrive/videos/videoIcon");
-let userUconPath = path.join("", "/mnt/mydrive/videos/icons");
+let videoPath = path.join("",process.env.STORAGE_DIR);
+let iconPath = path.join(process.env.STORAGE_DIR, "videoIcon");
+let userUconPath = path.join(process.env.STORAGE_DIR, "icons");
 
 const app = express.Router();
 
