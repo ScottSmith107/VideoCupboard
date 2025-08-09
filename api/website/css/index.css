@@ -95,10 +95,10 @@ button{
     
 }
 .iconNew{
-    width: 30%;
     border-radius: 18%;
     border-style: solid;
     border-color:#1e2423;
+    width: 25%;
 }
 .iconChecked{
     width: 30%; 
@@ -130,8 +130,8 @@ a:visited {
     padding-right:10px ;
     padding-left:10px ;
     margin-top: 10px;
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 33%;
+    margin-right: 33%;
 
     border-radius: 8%;
     background-color: white;
@@ -139,6 +139,7 @@ a:visited {
 }
 .controlesDiv{
     display: flex;
+    flex-wrap: wrap;
     flex-direction:row;
     align-items: center;
     justify-content: flex-start;
@@ -148,11 +149,21 @@ a:visited {
     /* background-color: white; */
 }
 
-.userEdit, .userContent, .addNewUser, #addButton , #addImage, #username, .label{
+#username{
+    width: 80%;
+}
+
+.userEdit, .userContent, .addNewUser, #username, .label{
     font-size: 22px;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 800px) {
+    #addButton,#addImage,#username{
+        font-size: 14px;
+    }
+}
+
+@media (min-width: 801px) {
     #user{
         width: 100%;
     }
@@ -161,20 +172,19 @@ a:visited {
     }
 
     .iconNew{
-        width: 30%;
+        width: 25%;
     }
     .iconChecked{
         width: 30%;
     }
 
-    .addUserDiv{
-        margin-right:5px ;
-        margin-left:5px ;
-    }
-
     .controlesDiv{
         display: flex;
         flex-wrap: wrap;
+    }
+
+    #addButton,#addImage,#username{
+        font-size: 14px;
     }
 }
 
@@ -187,5 +197,11 @@ a:visited {
         border-radius: 2%;
     }
 
+    #user{
+        width: 20%;
+    }
 
+    #username{
+        width:30%;
+    }
 }

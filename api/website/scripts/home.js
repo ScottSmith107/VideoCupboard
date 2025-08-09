@@ -78,16 +78,17 @@ function getVideos(){
                 const dir = ((arr[index].folder === 1) ? arr[index].id : arr[index].dir);
                 makeWidget(arr[index].Name, arr[index].id, dir, arr[index].folder, arr[index].Description, arr[index].icon,"videosItems",fav);
 
-                //system todo later addings shelves 
-                // if(phoneSize.matches){
-                //     checkForBar(3,index);
-                // }
-                // else if(halfScreen.matches){
-                //     checkForBar(5,index);
-                // }
-                // else if(fullScreen.matches){
-                //     checkForBar(8,index);
-                // }
+                if(phoneSize.matches){
+                    checkForBar(3,index);
+                }
+                else if(fullScreen.matches){
+                    console.log("MEOW");
+                    checkForBar(8,index);
+                }
+                else if(halfScreen.matches){
+                    checkForBar(5,index);
+                }
+                
             }
         })
         .catch(error => {
@@ -102,7 +103,7 @@ function checkForBar(limit,i){
     if((i % limit) == 0){
         const main = document.getElementById("videosItems");
         const div = document.createElement("div");
-        div.className = "controls";
+        div.className = "shelf";
 
         main.appendChild(div);
     }

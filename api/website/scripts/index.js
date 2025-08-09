@@ -17,7 +17,7 @@ let getUsers = () => {
         });
 }
 
-//makes video widget //I didnt feel like using react so here it is done
+//makes widget //I didnt feel like using react so here it is done
 function makeWidget(name,id,iconPath){
     const main = document.getElementById("userDiv");
     const div = document.createElement("div");
@@ -77,7 +77,7 @@ function makeForm(){
     const label = document.createElement("label");
     label.className = "label";
     label.setAttribute('for', 'username');
-    label.innerText = "Username:";
+    label.innerText = "New Username:";
     label.style.color = "black";
 
     const button = document.createElement("button");
