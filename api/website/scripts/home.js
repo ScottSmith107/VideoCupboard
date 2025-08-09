@@ -2,6 +2,11 @@ let url = IP;
 let allvideos =[];
 let favoriteVideos = new Map();
 const urlParams = new URLSearchParams(window.location.search);
+//displays all on phone but only 3 on desktop
+const phoneSize = window.matchMedia('(max-width: 800px)');
+const halfScreen = window.matchMedia('(min-width: 801px)');
+const fullScreen = window.matchMedia('(min-width: 1400px)');
+
 //get all videos from the server
 function onload(){
     formData = new FormData();
@@ -22,10 +27,6 @@ function onload(){
             if(data.length > 0){
                 //reset container
                 document.getElementById("favoritesItems").innerHTML ="";
-                //displays all on phone but only 3 on desktop
-                const phoneSize = window.matchMedia('(max-width: 800px)');
-                const halfScreen = window.matchMedia('(min-width: 801px)');
-                const fullScreen = window.matchMedia('(min-width: 1400px)');
                 //adds all to widget
                 for (let i = 0; i < data.length; i++) {
                     const video = data[i];
@@ -76,6 +77,17 @@ function getVideos(){
                 const fav = ((favoriteVideos.get(video.id) ? true : false));
                 const dir = ((arr[index].folder === 1) ? arr[index].id : arr[index].dir);
                 makeWidget(arr[index].Name, arr[index].id, dir, arr[index].folder, arr[index].Description, arr[index].icon,"videosItems",fav);
+
+                //system todo later addings shelves 
+                // if(phoneSize.matches){
+                //     checkForBar(3,index);
+                // }
+                // else if(halfScreen.matches){
+                //     checkForBar(5,index);
+                // }
+                // else if(fullScreen.matches){
+                //     checkForBar(8,index);
+                // }
             }
         })
         .catch(error => {
@@ -84,12 +96,23 @@ function getVideos(){
     
 }
 
+//checks if a shelf needs to be added
+function checkForBar(limit,i){
+    i++;
+    if((i % limit) == 0){
+        const main = document.getElementById("videosItems");
+        const div = document.createElement("div");
+        div.className = "controls";
+
+        main.appendChild(div);
+    }
+}
+
 //gets the recent videos then displays them
 function recent(userID){        
     formData = new FormData();
     formData.append("userID",userID);
 
-    const phoneSize = window.matchMedia('(max-width: 800px)');
     if(phoneSize.matches){
         fetch(url+"getRecent", {
             method: "PUT",
@@ -116,7 +139,7 @@ function recent(userID){
             console.error("couldnt make connection to database", error);
         });
     }
-    else {//if phone sized
+    else {//if not phone sized
         fetch(url+"getRecentLimit", {
             method: "PUT",
             body: formData,
@@ -128,9 +151,6 @@ function recent(userID){
             if(data.length > 0){
                 //clear div
                 document.getElementById("recentItems").innerHTML ="";
-                //diff sizes for diff screens
-                const halfScreen = window.matchMedia('(min-width: 801px)');
-                const fullScreen = window.matchMedia('(min-width: 1400px)');
                 //add widgets
                 for (let i = 0; i < data.length; i++) {
                     const video = data[i];

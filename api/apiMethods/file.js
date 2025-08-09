@@ -24,98 +24,153 @@ app.post('/upload-icon', upload.array('files'),async (req, res) => {
     res.send(output);
 }); 
 
+let fileChunks = new Map();
+//usage 
+// fileId, [array of chunks] 
+
 //for uploading files not in a folder
-app.post('/upload', upload.array('files'),async (req, res) => {
-    var files = req.files;
-    description = req.body.description;
-    
-    console.log("");
-    console.log(files);
-    console.log("");
-    
+app.post('/upload', upload.single('chunk'),async (req, res) => {
+    const fileId = req.body.fileId;
+    const fileNum = req.body.fileNum;
+    const chunkIndex = req.body.chunkIndex;
+    const totalChunks = req.body.totalChunks;
+    const chunk = req.file.buffer;
+    const icon = req.body.icon;
+    const description = req.body.description;
+
+    console.log("fileId:" ,fileId);
+    console.log("chunkIndex:" ,chunkIndex, "/", totalChunks);
+    console.log("icon:" ,icon);
+    console.log("fileNum:" ,fileNum);
+
     let newIconPath = "";
-
-    let i = 0;
-    //find icon\\ as if ther eis a icon it wil be placed first
-    if(files[0].mimetype.split("/")[0] == "image"){
-        i = 1;
-
-        newIconPath = path.join("videoIcon", files[0].originalname);
-        console.log("iconpath: ",newIconPath);
-        //writing icon
-        await fs.promises.writeFile(path.join(iconPath, files[0].originalname), files[0].buffer);
+    if(icon != 0){
+        newIconPath = path.join("videoIcon", icon);
+        //if the icon needs to be added
+        if(fileNum == 0 ){
+            newIconPath = path.join("videoIcon", req.file.originalname);
+            console.log("iconpath: ",newIconPath);
+            await fs.promises.writeFile(path.join(iconPath, req.file.originalname), chunk);
+            res.sendStatus(200);
+            return;
+        }   
     }
 
-    //adds each file by itself
-    for (; i < files.length; i++) {
-        var file = files[i];
-        console.log("file:", file);
-        console.log("originalname: ", file.originalname);
-        console.log("iconPath: ", newIconPath);
+    if(!fileChunks.get(fileId)){
+        fileChunks.set(fileId,[]);
+    }
+
+    //add chunk to the map
+    arry = fileChunks.get(fileId);
+    arry.push(chunk);
+
+    //if end of file then download
+    if(chunkIndex == totalChunks){
+        console.log("end found");
+
+        //add all the arrys together
+        wholeFile = Buffer.concat(fileChunks.get(fileId))
+
         //add file to db
-        output = data.uploadFile(file.originalname ,description ,0 , file.originalname,0,newIconPath);
+        output = data.uploadFile(req.file.originalname ,description ,0 , req.file.originalname,0,newIconPath);
         //write file
-        videoLoc = path.join(videoPath, file.originalname);
-        await fs.promises.writeFile(videoLoc, files[i].buffer);
+        videoLoc = path.join(videoPath, req.file.originalname);
+        await fs.promises.writeFile(videoLoc, wholeFile);
+
+        //wipe map
+        fileChunks.set(fileId,[])
     }
 
-    res.send(output);
+    res.sendStatus(200);
 }); 
 
 //for uploading files in a folder
-app.post('/upload-folder', upload.array('files'),async (req, res) => {
-    files = req.files;
-    folderName = req.body.folderName;
-    videoID = req.body.videoID;
-    description = req.body.description;
-    
-    console.log(folderName);
-    console.log("");
-    console.log(files);
-    console.log("");
+app.post('/upload-folder', upload.single('chunk'),async (req, res) => {
+    const folderName = req.body.folderName;
+    const fileId = req.body.fileId;
+    const fileNum = req.body.fileNum;
+    const chunkIndex = req.body.chunkIndex;
+    const totalChunks = req.body.totalChunks;
+    const chunk = req.file.buffer;
+    const icon = req.body.icon;
+    const description = req.body.description;
 
+    console.log("fileId:" ,fileId);
+    console.log("chunkIndex:" ,chunkIndex, "/", totalChunks);
+    console.log("icon:" ,icon);
+    console.log("fileNum:" ,fileNum);
+    console.log("folderName:" ,folderName);
     
     let newIconPath = "";
-    let i = 0;
-    //find icon\\ as if ther eis a icon it wil be placed first
-    if(files[0].mimetype.split("/")[0] == "image"){
-        i = 1;
-        
-        newIconPath = path.join("videoIcon", files[0].originalname);
-        console.log("iconpath: ",newIconPath);
-        //writing icon
-        await fs.promises.writeFile(path.join(iconPath, files[0].originalname), files[0].buffer);
-    }
-
-    //make new path
-    newFolder = path.join(videoPath, folderName);
-    if(!fs.existsSync(newFolder)){
-        //make the new dir with fs
-        await fs.mkdir(newFolder, { recursive: true }, (err) => {
-            if (err){
-                console.error("failed to make new folder", err);
+    if(icon != 0){
+        newIconPath = path.join("videoIcon", icon);
+        //if the icon needs to be added
+        if(fileNum == 0 ){
+            newIconPath = path.join("videoIcon", req.file.originalname);
+            console.log("iconpath: ",newIconPath);
+            await fs.promises.writeFile(path.join(iconPath, req.file.originalname), chunk);
+            
+            //make new path
+            newFolder = path.join(videoPath, folderName);
+            if(!fs.existsSync(newFolder)){
+                //make the new dir with fs
+                await fs.mkdir(newFolder, { recursive: true }, (err) => {
+                    if (err){
+                        console.error("failed to make new folder", err);
+                    }
+                });
+                // adds new folder to db 
+                await data.uploadFile(folderName ,description ,0 ,folderName,1,newIconPath);
             }
-        });
-        // adds new folder to db 
-        await data.uploadFile(folderName ,description ,0 ,folderName,1,newIconPath);
+            
+            res.sendStatus(200);
+            return;
+        }   
+    }else if(fileNum == 0){//create folder
+        //make new path
+        newFolder = path.join(videoPath, folderName);
+        if(!fs.existsSync(newFolder)){
+            //make the new dir with fs
+            await fs.mkdir(newFolder, { recursive: true }, (err) => {
+                if (err){
+                    console.error("failed to make new folder", err);
+                }
+            });
+            // adds new folder to db 
+            await data.uploadFile(folderName ,description ,0 ,folderName,1,newIconPath);
+        }
     }
     
-    //folder name for dir
-    folderName = req.body.folderName;
-    dir =  await data.getIdFromName(folderName);
-    console.log("dir");
-    console.log(dir);
-    //adds each file by itself
-    for (; i < files.length; i++) {
-        file = files[i];
-        //add file to db
-        output = data.uploadFile(file.originalname ,description ,dir[0].id , path.join(folderName , file.originalname),0,newIconPath);
-        //write file
-        videoLoc = path.join(videoPath, folderName, file.originalname);
-        await fs.promises.writeFile(videoLoc, files[i].buffer);
+    const folderId = await data.getIdFromName(folderName)
+    console.log("folderId:" ,folderId[0].id);
+    
+    if(!fileChunks.get(fileId)){
+        fileChunks.set(fileId,[]);
     }
 
-    res.send(output);
+    //add chunk to the map
+    let arry = fileChunks.get(fileId);
+    arry.push(chunk);
+
+    //if end of file then download
+    if(chunkIndex == totalChunks){
+        console.log("end found");
+
+        //add all the arrys together
+        const wholeFile = Buffer.concat(fileChunks.get(fileId))
+
+        //add file to db
+        let output = data.uploadFile(req.file.originalname ,description ,folderId[0].id , path.join(folderName, req.file.originalname),0,newIconPath);
+        //write file
+        const videoLoc = path.join(videoPath, folderName, req.file.originalname);
+        await fs.promises.writeFile(videoLoc, wholeFile);
+
+        //wipe map
+        fileChunks.set(fileId,[]);
+        fileChunks.delete(fileId);
+    }
+
+    res.sendStatus(200);
 });
 
 //delete singular file to db
@@ -126,6 +181,7 @@ app.delete('/remove', async (req, res) => {
     response = "";
     response = await data.getPath(id);
     fullPath = response[0].Full_path;
+    console.log("FULL PATH: ",fullPath);
 
     //removes folder from file system
     fs.unlink(path.join(videoPath,fullPath), (err) => {

@@ -98,7 +98,7 @@ function addFolderButtons(videoID){
     div.appendChild(input);
     div.appendChild(addVideo);
 }
-
+let prevtime=0;
 // play passed video
 function play(videoID) {
     videoID = videoID;
@@ -120,7 +120,10 @@ function play(videoID) {
     setUrl(videoID,videoPlayer)
     video.addEventListener("progress", () =>{
         var time = video.currentTime;
-        updateTimestamp(time,videoID); 
+        if(prevtime != time) {
+            prevtime = time;
+            updateTimestamp(time,videoID);
+        }
     });
     video.addEventListener("ended", videoEnded);
     //listeners for watch togeather
@@ -465,7 +468,7 @@ function configEdit(videoID){
 
 //change event for new file input
 //adds new file to the current folder
-function addNewVideo(event){
+async function addNewVideo(event){
     console.log(event.target.files);
     files = event.target.files;
 
@@ -485,24 +488,52 @@ function addNewVideo(event){
         }
     }
 
-    const formData = new FormData();
-    formData.append("videoID",videoID);
-    formData.append("folderName",name);
-    formData.append("description"," ");
     for (let i = 0; i < files.length; i++) {
-        formData.append('files', files[i]);
+        //get get chunks needed
+        const chunkSize = (1024 * 1024) * 100;
+        const totalChunks = Math.ceil(files[i].size / chunkSize);
+        const fileId = Date.now().toString();
+
+        let formData = new FormData();
+
+        for (let x = 0; x < totalChunks; x++) {
+            const start = x * chunkSize;
+            const end = Math.min(start + chunkSize, files[i].size);
+            const chunk = files[i].slice(start, end);
+
+            if(x != 0) formData = new FormData();
+            //0 will always be the icon//icons wont be doubled up
+            formData.append('icon', "0");
+            formData.append('fileId', fileId);
+            formData.append('fileNum', i);
+            formData.append('chunkIndex', x+1);
+            formData.append('totalChunks', totalChunks);
+            formData.append('chunk', chunk, files[i].name); 
+            formData.append("description","");
+            formData.append("folderName",name);
+
+            // formData.append('fileName', files[i].originalname); 
+            try{
+                let result = await fetch(url+"upload-folder", {
+                    method: "POST",
+                    headers:{'Transfer-Encoding': 'chunked'},
+                    body: formData,
+                });
+                console.log(`Chunk ${x + 1}/${totalChunks} uploaded...`);
+                display(`Chunk ${x + 1}/${totalChunks} uploaded...`);
+
+            }catch(error){
+                console.error(error);
+            }
+        }
     }
+    reload();
 
-    fetch(url+"upload-folder", {
-        method: "POST",
-        body: formData,
-    })
-    .then(response => response.json())
-    .then(reload)
-    .catch(error => {
-        console.error("couldnt upload new video to folder", error);
-    });
+}
 
+function display(txt){
+    console.log(txt)
+    document.getElementById("error").innerText = txt;
 }
 
 //reloads the page

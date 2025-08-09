@@ -58,10 +58,7 @@ async function addFile(){
         files = dataTransfer.files;
     }
 
-    //if folder
-    if (document.getElementById("folderName").value){
-        
-        console.log("is folder");
+    /*console.log("is folder");
         let i = 0
         if (icon) i = 1;
         for (; i < files.length; i++) {
@@ -84,42 +81,103 @@ async function addFile(){
             }
 
         }
-        display();
+        display();*/
+
+    //if folder
+    if (document.getElementById("folderName").value){
+
+        for (let i = 0; i < files.length; i++) {
+            //get get chunks needed
+            const chunkSize = (1024 * 1024) * 100;
+            const totalChunks = Math.ceil(files[i].size / chunkSize);
+            const fileId = Date.now().toString();
+
+            let formData = new FormData();
+
+            for (let x = 0; x < totalChunks; x++) {
+                const start = x * chunkSize;
+                const end = Math.min(start + chunkSize, files[i].size);
+                const chunk = files[i].slice(start, end);
+
+                if(x != 0) formData = new FormData();
+                //0 will always be the icon//icons wont be doubled up
+                if(icon) formData.append('icon', files[0].name);
+                else formData.append('icon', "0");
+
+                formData.append('fileId', fileId);
+                formData.append('fileNum', i);
+                formData.append('chunkIndex', x+1);
+                formData.append('totalChunks', totalChunks);
+                formData.append('chunk', chunk, files[i].name); 
+                formData.append("description",description);
+                formData.append("folderName",document.getElementById("folderName").value);
+
+                // formData.append('fileName', files[i].originalname); 
+                try{
+                    let result = await fetch(url+"upload-folder", {
+                        method: "POST",
+                        headers:{'Transfer-Encoding': 'chunked'},
+                        body: formData,
+                    });
+                    console.log(`Chunk ${x + 1}/${totalChunks} uploaded...`);
+                    display(`Chunk ${x + 1}/${totalChunks} uploaded...`);
+
+                }catch(error){
+                    console.error(error);
+                }
+            }
+        }
+        display("Upload Complete");
 
     } else{//not a folder
 
-        let i = 0
-        if (icon) i = 1;
-        for (; i < files.length; i++) {
-            const formData = new FormData();
-            formData.append("description",description);
+        for (let i = 0; i < files.length; i++) {
+            //get get chunks needed
+            const chunkSize = (1024 * 1024) * 100;
+            const totalChunks = Math.ceil(files[i].size / chunkSize);
+            const fileId = Date.now().toString();
 
-            //0 will always be the icon//icons wont be doubled up
-            if(icon) formData.append('files', files[0]);
-            formData.append('files', files[i]);
+            let formData = new FormData();
 
-            try{
-                let result = await fetch(url+"upload", {
-                    method: "POST",
-                    headers:{'Transfer-Encoding': 'chunked'},
-                    body: formData,
-                });
+            for (let x = 0; x < totalChunks; x++) {
+                const start = x * chunkSize;
+                const end = Math.min(start + chunkSize, files[i].size);
+                const chunk = files[i].slice(start, end);
 
-            }catch(error){
-                console.error(error);
+                if(x != 0) formData = new FormData();
+                //0 will always be the icon//icons wont be doubled up
+                if(icon) formData.append('icon', files[0].name);
+                else formData.append('icon', "0");
+
+                formData.append('fileId', fileId);
+                formData.append('fileNum', i);
+                formData.append('chunkIndex', x+1);
+                formData.append('totalChunks', totalChunks);
+                formData.append('chunk', chunk, files[i].name); 
+                formData.append("description",description);
+
+                try{
+                    let result = await fetch(url+"upload", {
+                        method: "POST",
+                        headers:{'Transfer-Encoding': 'chunked'},
+                        body: formData,
+                    });
+                    console.log(`Chunk ${x + 1}/${totalChunks} uploaded...`);
+                    display(`Chunk ${x + 1}/${totalChunks} uploaded...`);
+
+                }catch(error){
+                    console.error(error);
+                }
             }
         }
-        display();
+        display("Upload Complete");
     }
     
 }
 
-//gets ready for another upload
-function display(response){
-    console.log("done")
-    document.getElementById("error").innerText = "Upload Completed";
-    files =[];
-    icon = [];
+function display(txt){
+    console.log(txt)
+    document.getElementById("error").innerText = txt;
 }
 
 let userID;
