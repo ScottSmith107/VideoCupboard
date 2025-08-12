@@ -58,31 +58,6 @@ async function addFile(){
         files = dataTransfer.files;
     }
 
-    /*console.log("is folder");
-        let i = 0
-        if (icon) i = 1;
-        for (; i < files.length; i++) {
-            const formData = new FormData();
-            formData.append("folderName",document.getElementById("folderName").value);
-            formData.append("description",description);
-            //0 will always be the icon//icons wont be doubled up
-            if(icon) formData.append('files', files[0]);
-            formData.append('files', files[i]);
-            
-            try{
-                let result = await fetch(url+"upload-folder", {
-                    method: "POST",
-                    headers:{'Transfer-Encoding': 'chunked'},
-                    body: formData,
-                });
-
-            }catch (error){
-                console.error(error);
-            }
-
-        }
-        display();*/
-
     //if folder
     if (document.getElementById("folderName").value){
 
@@ -112,7 +87,6 @@ async function addFile(){
                 formData.append("description",description);
                 formData.append("folderName",document.getElementById("folderName").value);
 
-                // formData.append('fileName', files[i].originalname); 
                 try{
                     let result = await fetch(url+"upload-folder", {
                         method: "POST",
@@ -120,7 +94,7 @@ async function addFile(){
                         body: formData,
                     });
                     console.log(`Chunk ${x + 1}/${totalChunks} uploaded...`);
-                    display(`Chunk ${x + 1}/${totalChunks} uploaded...`);
+                    display(`Chunk ${x + 1}/${totalChunks} uploaded... ${files.length - i} files left`);
 
                 }catch(error){
                     console.error(error);
@@ -163,7 +137,7 @@ async function addFile(){
                         body: formData,
                     });
                     console.log(`Chunk ${x + 1}/${totalChunks} uploaded...`);
-                    display(`Chunk ${x + 1}/${totalChunks} uploaded...`);
+                    display(`Chunk ${x + 1}/${totalChunks} uploaded... ${files.length - i} files left`);
 
                 }catch(error){
                     console.error(error);

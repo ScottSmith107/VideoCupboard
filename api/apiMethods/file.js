@@ -69,9 +69,9 @@ app.post('/upload', upload.single('chunk'),async (req, res) => {
         console.log("end found");
 
         //add all the arrys together
+        //this makes one complete buffer for download
         wholeFile = Buffer.concat(fileChunks.get(fileId))
 
-        //add file to db
         output = data.uploadFile(req.file.originalname ,description ,0 , req.file.originalname,0,newIconPath);
         //write file
         videoLoc = path.join(videoPath, req.file.originalname);
@@ -79,6 +79,7 @@ app.post('/upload', upload.single('chunk'),async (req, res) => {
 
         //wipe map
         fileChunks.set(fileId,[])
+        fileChunks.delete(fileId);
     }
 
     res.sendStatus(200);
@@ -110,7 +111,7 @@ app.post('/upload-folder', upload.single('chunk'),async (req, res) => {
             console.log("iconpath: ",newIconPath);
             await fs.promises.writeFile(path.join(iconPath, req.file.originalname), chunk);
             
-            //make new path
+            //creates new folder with the new icon
             newFolder = path.join(videoPath, folderName);
             if(!fs.existsSync(newFolder)){
                 //make the new dir with fs
@@ -159,8 +160,7 @@ app.post('/upload-folder', upload.single('chunk'),async (req, res) => {
         //add all the arrys together
         const wholeFile = Buffer.concat(fileChunks.get(fileId))
 
-        //add file to db
-        let output = data.uploadFile(req.file.originalname ,description ,folderId[0].id , path.join(folderName, req.file.originalname),0,newIconPath);
+        data.uploadFile(req.file.originalname ,description ,folderId[0].id , path.join(folderName, req.file.originalname),0,newIconPath);
         //write file
         const videoLoc = path.join(videoPath, folderName, req.file.originalname);
         await fs.promises.writeFile(videoLoc, wholeFile);
@@ -207,7 +207,7 @@ app.delete('/removeDir', async (req, res) => {
         else console.log(fullPath, ' was deleted');
       });
 
-    output = await data.removeDir(id);
+    await data.removeDir(id);
     output = await data.remove(id);
     res.send(output);
 }); 

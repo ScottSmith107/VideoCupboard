@@ -161,6 +161,16 @@ a:visited {
     #addButton,#addImage,#username{
         font-size: 14px;
     }
+    #userIcon{
+        width: 90%;
+    }
+    #addUserDiv{
+        margin-left: 20%;
+        margin-right: 20%;
+    }
+    .iconNew,.iconChecked{
+        width: 28%;
+    }
 }
 
 @media (min-width: 801px) {
@@ -171,7 +181,7 @@ a:visited {
         width: 90%;
     }
 
-    .iconNew{
+    .iconNew,.iconChecked{
         width: 25%;
     }
     .iconChecked{

@@ -362,4 +362,15 @@ function utill(arr, index){
     const dir = ((arr[index].folder === 1) ? arr[index].id : arr[index].dir);
     console.log((arr[index].folder === 1));
     makeWidget(arr[index].Name, arr[index].id, dir, arr[index].folder, arr[index].Description, arr[index].icon,"videosItems",fav);
+
+    if(phoneSize.matches){
+        checkForBar(3,index);
+    }
+    else if(fullScreen.matches){
+        console.log("MEOW");
+        checkForBar(8,index);
+    }
+    else if(halfScreen.matches){
+        checkForBar(5,index);
+    }
 }
