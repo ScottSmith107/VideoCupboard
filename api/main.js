@@ -5,7 +5,7 @@ const data = require("./videos.js");
 const path = require('path');
 let websitePath= path.join(__dirname,"website")
 let videoPath = path.join("",process.env.STORAGE_DIR)
-let userIconPath = path.join("", "/mnt/mydrive/videos/icons")
+let userIconPath = path.join("", "/home/scott/main/videos/videoIcon")
 
 const multer = require("multer");
 const { userInfo } = require('os');
@@ -40,6 +40,7 @@ app.use('/', timestamp);
 app.use('/', user);
 app.use('/', video);
 app.use('/', websocket);
+app.use('/', torrent);
 
 require('dotenv').config();
 app.get('/config.js', (req, res) => {
