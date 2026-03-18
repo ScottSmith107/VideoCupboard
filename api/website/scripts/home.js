@@ -12,6 +12,12 @@ function onload(){
     formData = new FormData();
     formData.append("userID",urlParams.get("userID"));
 
+    // sets up onsubmit for form 
+    document.getElementById("searchForm").addEventListener("submit", function(e){
+        e.preventDefault();
+        search();
+    });
+
     //gets favs recents then everything else
         //so the favs are ready for the other sections to use
 
@@ -172,6 +178,49 @@ function recent(userID){
         });
     }
 
+}
+
+//searches for videos based off query
+function search(){
+
+    const query = document.getElementById("searchInput").value; 
+    const search = new URL(url+"search");
+    search.searchParams.append("query",query);
+
+    fetch(search)
+        .then(response => response.json())
+        .then(data =>{
+            console.log("search results");
+            console.log(data);
+            allvideos = data;
+            const arr = data;
+
+            //resets the video div
+            document.getElementById("videosItems").innerHTML = "";
+
+            for (let index = 0; index < arr.length; index++) {
+                const video = data[index];
+                const fav = ((favoriteVideos.get(video.id) ? true : false));
+                const dir = ((arr[index].folder === 1) ? arr[index].id : arr[index].dir);
+                makeWidget(arr[index].Name, arr[index].id, dir, arr[index].folder, arr[index].Description, arr[index].icon,"videosItems",fav);
+
+                if(phoneSize.matches){
+                    checkForBar(3,index);
+                }
+                else if(fullScreen.matches){
+                    console.log("MEOW");
+                    checkForBar(8,index);
+                }
+                else if(halfScreen.matches){
+                    checkForBar(5,index);
+                }
+                
+            }
+        })
+        .catch(error => {
+            console.error("couldnt get all videos", error);
+        });
+    
 }
 
 //makes video widget //I didnt feel like using react so here it is done

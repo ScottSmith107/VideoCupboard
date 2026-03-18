@@ -69,6 +69,19 @@ exports.getDir = function getDir(index){
     });
 }
 
+//searches for videos based off query
+exports.search = function search(query){
+    return new Promise((resolve, reject) => {
+        db.query('SELECT * FROM video WHERE Name LIKE ?', [`%${query}%`], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
 //gets a videos full path based from id
 exports.getPath = function getPath(id){
     return new Promise((resolve, reject) => {

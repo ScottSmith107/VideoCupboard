@@ -35,6 +35,15 @@ app.get('/path', async (req, res) => {
     res.send(output);
 });
 
+//Gets videos based off search query
+app.get('/search', async (req, res) => {
+    query = req.query.query;
+    console.log("query: ",query);
+    output = await data.search(query);
+    console.log(output);
+    res.send(output);
+}); 
+
 //updates a specific video.
 app.put('/updateVideo', upload.array('files'), async (req, res) => {
     files = req.files;
