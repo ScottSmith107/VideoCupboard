@@ -5,7 +5,7 @@ const data = require("./videos.js");
 const path = require('path');
 let websitePath= path.join(__dirname,"website")
 let videoPath = path.join("",process.env.STORAGE_DIR)
-let userIconPath = path.join("", "/home/scott/main/videos/videoIcon")
+let userIconPath = path.join("", process.env.ICON_DIR)
 
 const multer = require("multer");
 const { userInfo } = require('os');
@@ -19,6 +19,7 @@ const timestamp = require('./apiMethods/timestamp');
 const user = require('./apiMethods/user');
 const video = require('./apiMethods/video');
 const websocket = require('./apiMethods/websocket');
+const torrent = require('./apiMethods/torrent');
 
 const upload = multer({ storage: multer.memoryStorage() })
 
