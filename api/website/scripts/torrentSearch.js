@@ -7,29 +7,37 @@ function onload(){
 
     userID = urlParams.get("userID");
 
-    //reach out to backend to get sid
-    fetch(url+"auth", {
-        method: "POST",
-        body: formData,
-    })
-    .then(response => response.json())
-    .then(console.log(response))
-    .catch(error => {
-        console.error("couldnt reach torrent client", error);
+    // sets up onsubmit for form 
+    document.getElementById("searchForm").addEventListener("submit", function(e){
+        e.preventDefault();
+        search();
     });
+
+    //reach out to backend to get sid
+    // fetch(url+"auth", {
+    //     method: "POST",
+    //     body: formData,
+    // })
+    // .then(response => response.json())
+    // .then(console.log(response))
+    // .catch(error => {
+    //     console.error("couldnt reach torrent client", error);
+    // });
 }
 
 //searches for torrents bassed off input from user
 function search(){
-    const query = document.getElementById("searchInput").Value;
-    
+    const query = document.getElementById("searchInput").value;
+    const search = new URL(url+"torrentSearch");
+    search.searchParams.append("query",query);
+
     //reach out to backend with query 
-    fetch(url+"torrentSearch", {
-        method: "POST",
-        body: formData,
-    })
+    fetch(search)
     .then(response => response.json())
-    .then(listQuery)
+    .then(data =>{
+            console.log("search results");
+            console.log(data);
+        })
     .catch(error => {
         console.error("couldnt reach torrent client", error);
     });

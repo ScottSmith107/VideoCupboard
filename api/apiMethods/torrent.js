@@ -15,9 +15,28 @@ let SID;
 app.get('/torrentSearch', async (req, res) => {
     query = req.query.query;
     console.log("query: ",query);
-    output = await data.search(query);
-    console.log(output);
-    res.send(output);
+
+    // make call to prowlarr
+    const search = new URL('http://cupboard:9696/api/v1/search?query='+query+'&categories=2000');
+    fetch(search, {
+        headers: {
+            'X-Api-Key':process.env.PROWLARR_KEY
+        }
+    })
+    .then(response => response.json())
+    .then(data =>{
+        console.log("search results");
+        console.log(data);
+
+        res.send(data);
+    })
+    .catch(error => {
+        console.error("couldnt get all videos", error);
+        res.send("couldnt get all videos", error);
+    });
+
+    // console.log(output);
+    // res.send(output);
 }); 
 
 //adding new user to the db
