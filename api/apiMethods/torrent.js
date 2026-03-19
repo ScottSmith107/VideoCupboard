@@ -11,14 +11,14 @@ const app = express.Router();
 
 let SID;
 
-//searches for 
-app.get('/search',upload.none(), async (req, res) => {
-    userID = req.body.userID;
-    console.log("userID: ",userID);
-    
-    output = await data.getUser(userID);
+//searches for torrents based off query
+app.get('/torrentSearch', async (req, res) => {
+    query = req.query.query;
+    console.log("query: ",query);
+    output = await data.search(query);
+    console.log(output);
     res.send(output);
-});
+}); 
 
 //adding new user to the db
 app.post('/auth',upload.none(), async (req, res) => {

@@ -208,7 +208,6 @@ function search(){
                     checkForBar(3,index);
                 }
                 else if(fullScreen.matches){
-                    console.log("MEOW");
                     checkForBar(8,index);
                 }
                 else if(halfScreen.matches){
@@ -351,6 +350,10 @@ function reloadFavs(){
 function gotoUpload(){
     location.replace("uploadForm.html?userID="+urlParams.get("userID"));
 }
+//configs the upload button
+function gotoTorrent(){
+    location.replace("torrentSearch.html?userID="+urlParams.get("userID"));
+}
 
 function logout(){
     location.replace("index.html");
@@ -371,10 +374,7 @@ function filterFolders(){
 function filterAll(){
     
     resetItems();
-
-    for (let index = 0; index < allvideos.length; index++) {
-        utill(allvideos, index);
-    }
+    getVideos();
 }
 function filterSingle(){
     
@@ -416,7 +416,6 @@ function utill(arr, index){
         checkForBar(3,index);
     }
     else if(fullScreen.matches){
-        console.log("MEOW");
         checkForBar(8,index);
     }
     else if(halfScreen.matches){

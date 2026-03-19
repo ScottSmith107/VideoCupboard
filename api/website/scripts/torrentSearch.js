@@ -1,5 +1,11 @@
+let url = IP;
+let urlParams = new URLSearchParams(window.location.search);
+let userID;
+
 // onload function to get sid for qbittornt 
 function onload(){
+
+    userID = urlParams.get("userID");
 
     //reach out to backend to get sid
     fetch(url+"auth", {
@@ -18,7 +24,7 @@ function search(){
     const query = document.getElementById("searchInput").Value;
     
     //reach out to backend with query 
-    fetch(url+"search", {
+    fetch(url+"torrentSearch", {
         method: "POST",
         body: formData,
     })
