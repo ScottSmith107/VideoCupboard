@@ -228,6 +228,9 @@ app.get('/resumeTorrent',upload.none(), async (req, res) => {
 
 });
 
+//stores all files that need to be saved
+var neededFiles = [];
+
 //this endpoint is called when a torrent completes
 app.get('/torrentFinished',upload.none(), async (req, res) => {
     const name = req.query.name;
@@ -239,16 +242,11 @@ app.get('/torrentFinished',upload.none(), async (req, res) => {
 
     const stat = await fs.promises.stat(path);
     if(stat.isDirectory()){
-        console.log("Is dir");
         const files = await fs.promises.readdir(path); 
-        console.log(files);
 
-        var neededFiles = [];
-        files.forEach(file => {
-            if(file.slice(-3) == "mp4" || file.slice(-3) == "mkv"){
-                neededFiles.push(file)
-            }
-        });
+        await getFilesRecur(path)
+        console.log("neededFiles");
+        console.log(neededFiles);
 
         // check if a folder is needed
         if(neededFiles.length > 1){
@@ -270,32 +268,53 @@ app.get('/torrentFinished',upload.none(), async (req, res) => {
             console.log("folderId:" ,folderId[0].id);
 
             // move file to new folder then add to db
-            neededFiles.forEach(async file => {
-                const oldDir = PATH.join(path , file);
-                const newDir = PATH.join(folderPath , file);
-                fs.promises.rename(oldDir, newDir );
+            neededFiles.forEach(async file => { //file now holds the full path
+                var fileName = file.split("/");
+                fileName = fileName[fileName.length-1]
+                const newDir = PATH.join(folderPath , fileName);
+                fs.promises.rename(file, newDir );
 
                 // upload file
-                await data.uploadFile(file ,"" ,folderId[0].id , PATH.join(name, file),0,"");
+                await data.uploadFile(fileName ,"" ,folderId[0].id , PATH.join(name, fileName),0,"");
             });
 
         }else{
             // move file out of folder to correct dir
-            const oldDir = PATH.join(path , neededFiles[0]);
-            const newDir = PATH.join(process.env.STORAGE_DIR , neededFiles[0]);
-            fs.promises.rename(oldDir, newDir );
+            var fileName = neededFiles[0].split("/");
+            fileName = fileName[fileName.length-1]
+            const newDir = PATH.join(process.env.STORAGE_DIR , fileName);
+            fs.promises.rename(neededFiles[0], newDir );
 
             // add file to DB 
-            output = await data.uploadFile(neededFiles[0] ,"" ,0 , neededFiles[0],0,"");
+            output = await data.uploadFile(fileName ,"" ,0 , fileName,0,"");
         }
 
     }
     
-    auth();
+    neededFiles = [];
+
+    await auth();
     //remove torrent but not the data
-    output = await removeTorrentFunc(hash,false);
+    output = await removeTorrentFunc(hash,true);
     res.send("meow")
 });
+
+//get all videos files from the pearent folder
+// places them in one list in the order they are found depth first
+async function getFilesRecur(currentFolder){
+
+    const files = await fs.promises.readdir(currentFolder); 
+        for(const file of files){
+            var filePath = PATH.join(currentFolder,file);
+            if(file.slice(-3) == "mp4" || file.slice(-3) == "mkv"){
+                neededFiles.push(filePath);
+            }else{
+                const stat = await fs.promises.stat(filePath);
+                if(stat.isDirectory())
+                    await getFilesRecur(filePath);
+            }
+        }
+}
 
 async function removeTorrentFunc(hash , remove){
 
