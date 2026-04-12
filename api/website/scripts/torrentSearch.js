@@ -48,7 +48,7 @@ function search(){
             
             data.forEach(item => {
                 if(item.seeders != 0){
-                    makeWidget(item.fileName, item.magnetUrl, item.seeders);
+                    makeWidget(item.fileName, item.magnetUrl, item.seeders, item.size, item.files);
                 }
             });
             
@@ -60,7 +60,7 @@ function search(){
 }
 
 //displays each entry
-function makeWidget(name, magnet, seeders){
+function makeWidget(name, magnet, seeders, size, files){
     const main = document.getElementById("searchResults");
 
     const div = document.createElement("div");
@@ -75,6 +75,16 @@ function makeWidget(name, magnet, seeders){
     contentS.className = "seeders"; 
     contentS.innerText = "seeders :" + seeders;
     contentS.id = magnet;
+
+    const contentSize = document.createElement("p");
+    contentSize.className = "Size"; 
+    contentSize.innerText = "size :" + Math.round(size/1000000) + "MB";
+    contentSize.id = magnet;
+
+    const contentFiles = document.createElement("p");
+    contentFiles.className = "contentFiles"; 
+    contentFiles.innerText = "Number of files :" + files;
+    contentFiles.id = magnet;
 
     const button = document.createElement("button");
     button.innerHTML = "Download"
@@ -95,6 +105,8 @@ function makeWidget(name, magnet, seeders){
 
     div.appendChild(contentP);
     div.appendChild(contentS);
+    div.appendChild(contentSize);
+    div.appendChild(contentFiles);
     div.appendChild(button);
     main.appendChild(div);
 }
@@ -111,7 +123,7 @@ function checkDownloads(){
         maindiv = document.getElementById("downloading").innerHTML = "";
 
         data.forEach(item => {
-            makeTorrentWidget(item.name, item.num_seeds, item.eta, item.dlspeed,item.state,item.hash);
+            makeTorrentWidget(item.name, item.num_seeds, item.eta, item.dlspeed, item.state, item.hash, item.progress) ;
         });
     })
     .catch(error => {
@@ -119,7 +131,7 @@ function checkDownloads(){
     });
 }
 
-function makeTorrentWidget(name, seeders, eta, dlspeed,state,hash){
+function makeTorrentWidget(name, seeders, eta, dlspeed,state,hash, progress){
     maindiv = document.getElementById("downloading");
 
     if(state == "stalledUP" || state == "pausedUP"){
@@ -146,6 +158,10 @@ function makeTorrentWidget(name, seeders, eta, dlspeed,state,hash){
     contentSpeed.className = "torrentDlspeed"; 
     contentSpeed.innerText = "Download-Speed : " + Math.round(dlspeed/1000000) + " Mib/s";
 
+    const contentProgress = document.createElement("p");
+    contentProgress.className = "torrentprogress"; 
+    contentProgress.innerText = "progress: " + Math.round(progress * 100) +"%";
+
     const contentState = document.createElement("p");
     contentState.className = "torrentState"; 
     contentState.innerText = "State : " + state;
@@ -159,7 +175,7 @@ function makeTorrentWidget(name, seeders, eta, dlspeed,state,hash){
         search.searchParams.append("hash",hash);
         
         fetch(search)
-        .then(response => response.json())
+        .then(response => response.text())
         .then(data => {
             console.log(data);
         })
@@ -207,6 +223,7 @@ function makeTorrentWidget(name, seeders, eta, dlspeed,state,hash){
     torrentDiv.appendChild(contentEta);
     torrentDiv.appendChild(contentSpeed);
     torrentDiv.appendChild(contentState);
+    torrentDiv.appendChild(contentProgress);
     torrentDiv.appendChild(buttonRemove);
     torrentDiv.appendChild(buttonPause);
     maindiv.appendChild(torrentDiv);

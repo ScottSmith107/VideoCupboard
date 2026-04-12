@@ -2,10 +2,11 @@ const express = require('express');
 const fs = require('fs');
 const data = require("../videos.js");
 
-const path = require('path');
+const PATH = require('path');
 
 const multer = require("multer");
 const { url } = require('inspector');
+const { ok } = require('assert');
 const upload = multer({ storage: multer.memoryStorage() })
 
 const app = express.Router();
@@ -18,7 +19,12 @@ app.get('/torrentSearch', async (req, res) => {
     console.log("query: ",query);
 
     // make call to prowlarr
-    const search = new URL(process.env.PROWLARR_URL + 'api/v1/search?query='+query+'&categories=2000');
+    // const search = new URL(process.env.PROWLARR_URL + 'api/v1/search?query='+query+'&categories=2000,5000');
+    const search = new URL(process.env.PROWLARR_URL + 'api/v1/search');
+    search.searchParams.append("query", query);
+    search.searchParams.append("categories", "2000");
+    search.searchParams.append("categories", "5000");
+
     fetch(search, {
         headers: {
             'X-Api-Key':process.env.PROWLARR_KEY
@@ -41,11 +47,38 @@ app.get('/torrentSearch', async (req, res) => {
 //adding new user to the db
 app.get('/auth',upload.none(), async (req, res) => {
 
+
+    res.send(auth());
+    // const body = new URLSearchParams();
+    // body.append("username", process.env.QBIT_USERNAME);
+    // body.append("password", process.env.QBIT_PASSWORD);
+
+    // const url = process.env.QBit_URL + "api/v2/auth/login";
+
+    // try {        
+    //     const response = await fetch(url, {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/x-www-form-urlencoded"
+    //         },
+    //         body: body.toString()
+    //     });
+    //     console.log("AuthResults");
+    //     QBITCookie = response.headers.get('set-cookie');
+    //     console.log("QBITCookie: ", QBITCookie);
+        
+    //     res.send(response);
+
+    // } catch (error) {
+    //     res.send(error);
+    // }
+
+});
+async function auth(){
     const body = new URLSearchParams();
     body.append("username", process.env.QBIT_USERNAME);
     body.append("password", process.env.QBIT_PASSWORD);
 
-    // const url = 'http://cupboard:8080/api/v2/auth/login';
     const url = process.env.QBit_URL + "api/v2/auth/login";
 
     try {        
@@ -56,19 +89,17 @@ app.get('/auth',upload.none(), async (req, res) => {
             },
             body: body.toString()
         });
-    //SOMTHING WRONG HERE \\
         console.log("AuthResults");
         QBITCookie = response.headers.get('set-cookie');
-        // QBITCookie = response.headers.get('set-cookie').split(';')[0].slice(8);
         console.log("QBITCookie: ", QBITCookie);
         
-        res.send(response);
+        return response;
 
     } catch (error) {
-        res.send(error);
-    }
+        return error;
 
-});
+    }
+}
 
 //adding new torrent
 app.get('/addTorrent',upload.none(), async (req, res) => {
@@ -133,28 +164,7 @@ app.get('/removeTorrent',upload.none(), async (req, res) => {
 
     console.log("attemping to remove " , hash);
 
-    const url = new URL(process.env.QBit_URL + "api/v2/torrents/delete");
-    fetch(url, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Cookie": QBITCookie
-        },
-        body: new URLSearchParams({
-            hashes: hash,
-            deleteFiles: "true"
-        })
-    })
-    .then(response => response.text())
-    .then(data =>{
-        console.log("removed torrent: " , hash);
-        console.log(data);
-
-        res.send(data);
-    })
-    .catch(error => {
-        console.error("couldnt remove torrent: ", error);
-    });
+    removeTorrentFunc(hash,true);
 
 });
 
@@ -217,5 +227,101 @@ app.get('/resumeTorrent',upload.none(), async (req, res) => {
     });
 
 });
+
+//this endpoint is called when a torrent completes
+app.get('/torrentFinished',upload.none(), async (req, res) => {
+    const name = req.query.name;
+    const hash = req.query.hash;
+    const path = req.query.path;
+
+    console.log("torrent done");
+    console.log(req.query.path);
+
+    const stat = await fs.promises.stat(path);
+    if(stat.isDirectory()){
+        console.log("Is dir");
+        const files = await fs.promises.readdir(path); 
+        console.log(files);
+
+        var neededFiles = [];
+        files.forEach(file => {
+            if(file.slice(-3) == "mp4" || file.slice(-3) == "mkv"){
+                neededFiles.push(file)
+            }
+        });
+
+        // check if a folder is needed
+        if(neededFiles.length > 1){
+            console.log("Creating folder")
+
+            // create new folder
+            const folderPath = PATH.join(process.env.STORAGE_DIR,name);
+            await fs.mkdir(folderPath, { recursive: true }, (err) => {
+                if (err){
+                    console.error("failed to make new folder", err);
+                }
+            });
+
+            //created folder in DB
+            await data.uploadFile(name ,"" ,0 ,name,1,"");
+
+            //get folder id
+            const folderId = await data.getIdFromName(name)
+            console.log("folderId:" ,folderId[0].id);
+
+            // move file to new folder then add to db
+            neededFiles.forEach(async file => {
+                const oldDir = PATH.join(path , file);
+                const newDir = PATH.join(folderPath , file);
+                fs.promises.rename(oldDir, newDir );
+
+                // upload file
+                await data.uploadFile(file ,"" ,folderId[0].id , PATH.join(name, file),0,"");
+            });
+
+        }else{
+            // move file out of folder to correct dir
+            const oldDir = PATH.join(path , neededFiles[0]);
+            const newDir = PATH.join(process.env.STORAGE_DIR , neededFiles[0]);
+            fs.promises.rename(oldDir, newDir );
+
+            // add file to DB 
+            output = await data.uploadFile(neededFiles[0] ,"" ,0 , neededFiles[0],0,"");
+        }
+
+    }
+    
+    auth();
+    //remove torrent but not the data
+    output = await removeTorrentFunc(hash,false);
+    res.send("meow")
+});
+
+async function removeTorrentFunc(hash , remove){
+
+    const url = new URL(process.env.QBit_URL + "api/v2/torrents/delete");
+    await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Cookie": QBITCookie
+        },
+        body: new URLSearchParams({
+            hashes: hash,
+            deleteFiles: remove
+        })
+    })
+    .then(response => response.text())
+    .then(data =>{
+        console.log("removed torrent: " , hash) , "Removed data: ",remove;
+        console.log(data);
+
+        return(data);
+    })
+    .catch(error => {
+        console.error("couldnt remove torrent: ", error);
+        return(error);
+    });
+}
 
 module.exports = app;
