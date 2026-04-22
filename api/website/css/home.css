@@ -280,15 +280,20 @@ a.link:visited {
   }
   #logoutButton{
     grid-area: L;
-    margin-left:0;
+    margin-left:33%;
     margin-right: 0;
-    width: 100%;
+    width: 66%;
   }
   #uploadButton{
     grid-area: U;
     margin-left:0;
     margin-right: 0;
-    width: 100%;
+    width: 33%;
+  }
+  #torrentButton{
+    grid-area: U;
+    margin-left: 34%;
+    width: 33%;
   }
 
   #favoritesItems, #recentItems{

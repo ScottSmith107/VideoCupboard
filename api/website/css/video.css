@@ -57,6 +57,10 @@ video{
     padding-left: 10px;
 }
 
+#lineDiv{
+    overflow-wrap: break-word;
+}
+
 #main{
     display: flex;
     flex-direction:column;

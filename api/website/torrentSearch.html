@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>VideoCupboard</title>
-    <link rel="stylesheet" href="css/showAll.css">
+    <link rel="stylesheet" href="css/torrent.css">
     <script src="/config.js"></script>
     <script>
       let IP = window.APP_CONFIG.IP;
@@ -13,21 +13,25 @@
     <script src="scripts/torrentSearch.js"></script>
   </head>
 
-  <body onload=onload() style="background-image: url(images/folderBackground.jfif)">
+  <!-- style="background-image: url(images/folderBackground.jfif)" -->
+  <body onload=onload() >
     <div id="navBar">
       <button id="home" onclick="location.replace('home.html?userID='+userID)">Home</button>
       <button onclick="location.replace('index.html')" > LogOut</button>
-    </div>
-
-    <div id="downloading">
-      <h3 id="status"></h3>
     </div>
 
     <div id="searchBar" class="searchBar"> 
             <form id="searchForm">
               <input id="searchInput" class="searchInput" type="search" placeholder="Search...">
             </form>
-          </div>
+    </div>
+    
+    <h4 id="searchTitle">Search</h4>
+    <h4 id="downloadTitle">Current Downloads </h3>
+
+    <div id="downloading">
+      <h3 id="status"></h3>
+    </div>
     
     <div id="searchResults" >
       <h4 id="error"></h4>
