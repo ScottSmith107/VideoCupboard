@@ -95,7 +95,7 @@ app.put('/getTimestamp',upload.none(), async (req, res) => {
     res.send(output);
 }); 
 
-//if the user opens a folder
+//called by progress event
 app.put('/updateTimestamp',upload.none(), async (req, res) => {
     userID = req.body.userID;
     videoID = req.body.videoID;
@@ -122,5 +122,19 @@ app.put('/updateTimestamp',upload.none(), async (req, res) => {
     // console.log(output);
     res.send(output);
 });
+
+//clears the selected folder from the watching folder for the user
+app.put('/clearTimestamp',upload.none(), async (req, res) => {
+    userID = req.body.userID;
+    folderID = req.body.folderID;
+    console.log("userID: ",userID);
+    console.log("folderID: ",folderID);
+
+    output = await data.clearTimestamp(userID,folderID);
+
+    res.send(output);
+});
+
+
 
 module.exports = app;

@@ -8,6 +8,10 @@ function onload() {
     userID = urlParams.get("userID");
     isFolder = urlParams.get("folder");
 
+    if(isFolder != 1){
+        document.getElementById("clearButton").hidden = true;
+    }
+
     //sets the params of the home button
     document.getElementById("home").href = "home.html?userID="+userID;
     video = getVideo(videoID);
@@ -102,4 +106,24 @@ function remove(){
         location.replace("home.html?userID="+userID);
     }
 
+}
+
+//clears all timestamps for the folder and the user
+function clearTimestamp(){
+        const formData = new FormData();
+        formData.append("userID",userID);
+        formData.append("folderID",videoID);
+        
+        fetch(url+"clearTimestamp", {
+            method: "PUT",
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Timestamps cleared");
+            document.getElementById("clearButton").hidden = true;
+        })
+        .catch(error => {
+            console.error("couldnt make connection to database", error);
+        });    
 }

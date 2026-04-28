@@ -393,3 +393,16 @@ exports.updateTimestamp = function updateTimestamp(userID,videoID,timestamp){
         });
     });
 }
+
+//clears all timestaps for a specfic user in a specfic folder
+exports.clearTimestamp = function clearTimestamp(userID,folderID){
+    return new Promise((resolve, reject) => {
+        db.query('DELETE watching FROM watching INNER JOIN video ON watching.videoID = video.id WHERE dir = ? AND userID = ?', [folderID,userID], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
