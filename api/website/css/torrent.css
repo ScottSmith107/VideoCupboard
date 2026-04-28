@@ -112,6 +112,9 @@ p{
 .torrent{
     margin-left: auto;
 }
+.TorrentDiv{
+  margin-left: 3px;
+}
 
 @media (max-width: 1000px) {
   .video {

@@ -8,6 +8,10 @@ const multer = require("multer");
 const { url } = require('inspector');
 const { ok } = require('assert');
 const upload = multer({ storage: multer.memoryStorage() })
+const ffmpeg = require('fluent-ffmpeg');
+const { exec } = require('child_process');
+const { get } = require('http');
+const { setTimeout } = require('timers/promises');
 
 const app = express.Router();
 
@@ -47,31 +51,7 @@ app.get('/torrentSearch', async (req, res) => {
 //adding new user to the db
 app.get('/auth',upload.none(), async (req, res) => {
 
-
     res.send(auth());
-    // const body = new URLSearchParams();
-    // body.append("username", process.env.QBIT_USERNAME);
-    // body.append("password", process.env.QBIT_PASSWORD);
-
-    // const url = process.env.QBit_URL + "api/v2/auth/login";
-
-    // try {        
-    //     const response = await fetch(url, {
-    //         method: "POST",
-    //         headers: {
-    //             "Content-Type": "application/x-www-form-urlencoded"
-    //         },
-    //         body: body.toString()
-    //     });
-    //     console.log("AuthResults");
-    //     QBITCookie = response.headers.get('set-cookie');
-    //     console.log("QBITCookie: ", QBITCookie);
-        
-    //     res.send(response);
-
-    // } catch (error) {
-    //     res.send(error);
-    // }
 
 });
 async function auth(){
@@ -231,6 +211,9 @@ app.get('/resumeTorrent',upload.none(), async (req, res) => {
 //stores all files that need to be saved
 var neededFiles = [];
 
+//wait helper function
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 //this endpoint is called when a torrent completes
 app.get('/torrentFinished',upload.none(), async (req, res) => {
     const name = req.query.name;
@@ -243,6 +226,12 @@ app.get('/torrentFinished',upload.none(), async (req, res) => {
     const stat = await fs.promises.stat(path);
     if(stat.isDirectory()){
         const files = await fs.promises.readdir(path); 
+
+        // TODO add check here if neededfiles > [] wait untill not // yucky work around but it works lol.
+        while(neededFiles.length != 0){
+            console.log("neededFiles.length:", neededFiles.length , " Waiting");
+            await wait(5000);
+        }
 
         await getFilesRecur(path)
         console.log("neededFiles");
@@ -272,26 +261,43 @@ app.get('/torrentFinished',upload.none(), async (req, res) => {
                 var fileName = file.split("/");
                 fileName = fileName[fileName.length-1]
                 const newDir = PATH.join(folderPath , fileName);
-                fs.promises.rename(file, newDir );
+                await fs.promises.rename(file, newDir);
 
                 // upload file
                 await data.uploadFile(fileName ,"" ,folderId[0].id , PATH.join(name, fileName),0,"");
             });
+
+            neededFiles = []; // needs to be called before converting files as will stall the any other downloads
+
+            await convertFile(name,true);
 
         }else{
             // move file out of folder to correct dir
             var fileName = neededFiles[0].split("/");
             fileName = fileName[fileName.length-1]
             const newDir = PATH.join(process.env.STORAGE_DIR , fileName);
-            fs.promises.rename(neededFiles[0], newDir );
+            await fs.promises.rename(neededFiles[0], newDir );
+            
+            neededFiles = [];// needs to be called before converting files as will stall the any other downloads
+
+            await convertFile(fileName,false);
 
             // add file to DB 
             output = await data.uploadFile(fileName ,"" ,0 , fileName,0,"");
         }
+    
 
+    }else{// if the there is only one loose file // bit of an edge case
+        var fileName = path.split("/");
+        fileName = fileName[fileName.length-1]
+        const newDir = PATH.join(process.env.STORAGE_DIR , fileName);
+        await fs.promises.rename(path, newDir);
+
+        await convertFile(fileName,false);
+
+        output = await data.uploadFile(fileName ,"" ,0 , fileName,0,"");
     }
     
-    neededFiles = [];
 
     await auth();
     //remove torrent but not the data
@@ -341,6 +347,128 @@ async function removeTorrentFunc(hash , remove){
         console.error("couldnt remove torrent: ", error);
         return(error);
     });
+}
+
+// converts the passed in file/folder to a video/audio codec that is supported by my chromecast.
+async function convertFile(name, folder){
+    if(!folder){
+        
+        console.log("Not folder to remux");
+
+        const suffix = name.slice(-4);
+        const filePath = PATH.join(process.env.STORAGE_DIR,name);
+        
+        const metadata = await getMetadata(PATH.join(process.env.STORAGE_DIR, name)); 
+        var videoCodec = metadata.streams[0].codec_name; 
+        var audioCodec = metadata.streams[1].codec_name; 
+        var audioCodecProfile = metadata.streams[1].profile; 
+
+        console.log("Current Codecs of ", name);
+        console.log(videoCodec);
+        console.log(audioCodec);
+        console.log(audioCodecProfile);
+        console.log(" ");
+        console.log("suffix - ",suffix);
+
+        if(videoCodec != "h264"){
+            console.log("Video and audio need to be changed");
+            //change audio and video codex
+            const tempPath = PATH.join(process.env.STORAGE_DIR, `${name.slice(0, -4)}.tmp${suffix}`);
+
+            ffmpeg(filePath)
+                .videoCodec('libx264')        // H.264
+                .audioCodec('aac')            // AAC (LC by default)
+                .audioChannels(2)             // Dual channel (stereo)
+                .outputOptions([
+                    '-profile:a aac_low',     // Explicit AAC-LC
+                    '-crf 23',
+                    '-preset medium'
+                ])
+                .on('end', () => {
+                    // Replace original file
+                    fs.renameSync(tempPath, filePath);
+                    console.log(`Replaced: ${filePath}`);
+                })
+                .on('error', (err) => {
+                    console.error(`Error processing ${filePath}:`, err);
+                    if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+                })
+                .save(tempPath);
+
+        }else if(audioCodec != "aac" || audioCodecProfile != "LC"){
+            console.log("audio needs to be changed");
+            //change just audio codec
+            const tempPath = PATH.join(process.env.STORAGE_DIR, `${name.slice(0, -4)}.tmp${suffix}`);
+
+            ffmpeg(filePath)
+                .videoCodec('copy')           //copies current 'vaild' codec
+                .audioCodec('aac')            // AAC (LC by default)
+                .audioChannels(2)             // Dual channel (stereo)
+                .outputOptions([
+                    '-profile:a aac_low',     // Explicit AAC-LC
+                    '-crf 23',
+                    '-preset medium'
+                ])
+                .on('end', () => {
+                    // Replace original file
+                    fs.renameSync(tempPath, filePath);
+                    console.log(`Replaced: ${filePath}`);
+                })
+                .on('error', (err) => {
+                    console.error(`Error processing ${filePath}:`, err);
+                    if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+                })
+                .save(tempPath);
+        }
+
+    }else{ //if folder
+
+        var file = await fs.promises.readdir(PATH.join(process.env.STORAGE_DIR, name));
+        const fileSuffix = file[0].slice(-4);
+
+        const metadata = await getMetadata(PATH.join(process.env.STORAGE_DIR, name , file[0])); 
+        var videoCodec = metadata.streams[0].codec_name; 
+        var audioCodec = metadata.streams[1].codec_name; 
+        var audioCodecProfile = metadata.streams[1].profile; 
+
+        console.log("Current Codecs of ", name);
+        console.log(videoCodec);
+        console.log(audioCodec);
+        console.log(audioCodecProfile);
+        console.log(" ");
+        
+        //runs a scrpit 
+        if(videoCodec != "h264"){
+            
+            console.log("audioVideo.sh");
+            exec("bash /home/scott/main/videos/videoAudio.sh", {
+                cwd: PATH.join(process.env.STORAGE_DIR, name)
+                }, (err, stdout, stderr) => {
+                    console.log(stdout);
+                }
+            );
+        }else if(audioCodec != "aac" || audioCodecProfile != "LC"){
+        
+            console.log("audio.sh");
+            exec("bash /home/scott/main/videos/audio.sh", {
+                cwd: PATH.join(process.env.STORAGE_DIR, name)
+                }, (err, stdout, stderr) => {
+                console.log(stdout);
+                }
+            );
+        }
+    }
+
+}
+
+// gets all data from a file
+async function getMetadata(path) {
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(path, (err, metadata) => {
+      if (err) return reject(err);
+      resolve(metadata);
+    });
+  });
 }
 
 module.exports = app;
