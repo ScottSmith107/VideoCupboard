@@ -20,6 +20,7 @@ const user = require('./apiMethods/user');
 const video = require('./apiMethods/video');
 const websocket = require('./apiMethods/websocket');
 const torrent = require('./apiMethods/torrent');
+const logon = require('./apiMethods/logon');
 
 const upload = multer({ storage: multer.memoryStorage() })
 
@@ -42,11 +43,11 @@ app.use('/', user);
 app.use('/', video);
 app.use('/', websocket);
 app.use('/', torrent);
+app.use('/', logon);
 
 require('dotenv').config();
 app.get('/config.js', (req, res) => {
     res.setHeader('Content-Type', 'application/javascript');
-    // res.send(`window.APP_CONFIG = { IP: "${'http://'+process.env.IP+':3000/'}" };`);
     res.send(`window.APP_CONFIG = { IP: "${'https://'+process.env.IP}" };`);
 });
 
@@ -55,6 +56,13 @@ app.get('/', async (req, res) => {
 });
 
 app.use(express.static(videoPath));
+
+const basicAuth = require('express-basic-auth');
+app.use(basicAuth({
+  users: { admin: 'admin' },
+  challenge: true
+}));
+
 app.use(express.static(userIconPath));
 app.use(express.static(websitePath));
 

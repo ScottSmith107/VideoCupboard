@@ -5,59 +5,38 @@ const data = require("../videos.js");
 const path = require('path');
 
 const multer = require("multer");
+const { ok } = require('assert');
 const upload = multer({ storage: multer.memoryStorage() })
 
 const app = express.Router();
 
-///sends all files listed in the videos dir back to caller as json
-app.get('/allUsers', async (req, res) => {
-    output = await data.allUsers("");
-    res.send(output);
-});
-
-// gets user info from userID
-app.put('/getUser',upload.none(), async (req, res) => {
-    userID = req.body.userID;
-    console.log("userID: ",userID);
+//creates auth token for user  
+app.post('/logon',upload.none(), async (req, res) => {
+    const password = req.body.password
     
-    output = await data.getUser(userID);
-    res.send(output);
-});
+    //check with password from env lol
+    if(password == process.env.PASSWORD){
+        console.log("Password correct");
+        
+        token = createToken();
+        console.log("Token generated:", token);
 
-//updates the users icon
-app.put('/updateUser',upload.array('files'), async (req, res) => {
-    userID = req.body.userID;
-    let name = req.body.username
-    iconID = req.body.iconID
-    console.log("name: ",name);
-    console.log("iconID: ",iconID);
-    console.log("userID: ",userID);
-    
-    //if the icon has been added
-    if(iconID){
-        output = await data.updateUser(name,iconID,userID);
+        await data.saveToken(token);
+        res.send(token);
     }else{
-        output = await data.updateUsername(name,userID);
+        console.log("Password incorrect");
+        res.send("404");
     }
-    res.send(output);
 });
 
-//adding new user to the db
-app.post('/addUser',upload.none(), async (req, res) => {
-    let name = req.body.username
-    let iconID = req.body.iconID
-    output = await data.addUser(name,iconID);
-    res.send(output);
-});
-
-//delete whole dir file to db
-app.delete('/deleteUser',upload.none(), async (req, res) => {
-    userID = req.body.userID;
-    console.log("userID: ",userID);
-
-    await data.deleteUser(userID);
-    output = await data.deleteUserWatching(userID);
-    res.send(output);
-}); 
+function createToken(){
+    var length = 8,
+        charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+        token = "";
+    for (var i = 0, n = charset.length; i < length; ++i) {
+        token += charset.charAt(Math.floor(Math.random() * n));
+    }
+    return token;
+}
 
 module.exports = app;

@@ -406,3 +406,16 @@ exports.clearTimestamp = function clearTimestamp(userID,folderID){
         });
     });
 }
+
+//saves passed in token
+exports.saveToken = function saveToken(token){
+    return new Promise((resolve, reject) => {
+        db.query('INSERT INTO tokens (`token`) VALUES (?)', [token], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
