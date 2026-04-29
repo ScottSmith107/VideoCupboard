@@ -7,7 +7,7 @@ const dbConfig = {
     database: process.env.DB_NAME,
     port: process.env.PORT,
     user: process.env.USER,
-    password: process.env.PASSWORD
+    password: process.env.DB_PASSWORD
 };
 
 const db = mysql.createConnection(dbConfig);
@@ -18,5 +18,6 @@ db.connect(err => {
     console.log('Successfully connected to the db');
 });
 
-//sexpoorts db connection to be used by events
+//expoorts db connection to be used by events
 exports.db = db;
+

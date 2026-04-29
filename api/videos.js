@@ -252,9 +252,9 @@ exports.updateVideoName = function updateVideoName(videoId,videoName,desc){
 }
 
 //uploads singular file to db
-exports.uploadFile = function uploadFile(name ,desc ,dir ,fullPath,folder,icon){
+exports.uploadFile = function uploadFile(name ,desc ,dir ,fullPath,folder,icon,position){
     return new Promise((resolve, reject) => {
-        db.query('INSERT INTO `video` (`Name`, `Description`, `dir`, `Full_path`,`folder`,`icon`) VALUES (?, ?, ?, ?, ?, ?)', [name ,desc ,dir ,fullPath,folder,icon], (error,results) => {
+        db.query('INSERT INTO `video` (`Name`, `Description`, `dir`, `Full_path`,`folder`,`icon`,`position`) VALUES (?, ?, ?, ?, ?, ?,?)', [name ,desc ,dir ,fullPath,folder,icon,position], (error,results) => {
             if (error) {
                 reject(error);
             } else {
@@ -411,6 +411,19 @@ exports.clearTimestamp = function clearTimestamp(userID,folderID){
 exports.saveToken = function saveToken(token){
     return new Promise((resolve, reject) => {
         db.query('INSERT INTO tokens (`token`) VALUES (?)', [token], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+// 
+exports.updatePosition = function updatePosition(id,pos){
+    return new Promise((resolve, reject) => {
+        db.query('UPDATE video SET position = ? WHERE id = ?', [pos,id], (error,results) => {
             if (error) {
                 reject(error);
             } else {

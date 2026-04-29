@@ -85,6 +85,14 @@ function addFolderButtons(videoID){
         document.getElementById("fileInput").click();
     });
 
+    // edit order button
+    const editOrder = document.createElement("button");
+    editOrder.id = "editOrder";
+    editOrder.innerText = "Edit Order";
+    editOrder.addEventListener("click", function() {
+        displayPostions(urlParams.get("dir"));
+    });
+
     //file input that will be hidden
     const input = document.createElement("input");
     input.type = "file";
@@ -97,7 +105,9 @@ function addFolderButtons(videoID){
     div.appendChild(removeButton);
     div.appendChild(input);
     div.appendChild(addVideo);
+    div.appendChild(editOrder);
 }
+
 let prevtime=0;
 // play passed video
 function play(videoID) {
@@ -234,11 +244,121 @@ function findFolder(index){
         //reset the div
         document.getElementById("videosDiv").innerHTML = "";
 
+        arr.sort((a,b) => a.position - b.position);
+
         for (let index = 0; index < arr.length; index++) {
             const recent = ((recents.has(arr[index].id)) ? true : false ) 
             makeWidget(arr[index].Name, arr[index].id, arr[index].dir, arr[index].folder,recent);
         }
 
+    })
+    .catch(error => {
+        console.error("couldnt make connection to database", error);
+    });
+}
+
+// displays all videos in folder but with postion feilds to be edited
+function displayPostions(index){
+    const folderUrl = new URL(url+"folder");
+    folderUrl.searchParams.append("folderIndex",index);
+    fetch(folderUrl)
+    .then(response => response.json())
+    .then(data =>{
+
+        const main = document.getElementById("videosDiv").innerHTML = "";
+
+        arrayOfContents = data;
+        const arr = data;
+        console.log("all videos in folder");
+        console.log(data);
+        //reset the div
+        document.getElementById("videosDiv").innerHTML = "";
+
+        arr.sort((a,b) => a.position - b.position);
+
+        for (let index = 0; index < arr.length; index++) {
+            const recent = ((recents.has(arr[index].id)) ? true : false ) 
+            const name= arr[index].Name;
+            const id = arr[index].id;
+            const dir = arr[index].dir;
+            const folder = arr[index].folder;
+            const position = arr[index].position;
+
+            const main = document.getElementById("videosDiv");
+            const div = document.createElement("div");
+            div.id = "lineDiv";
+
+            const content = document.createElement("a");
+            content.href = "video.html?data="+name + 
+                    "&index=" + id +
+                    "&dir=" + dir +
+                    "&folder=" + folder+   
+                    "&userID=" + userID;   
+            content.innerText = name.split(".mp4")[0];
+            content.className = "nextup";
+            div.appendChild(content);
+
+            if(recent){
+                console.log("recents");
+                const recentCheck = document.createElement("img");
+                recentCheck.className = "recent";
+                recentCheck.src = "images/recentCheck.webp";
+                div.appendChild(recentCheck);
+            }
+
+            //feild to display current postion 
+            const input = document.createElement("input");
+            input.value = position;
+            input.className = "inputPostion";
+            input.id = id;
+            div.append(input);
+
+            main.appendChild(div);                        
+        }
+
+        const saveButton = document.createElement("button");
+        saveButton.id = "saveButton";
+        saveButton.innerText = "Save";
+        saveButton.addEventListener("click", function() {
+            // saves all current postions and ids
+            positions = document.querySelectorAll('.inputPostion');
+
+            // let map = new Map(); 
+            let ids = [];
+            let pos = [];
+            for(i = 0; i < positions.length; i++){
+                var id = positions[i].id;
+                var value = positions[i].value;
+
+                // map.set(id, value);
+                ids.push(id);
+                pos.push(value);
+            }
+
+            // sending map to db to be alterd
+            var formData = new FormData();
+            // formData.append("map", JSON.stringify(Object.fromEntries(map)));
+            formData.append("ids", ids);
+            formData.append("positions", pos);
+
+            fetch(url+"updatePositions", {
+                method: "post",
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error("", error);
+            });
+
+            location.reload();
+
+        });
+
+        document.getElementById("removeButton").appendChild(saveButton);
+        
     })
     .catch(error => {
         console.error("couldnt make connection to database", error);

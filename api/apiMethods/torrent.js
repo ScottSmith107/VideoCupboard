@@ -250,13 +250,14 @@ app.get('/torrentFinished',upload.none(), async (req, res) => {
             });
 
             //created folder in DB
-            await data.uploadFile(name ,"" ,0 ,name,1,"");
+            await data.uploadFile(name ,"" ,0 ,name,1,"",null);
 
             //get folder id
             const folderId = await data.getIdFromName(name)
             console.log("folderId:" ,folderId[0].id);
 
             // move file to new folder then add to db
+            var position = 0;
             neededFiles.forEach(async file => { //file now holds the full path
                 var fileName = file.split("/");
                 fileName = fileName[fileName.length-1]
@@ -264,7 +265,8 @@ app.get('/torrentFinished',upload.none(), async (req, res) => {
                 await fs.promises.rename(file, newDir);
 
                 // upload file
-                await data.uploadFile(fileName ,"" ,folderId[0].id , PATH.join(name, fileName),0,"");
+                await data.uploadFile(fileName ,"" ,folderId[0].id , PATH.join(name, fileName),0,"",position);
+                position++;
             });
 
             neededFiles = []; // needs to be called before converting files as will stall the any other downloads
@@ -283,7 +285,7 @@ app.get('/torrentFinished',upload.none(), async (req, res) => {
             await convertFile(fileName,false);
 
             // add file to DB 
-            output = await data.uploadFile(fileName ,"" ,0 , fileName,0,"");
+            output = await data.uploadFile(fileName ,"" ,0 , fileName,0,"",null);
         }
     
 
@@ -295,7 +297,7 @@ app.get('/torrentFinished',upload.none(), async (req, res) => {
 
         await convertFile(fileName,false);
 
-        output = await data.uploadFile(fileName ,"" ,0 , fileName,0,"");
+        output = await data.uploadFile(fileName ,"" ,0 , fileName,0,"",null);
     }
     
 
@@ -423,40 +425,52 @@ async function convertFile(name, folder){
 
     }else{ //if folder
 
-        var file = await fs.promises.readdir(PATH.join(process.env.STORAGE_DIR, name));
-        const fileSuffix = file[0].slice(-4);
+        var files = await fs.promises.readdir(PATH.join(process.env.STORAGE_DIR, name));
 
-        const metadata = await getMetadata(PATH.join(process.env.STORAGE_DIR, name , file[0])); 
-        var videoCodec = metadata.streams[0].codec_name; 
-        var audioCodec = metadata.streams[1].codec_name; 
-        var audioCodecProfile = metadata.streams[1].profile; 
+        // const metadata = await getMetadata(PATH.join(process.env.STORAGE_DIR, name , files[0])); 
+        // var videoCodec = metadata.streams[0].codec_name; 
+        // var audioCodec = metadata.streams[1].codec_name; 
+        // var audioCodecProfile = metadata.streams[1].profile; 
 
-        console.log("Current Codecs of ", name);
-        console.log(videoCodec);
-        console.log(audioCodec);
-        console.log(audioCodecProfile);
-        console.log(" ");
+        // console.log("Current Codecs of ", name);
+        // console.log(videoCodec);
+        // console.log(audioCodec);
+        // console.log(audioCodecProfile);
+        // console.log(" ");
         
-        //runs a scrpit 
-        if(videoCodec != "h264"){
+        for(i = 0; i < files.length; i++){
+            const metadata = await getMetadata(PATH.join(process.env.STORAGE_DIR, name , files[i])); 
+            var videoCodec = metadata.streams[0].codec_name; 
+            var audioCodec = metadata.streams[1].codec_name; 
+            var audioCodecProfile = metadata.streams[1].profile; 
+
+            console.log("Current Codecs of ", name);
+            console.log(videoCodec);
+            console.log(audioCodec);
+            console.log(audioCodecProfile);
+            console.log(" ");
+
+            if(videoCodec != "h264"){
+                
+                console.log("audioVideo.sh");
+                exec("bash /home/scott/main/videos/videoAudio.sh", {
+                    cwd: PATH.join(process.env.STORAGE_DIR, name)
+                    }, (err, stdout, stderr) => {
+                        console.log(stdout);
+                    }
+                );
+            }else if(audioCodec != "aac" || audioCodecProfile != "LC"){
             
-            console.log("audioVideo.sh");
-            exec("bash /home/scott/main/videos/videoAudio.sh", {
-                cwd: PATH.join(process.env.STORAGE_DIR, name)
-                }, (err, stdout, stderr) => {
+                console.log("audio.sh");
+                exec("bash /home/scott/main/videos/audio.sh", {
+                    cwd: PATH.join(process.env.STORAGE_DIR, name)
+                    }, (err, stdout, stderr) => {
                     console.log(stdout);
-                }
-            );
-        }else if(audioCodec != "aac" || audioCodecProfile != "LC"){
-        
-            console.log("audio.sh");
-            exec("bash /home/scott/main/videos/audio.sh", {
-                cwd: PATH.join(process.env.STORAGE_DIR, name)
-                }, (err, stdout, stderr) => {
-                console.log(stdout);
-                }
-            );
+                    }
+                );
+            }
         }
+
     }
 
 }
@@ -470,5 +484,22 @@ async function getMetadata(path) {
     });
   });
 }
+
+//this endpoint is called when a torrent completes
+app.post('/updatePositions',upload.none(), async (req, res) => {
+    // const map = req.body.map;
+    const ids = req.body.ids.split(',');
+    const positions = req.body.positions.split(',');
+
+    for (let index = 0; index < ids.length; index++) {
+        //update pos for each video
+        var id = ids[index];
+        var pos = positions[index];
+        var output = await data.updatePosition(id,pos);      
+        console.log(output);
+    }
+    
+    res.send("meow");
+});
 
 module.exports = app;
