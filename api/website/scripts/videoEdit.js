@@ -15,6 +15,8 @@ function onload() {
     //sets the params of the home button
     document.getElementById("home").href = "home.html?userID="+userID;
     video = getVideo(videoID);
+
+    getFolders();
 }
 
 //gets the video from the db
@@ -126,4 +128,51 @@ function clearTimestamp(){
         .catch(error => {
             console.error("couldnt make connection to database", error);
         });    
+}
+
+//gets all folders for use in moveto drop down
+function getFolders(){
+    fetch(url+"Allfolders")
+        .then(response => response.json())
+        .then(data =>{
+            // put it all in the move drop down
+            console.log(data);
+            data.forEach(folder => {
+                document.getElementById("folderSelect").add(new Option(folder.Name , folder.id));
+            });
+        })
+        .catch(error => {
+            console.error("couldnt make connection to database", error);
+        });
+}
+
+//moves all items within this folder to the selected folder
+function move(){
+    // take selected folder
+    const select = document.getElementById("folderSelect");
+    const newDir = select.value;
+    const oldDir = urlParams.get("videoID");
+    const selectElement = document.querySelector('#folderSelect');
+    const newName = selectElement.options[selectElement.selectedIndex].innerText;
+    // const newName = select.innerText;
+    const oldName = document.getElementById("videoName").value;
+
+    var formData = new FormData();
+    formData.append("newDir", newDir);
+    formData.append("oldDir", oldDir);
+    formData.append("oldName", oldName);
+    formData.append("newName", newName);
+
+    fetch(url+"moveFolders", {
+                method: "post",
+                body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error("", error);
+    });
+
 }

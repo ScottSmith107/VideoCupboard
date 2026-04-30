@@ -46,7 +46,6 @@ app.use('/', torrent);
 
 console.log(process.env.IP);
 app.get('/config.js', (req, res) => {
-    console.log(process.env.IP);
     res.setHeader('Content-Type', 'application/javascript');
     res.send(`window.APP_CONFIG = { IP: "${'https://' + process.env.IP}" };`);
 });

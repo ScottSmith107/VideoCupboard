@@ -426,17 +426,6 @@ async function convertFile(name, folder){
     }else{ //if folder
 
         var files = await fs.promises.readdir(PATH.join(process.env.STORAGE_DIR, name));
-
-        // const metadata = await getMetadata(PATH.join(process.env.STORAGE_DIR, name , files[0])); 
-        // var videoCodec = metadata.streams[0].codec_name; 
-        // var audioCodec = metadata.streams[1].codec_name; 
-        // var audioCodecProfile = metadata.streams[1].profile; 
-
-        // console.log("Current Codecs of ", name);
-        // console.log(videoCodec);
-        // console.log(audioCodec);
-        // console.log(audioCodecProfile);
-        // console.log(" ");
         
         for(i = 0; i < files.length; i++){
             const metadata = await getMetadata(PATH.join(process.env.STORAGE_DIR, name , files[i])); 
@@ -484,22 +473,5 @@ async function getMetadata(path) {
     });
   });
 }
-
-//this endpoint is called when a torrent completes
-app.post('/updatePositions',upload.none(), async (req, res) => {
-    // const map = req.body.map;
-    const ids = req.body.ids.split(',');
-    const positions = req.body.positions.split(',');
-
-    for (let index = 0; index < ids.length; index++) {
-        //update pos for each video
-        var id = ids[index];
-        var pos = positions[index];
-        var output = await data.updatePosition(id,pos);      
-        console.log(output);
-    }
-    
-    res.send("meow");
-});
 
 module.exports = app;

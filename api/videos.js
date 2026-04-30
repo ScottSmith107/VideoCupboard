@@ -1,6 +1,7 @@
 const { resolve } = require('path');
 const data = require('./db.js');
 const { rejects } = require('assert');
+const path = require('path');
 
 const db = data.db;
 
@@ -8,6 +9,19 @@ const db = data.db;
 exports.allVideos = function allVideos(){
     return new Promise((resolve, reject) => {
         db.query('SELECT * FROM video WHERE dir = ""', (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//get all folders
+exports.Allfolders = function Allfolders(){
+    return new Promise((resolve, reject) => {
+        db.query('SELECT * FROM video WHERE folder = 1', (error,results) => {
             if (error) {
                 reject(error);
             } else {
@@ -420,10 +434,62 @@ exports.saveToken = function saveToken(token){
     });
 }
 
-// 
+// updates the postition for a video in its given folder
 exports.updatePosition = function updatePosition(id,pos){
     return new Promise((resolve, reject) => {
         db.query('UPDATE video SET position = ? WHERE id = ?', [pos,id], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+// moves the contents of one folder to another.
+exports.moveFolders = function moveFolders(oldDir,newDir,pos){
+    return new Promise((resolve, reject) => {
+        db.query('SET @i = ?; UPDATE video SET dir = ?, position = (@i := @i +1) where dir = ?', [pos,newDir,oldDir], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+// moves the contents of one folder to another.
+exports.updatePath = function updatePath(path,name){
+    return new Promise((resolve, reject) => {
+        db.query('UPDATE video SET full_path = ? where name = ?', [path,name], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+// moves the contents of one folder to another.
+exports.getLargestPos = function getLargestPos(dir){
+    return new Promise((resolve, reject) => {
+        db.query('select MAX(position) from video where dir = ?', [dir], (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//gets video 
+exports.getVideo = function getVideo(id){
+    return new Promise((resolve, reject) => {
+        db.query('SELECT * FROM video WHERE id = ?', [id],(error,results) => {
             if (error) {
                 reject(error);
             } else {

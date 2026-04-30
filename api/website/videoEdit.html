@@ -25,6 +25,11 @@
       <button id="updateButton" onclick=update() >Update</button>
       <button id="deleteButton" onclick=remove()> Delete</button>
       <button id="clearButton" onclick=clearTimestamp()> clear Watch history for folder</button>
+      <label id="moveLabel" for="folderSelect">Move Contents</label>
+      <select id="folderSelect">
+        <option></option>
+      </select>
+      <button onclick="move()">Move to</button>
     </div>
   </body>
 </html>
