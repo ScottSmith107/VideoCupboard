@@ -10,6 +10,9 @@ function onload() {
 
     if(isFolder != 1){
         document.getElementById("clearButton").hidden = true;
+        document.getElementById("moveLabel").hidden = true;
+        document.getElementById("folderSelect").hidden = true;
+        document.getElementById("moveButton").hidden = true;
     }
 
     //sets the params of the home button
