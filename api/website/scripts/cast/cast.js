@@ -52,9 +52,10 @@ async function playVideo(media){
   console.log(media);
 
   castSession = _framework.CastContext.getInstance().getCurrentSession();
-
-  request = new chrome.cast.media.LoadRequest(media);
   
+  request = new chrome.cast.media.LoadRequest(media);
+  request.currentTime = media.startTime;
+
   castSession.loadMedia(request)
   .then(
    function() { 
@@ -68,7 +69,7 @@ async function playVideo(media){
   .then(play)
 }
 
-function createQueue(){
+async function createQueue(){
   var queue = [];
 
   var firstIndex = findIndex(arrayOfContents, _video.id);
@@ -95,13 +96,43 @@ function createQueue(){
       media.metadata.title = video.Name;
       media.autoplay = true;
       media.preloadTime = 10;
-      media.startTime = 0;
+      const timestamp = await getTimestamp()
+      console.log("timestamp: " + timestamp);
+      // const startTime = await getTimestamp(videoID);
+      media.startTime = timestamp ? timestamp : 0;
+
 
       queue.push(media);
     }
   }
 
   return queue;
+}
+
+async function getTimestamp(){
+    const formData = new FormData();
+    formData.append("userID",userID);
+    formData.append("videoID",videoID);
+    let output;
+    
+    try {
+        const response = await fetch(url + "getTimestamp", {
+            method: "PUT",
+            body: formData,
+        });
+
+        const data = await response.json();
+
+        if (data.length > 0) {
+            return data[0].time;
+        }
+
+        return null; // if no data
+    } catch (error) {
+        console.error("couldnt get the timestamp", error);
+        return null;
+    }
+
 }
 
 function play(){

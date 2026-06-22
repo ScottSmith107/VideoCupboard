@@ -146,17 +146,25 @@ function play(videoID) {
     checkPlayTime(video);
     div.appendChild(videoPlayer);
 
-    //add buttons
     const buttonDiv = document.createElement("div");
     buttonDiv.className = "playerButtons";
+
+    // next button
     const next = document.createElement("button");
-    const prev = document.createElement("button");
     next.onclick = nextPressed;
-    prev.onclick = prevPressed;
     next.innerText = "Next";
-    prev.innerText = "Prev";
     next.id = "nextButton";
+    // prev button
+    const prev = document.createElement("button");
+    prev.onclick = prevPressed;
+    prev.innerText = "Prev";
     prev.id = "prevButton";
+    
+    // expand button
+    const expand = document.createElement("button");
+    expand.onclick = expandPlayer;
+    expand.innerText = "Expand";
+    expand.id = "expandButton";
 
     //add heart
     const heart = document.createElement("img");
@@ -174,9 +182,36 @@ function play(videoID) {
 
     buttonDiv.appendChild(prev);
     buttonDiv.appendChild(next);
+    buttonDiv.appendChild(expand);
     buttonDiv.appendChild(heart);
     buttonDiv.appendChild(cast);
     div.appendChild(buttonDiv);
+}
+
+let expanded = false;
+
+//expands the video player
+function expandPlayer(){
+    const videoPlayer = document.getElementById("videoPlayer");
+    const body = document.body;
+    const tester = document.getElementById("tester");
+
+    if(expanded){
+        if(window.matchMedia('(min-width: 1400px)').matches){
+            videoPlayer.style.width = "70%";
+        }else{
+            videoPlayer.style.width = "100%";
+        }
+
+        body.style.margin = "8px";
+        tester.style.alignItems = "center";
+        expanded = false;
+    }else{
+        videoPlayer.style.width = "100vw";
+        body.style.margin = "0px";
+        tester.style.alignItems = "baseline";
+        expanded = true;
+    }
 }
 
 //saves volume change to cookie

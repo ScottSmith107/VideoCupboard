@@ -3,12 +3,36 @@ const data = require('./db.js');
 const { rejects } = require('assert');
 const path = require('path');
 
-const db = data.db;
+let db = data.db;
+
+// checks connectyion to db and if it fails then trys to connect to db again.
+// function checkConnection() {
+//     db.connect(err => { 
+//         if (err) {  
+//             data.reconnect();
+//             db = data.db;
+//         }   
+//         console.log('Successfully connected to the db');
+//     }   );
+// }
 
 //get all videos
 exports.allVideos = function allVideos(){
     return new Promise((resolve, reject) => {
         db.query('SELECT * FROM video WHERE dir = ""', (error,results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
+//get all single videos
+exports.allSingles = function allSingles(){
+    return new Promise((resolve, reject) => {
+        db.query('SELECT * FROM video WHERE folder = "0" AND DIR = "0"', (error,results) => {
             if (error) {
                 reject(error);
             } else {
@@ -33,6 +57,7 @@ exports.Allfolders = function Allfolders(){
 
 //get all videos
 exports.allUsers = function allUsers(){
+    // checkConnection();
     return new Promise((resolve, reject) => {
         db.query('SELECT user.userID, user.name, icons.fullPath FROM `user` inner JOIN icons on icons.iconID = user.icon', (error,results) => {
             if (error) {

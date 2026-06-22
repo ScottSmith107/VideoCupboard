@@ -18,6 +18,12 @@ app.get('/allVideos', async (req, res) => {
     res.send(output);
 });
 
+//get all single videos
+app.get('/allSingles', async (req, res) => {
+    output = await data.allSingles("");
+    res.send(output);
+});
+
 //if the user opens a folder
 app.get('/folder', async (req, res) => {
     folderIndex = req.query.folderIndex;

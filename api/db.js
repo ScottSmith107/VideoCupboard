@@ -1,6 +1,23 @@
 const mysql = require("mysql2");
 require('dotenv').config();
 
+// const dbConfig = {
+//     host: process.env.DB_IP,
+//     database: process.env.DB_NAME,
+//     port: process.env.PORT,
+//     user: process.env.USER,
+//     password: process.env.DB_PASSWORD,
+//     multipleStatements: true
+    
+// };
+
+// const db = mysql.createConnection(dbConfig);
+// db.connect(err => {
+//     if (err) {
+//         throw err;
+//     }
+//     console.log('Successfully connected to the db');
+// });
 
 const dbConfig = {
     host: process.env.DB_IP,
@@ -8,17 +25,32 @@ const dbConfig = {
     port: process.env.PORT,
     user: process.env.USER,
     password: process.env.DB_PASSWORD,
-    multipleStatements: true
+    multipleStatements: true,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 10000 
 };
 
-const db = mysql.createConnection(dbConfig);
-db.connect(err => {
-    if (err) {
-        throw err;
-    }
-    console.log('Successfully connected to the db');
-});
+const db = mysql.createPool(dbConfig);
+// db.connect(err => {
+//     if (err) {
+//         throw err;
+//     }
+//     console.log('Successfully connected to the db');
+// });
 
 //expoorts db connection to be used by events
 exports.db = db;
+
+//reconnects to the db. called if connection is lost. called by events
+// exports.reconnect = function reconnect() {
+//     db.connect(err => {
+//     if (err) {
+//         throw err;
+//     }
+//     console.log('Successfully connected to the db');
+// });
+// };
 

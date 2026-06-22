@@ -44,6 +44,13 @@ body{
 #deleteButton{
     order: 6;
 }
+#clearButton{
+    margin-top: 5px;
+}
+
+#folderSelect{
+    max-width: 60%;
+}
 
 button{
     background-color: black;

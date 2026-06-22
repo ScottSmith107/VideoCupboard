@@ -365,26 +365,52 @@ function filterFolders(){
     
     resetItems();
 
+    var i = 0;
     for (let index = 0; index < allvideos.length; index++) {
         if(allvideos[index].folder == 1){
-            utill(allvideos, index);
+            utill(allvideos, i);
+            i++;
         }
     }
-}
-function filterAll(){
-    
-    resetItems();
-    getVideos();
 }
 function filterSingle(){
     
     resetItems();
 
-    for (let index = 0; index < allvideos.length; index++) {
-        if (allvideos[index].folder == 0) {
-            utill(allvideos, index);
-        }
-    }
+//TODO CLEAN THIS UP
+
+    fetch(url+"allSingles")
+            .then(response => response.json())
+            .then(data =>{
+                console.log("all Videos");
+                console.log(data);
+                allvideos = data;
+                const arr = data;
+                for (let index = 0; index < arr.length; index++) {
+                    const video = data[index];
+                    const fav = ((favoriteVideos.get(video.id) ? true : false));
+                    const dir = ((arr[index].folder === 1) ? arr[index].id : arr[index].dir);
+                    makeWidget(arr[index].Name, arr[index].id, dir, arr[index].folder, arr[index].Description, arr[index].icon,"videosItems",fav);
+
+                    if(phoneSize.matches){
+                        checkForBar(3,index);
+                    }
+                    else if(fullScreen.matches){
+                        checkForBar(8,index);
+                    }
+                    else if(halfScreen.matches){
+                        checkForBar(5,index);
+                    }
+                    
+                }
+            })
+            .catch(error => {
+                console.error("couldnt get all videos", error);
+            });
+}
+function filterAll(){
+    resetItems();
+    getVideos();
 }
 //filters Alphabetically
 function filterAbc(){
@@ -404,12 +430,9 @@ function resetItems(){
 }
 
 //utillity to save repeat lines
-//dont have name
 function utill(arr, index){
-    console.log(arr[index]);
     const fav = ((favoriteVideos.get(arr[index].id) ? true : false));
     const dir = ((arr[index].folder === 1) ? arr[index].id : arr[index].dir);
-    console.log((arr[index].folder === 1));
     makeWidget(arr[index].Name, arr[index].id, dir, arr[index].folder, arr[index].Description, arr[index].icon,"videosItems",fav);
 
     if(phoneSize.matches){

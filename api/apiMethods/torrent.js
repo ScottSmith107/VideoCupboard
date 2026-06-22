@@ -178,7 +178,7 @@ app.get('/pauseTorrent',upload.none(), async (req, res) => {
 
 });
 
-//pausing a passed torrent from qbit 
+//resuming a passed torrent from qbit 
 app.get('/resumeTorrent',upload.none(), async (req, res) => {
     const hash = req.query.hash;
 
@@ -208,9 +208,6 @@ app.get('/resumeTorrent',upload.none(), async (req, res) => {
 
 });
 
-//stores all files that need to be saved
-var neededFiles = [];
-
 //wait helper function
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -227,13 +224,7 @@ app.get('/torrentFinished',upload.none(), async (req, res) => {
     if(stat.isDirectory()){
         const files = await fs.promises.readdir(path); 
 
-        // TODO add check here if neededfiles > [] wait untill not // yucky work around but it works lol.
-        while(neededFiles.length != 0){
-            console.log("neededFiles.length:", neededFiles.length , " Waiting");
-            await wait(5000);
-        }
-
-        await getFilesRecur(path)
+        let neededFiles = await getFilesRecur(path)
         console.log("neededFiles");
         console.log(neededFiles);
 
@@ -273,6 +264,9 @@ app.get('/torrentFinished',upload.none(), async (req, res) => {
 
             await convertFile(name,true);
 
+        }else if(neededFiles.length == 0){
+            console.log("no video files found");
+            res.send("No files found ");
         }else{
             // move file out of folder to correct dir
             var fileName = neededFiles[0].split("/");
@@ -310,18 +304,21 @@ app.get('/torrentFinished',upload.none(), async (req, res) => {
 //get all videos files from the pearent folder
 // places them in one list in the order they are found depth first
 async function getFilesRecur(currentFolder){
+    let neededFiles = [];
 
     const files = await fs.promises.readdir(currentFolder); 
         for(const file of files){
             var filePath = PATH.join(currentFolder,file);
-            if(file.slice(-3) == "mp4" || file.slice(-3) == "mkv"){
+            if(file.slice(-3) == "mp4" || file.slice(-3) == "mkv" || file.slice(-3) == "avi"){
                 neededFiles.push(filePath);
             }else{
                 const stat = await fs.promises.stat(filePath);
                 if(stat.isDirectory())
-                    await getFilesRecur(filePath);
+                    neededFiles.push(...await getFilesRecur(filePath));
             }
         }
+
+    return neededFiles;
 }
 
 async function removeTorrentFunc(hash , remove){
@@ -353,14 +350,20 @@ async function removeTorrentFunc(hash , remove){
 
 // converts the passed in file/folder to a video/audio codec that is supported by my chromecast.
 async function convertFile(name, folder){
+    
     if(!folder){
-        
-        console.log("Not folder to remux");
-
         const suffix = name.slice(-4);
         const filePath = PATH.join(process.env.STORAGE_DIR,name);
-        
+        const tempPath = PATH.join(process.env.STORAGE_DIR, `${name.slice(0, -4)}.tmp${suffix}`);
+
+        console.log("Not folder to remux");
+
         const metadata = await getMetadata(PATH.join(process.env.STORAGE_DIR, name)); 
+        if(suffix != "avi"){
+            await checkLang(metadata, filePath, tempPath);
+        }
+
+
         var videoCodec = metadata.streams[0].codec_name; 
         var audioCodec = metadata.streams[1].codec_name; 
         var audioCodecProfile = metadata.streams[1].profile; 
@@ -374,9 +377,8 @@ async function convertFile(name, folder){
 
         if(videoCodec != "h264"){
             console.log("Video and audio need to be changed");
+            
             //change audio and video codex
-            const tempPath = PATH.join(process.env.STORAGE_DIR, `${name.slice(0, -4)}.tmp${suffix}`);
-
             ffmpeg(filePath)
                 .videoCodec('libx264')        // H.264
                 .audioCodec('aac')            // AAC (LC by default)
@@ -428,7 +430,15 @@ async function convertFile(name, folder){
         var files = await fs.promises.readdir(PATH.join(process.env.STORAGE_DIR, name));
         
         for(i = 0; i < files.length; i++){
-            const metadata = await getMetadata(PATH.join(process.env.STORAGE_DIR, name , files[i])); 
+            const suffix = files[i].slice(-4);
+            const filePath = PATH.join(process.env.STORAGE_DIR, name , files[i]);
+            const tempPath = PATH.join(process.env.STORAGE_DIR, name, `${files[i].slice(0, -4)}.tmp${suffix}`);
+
+            const metadata = await getMetadata(filePath);
+            if(suffix != ".avi"){
+                await checkLang(metadata, filePath, tempPath);
+            }
+
             var videoCodec = metadata.streams[0].codec_name; 
             var audioCodec = metadata.streams[1].codec_name; 
             var audioCodecProfile = metadata.streams[1].profile; 
@@ -442,7 +452,7 @@ async function convertFile(name, folder){
             if(videoCodec != "h264"){
                 
                 console.log("audioVideo.sh");
-                exec("bash /home/scott/main/videos/videoAudio.sh", {
+                exec("bash "+process.env.VIDEO_AUDIO_SCRIPT_DIR, {
                     cwd: PATH.join(process.env.STORAGE_DIR, name)
                     }, (err, stdout, stderr) => {
                         console.log(stdout);
@@ -451,7 +461,7 @@ async function convertFile(name, folder){
             }else if(audioCodec != "aac" || audioCodecProfile != "LC"){
             
                 console.log("audio.sh");
-                exec("bash /home/scott/main/videos/audio.sh", {
+                exec("bash "+process.env.AUDIO_SCRIPT_DIR, {
                     cwd: PATH.join(process.env.STORAGE_DIR, name)
                     }, (err, stdout, stderr) => {
                     console.log(stdout);
@@ -462,6 +472,72 @@ async function convertFile(name, folder){
 
     }
 
+}
+
+//checks the language of the audio stream and if it is not english it will change it to english using ffmpeg
+async function checkLang(metadata, filePath, tempPath){
+
+    // just for logging will remove later //TODO\\
+    metadata.streams.forEach((stream) => {
+        // Languages are stored inside the optional "tags" object
+        const language = stream.tags && stream.tags.language 
+        ? stream.tags.language 
+        : 'unknown';
+
+        console.log(`Index: ${stream.index}`);
+        console.log(`Type: ${stream.codec_type}`); // e.g., 'video', 'audio', 'subtitle'
+        console.log(`Codec: ${stream.codec_name}`);
+        console.log(`Language: ${language}`);
+        console.log('--------------------');
+    });
+
+    //gets current default language strean 0 is always the video stream
+    console.log("default language: ", metadata.streams[1].tags.language);
+    if(metadata.streams[1].tags.language != "eng"){
+
+        for (let i = 2; i < metadata.streams.length; i++) {
+        const lang = metadata.streams[i].tags.language;
+        console.log("Stream ", i, " Language: ", lang);
+
+        if(lang == "eng"){
+            console.log("Found English audio stream at index: ", i);
+            
+            await convertAudio(filePath, tempPath, i);
+            return;
+        }
+        }
+
+    }
+}
+
+//converts audio track i to be the first and default track
+function convertAudio(filePath, tempPath, i){
+    return new Promise((resolve, reject) => {
+        //when english file is found make it default
+        ffmpeg(filePath)
+        .outputOptions([
+        '-c copy',                     // Copy all video/audio streams without re-encoding
+        '-map 0:v',                      // Map all streams from the input file
+        `-map 0:a:${i-1}`,                      // Map the English audio stream to to be first
+        `-map 0:a:0`,                      // takes the old default audio stream and moves it to the end //this will be removed anyway
+        `-disposition:a:0 default`,    // Set the English audio stream (index i) as default
+        `-disposition:a:1 0`           // Remove the default flag from the second audio stream (index 0)
+        ])
+        .output(tempPath)
+        .on('end', () => {
+            console.log('Audio track updated successfully!')
+            // Replace original file
+            fs.renameSync(tempPath, filePath);
+            console.log(`Replaced: ${filePath}`);
+            resolve();                
+        })
+        .on('error', (err) => {
+            console.error(`Error processing ${filePath}:`, err);
+            if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+            reject(err);
+        })
+        .run();
+    });
 }
 
 // gets all data from a file

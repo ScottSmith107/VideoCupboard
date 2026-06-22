@@ -48,7 +48,14 @@ function search(){
             
             data.forEach(item => {
                 if(item.seeders != 0){
-                    makeWidget(item.fileName, item.magnetUrl, item.seeders, item.size, item.files);
+
+                    if(item.files){
+                        // this fits the piratebay indexer
+                        makeWidget(item.fileName, item.magnetUrl, item.seeders, item.size, item.files);
+                    }else{
+                        // this fits the limetorrent indexer
+                        makeWidget(item.fileName, item.downloadUrl, item.seeders, item.size, "LimeTorrent");
+                    }
                 }
             });
             
@@ -73,17 +80,17 @@ function makeWidget(name, magnet, seeders, size, files){
     
     const contentS = document.createElement("p");
     contentS.className = "seeders"; 
-    contentS.innerText = "seeders :" + seeders;
+    contentS.innerText = "seeders : " + seeders;
     contentS.id = magnet;
 
     const contentSize = document.createElement("p");
     contentSize.className = "Size"; 
-    contentSize.innerText = "size :" + Math.round(size/1000000) + "MB";
+    contentSize.innerText = "size : " + Math.round(size/1000000) + "MB";
     contentSize.id = magnet;
 
     const contentFiles = document.createElement("p");
     contentFiles.className = "contentFiles"; 
-    contentFiles.innerText = "Number of files :" + files;
+    contentFiles.innerText = "Number of files : " + files;
     contentFiles.id = magnet;
 
     const button = document.createElement("button");

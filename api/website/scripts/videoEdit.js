@@ -74,12 +74,14 @@ function update(){
         body: formData,
     })
     .then(response => response.json())
-    .then()
+    .then( data => {
+        // location.replace("home.html?userID="+userID);
+        location.reload();
+    })
     .catch(error => {
         console.error("couldnt update video", error);
     });
 
-    location.replace("home.html?userID="+userID);
 
 }
 
