@@ -399,8 +399,8 @@ async function convertFile(name, folder){
                 })
                 .save(tempPath);
 
-        }else if(audioCodec != "aac" || audioCodecProfile != "LC"){
-            console.log("audio needs to be changed");
+        }else{ // if(audioCodec != "aac" || audioCodecProfile != "LC" ) // this has be came a catch all because of the limited support by my first gen chromecast.
+            console.log("audio will be changed by default");
             //change just audio codec
             const tempPath = PATH.join(process.env.STORAGE_DIR, `${name.slice(0, -4)}.tmp${suffix}`);
 
@@ -497,9 +497,10 @@ async function checkLang(metadata, filePath, tempPath){
 
         for (let i = 2; i < metadata.streams.length; i++) {
         const lang = metadata.streams[i].tags.language;
+        const codec_type = metadata.streams[i].tags.codec_type;
         console.log("Stream ", i, " Language: ", lang);
 
-        if(lang == "eng"){
+        if(lang == "eng" && codec_type == "Audio"){
             console.log("Found English audio stream at index: ", i);
             
             await convertAudio(filePath, tempPath, i);
@@ -509,6 +510,8 @@ async function checkLang(metadata, filePath, tempPath){
 
     }
 }
+
+// Removes subtrack from file and saves sepratly
 
 //converts audio track i to be the first and default track
 function convertAudio(filePath, tempPath, i){

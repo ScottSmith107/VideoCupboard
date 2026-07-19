@@ -7,6 +7,7 @@ let videoPath = path.join("",process.env.STORAGE_DIR);
 
 const multer = require("multer");
 const { userInfo } = require('os');
+const { error } = require('console');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -103,6 +104,13 @@ app.put('/updateTimestamp',upload.none(), async (req, res) => {
     console.log("userID: ",userID);
     console.log("videoID: ",videoID);
     console.log("timestamp: ",timestamp);
+
+    //TODO correct thisz
+    if(userID == null){
+        console.log("No userID provided timestamp wont be saved");
+        res.send(error);
+        return;
+    }
 
     check = await data.getTimestamp(userID,videoID);
     console.log("check: ",check);
